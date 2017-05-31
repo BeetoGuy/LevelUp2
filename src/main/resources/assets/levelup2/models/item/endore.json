@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "levelup2:items/endstone_underlay",
+    "layer1": "levelup2:items/ore_overlay"
+  }
+}

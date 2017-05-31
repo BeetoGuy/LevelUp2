@@ -1,0 +1,16 @@
+[
+{
+  "modid": "levelup2",
+  "name": "Level Up! Reloaded",
+  "description": "Skill up by spending levels.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["BeetoGuy"],
+  "credits": "Remalis, for the original. GotoLink, for maintaining it for several versions.",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
