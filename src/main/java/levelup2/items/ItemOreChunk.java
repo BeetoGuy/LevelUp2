@@ -1,7 +1,7 @@
 package levelup2.items;
 
 import levelup2.skills.SkillRegistry;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -33,9 +33,9 @@ public class ItemOreChunk extends Item {
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
         if (!oreTypes.get(0).equals("null")) {
-            return I18n.format("item.levelup:orechunk.name", getOreName(stack));
+            return I18n.translateToLocalFormatted("item.levelup:orechunk.name", getOreName(stack));
         }
-        return I18n.format("item.levelup:orechunk_null.name");
+        return I18n.translateToLocalFormatted("item.levelup:orechunk_null.name");
     }
 
     private String getOreName(ItemStack stack) {
@@ -43,7 +43,7 @@ public class ItemOreChunk extends Item {
         if (meta < oreTypes.size()) {
             ItemStack check = SkillRegistry.getOreEntry(oreTypes.get(meta));
             if (!check.isEmpty()) {
-                return I18n.format(check.getUnlocalizedName() + ".name");
+                return I18n.translateToLocalFormatted(check.getUnlocalizedName() + ".name");
             }
         }
         return "Ore";
