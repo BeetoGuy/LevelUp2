@@ -20,12 +20,12 @@ public class StoneSpeedBonus extends MiningSpeedBonus {
     public void onBreak(PlayerEvent.BreakSpeed evt) {
         EntityPlayer player = evt.getEntityPlayer();
         if (player != null) {
-            IPlayerSkill skill = SkillRegistry.getPlayer(player).getSkillFromName(getSkillName());
-            if (skill.getSkillLevel() > 0) {
+            int skill = SkillRegistry.getSkillLevel(evt.getEntityPlayer(), getSkillName());
+            if (skill > 0) {
                 IBlockState state = evt.getState();
                 float speed = evt.getNewSpeed();
                 if (state.getMaterial() == Material.ROCK) {
-                    evt.setNewSpeed(speed + (skill.getSkillLevel() * 0.3F));
+                    evt.setNewSpeed(speed + (skill * 0.3F));
                 }
             }
         }

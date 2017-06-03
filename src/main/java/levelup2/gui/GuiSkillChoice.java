@@ -16,7 +16,7 @@ public class GuiSkillChoice extends GuiScreen {
         this.skill = skill;
         this.parent = parent;
         this.skillLevel = skillLevel;
-        canDowngrade = parent.player.getSkillFromName(skill.getSkillName()).getSkillLevel() < skillLevel;
+        canDowngrade = parent.player.getSkillLevel(skill.getSkillName()) < skillLevel;
         canSpendLevels = skill.getLevelCost(skillLevel) <= parent.availableLevels - parent.levelSpend && skill.getLevelCost(skillLevel) > -1 && parent.canUnlock(skill);
     }
 
@@ -50,7 +50,7 @@ public class GuiSkillChoice extends GuiScreen {
         if (this.skill.getLevelCost(skillLevel) > -1) {
             drawCenteredString(I18n.format("levelup.cost", this.skill.getLevelCost(skillLevel)), this.width / 2, this.height / 2 - (secondLine ? 46 : 64), -8355712);
         }
-        drawCenteredString(I18n.format("levelup.levels.track", skillLevel, parent.player.getSkillFromName(skill.getSkillName()).getSkillLevel()), this.width / 2, this.height / 2 + 15, -8355712);
+        drawCenteredString(I18n.format("levelup.levels.track", skillLevel, parent.player.getSkillLevel(skill.getSkillName())), this.width / 2, this.height / 2 + 15, -8355712);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -74,5 +74,6 @@ public class GuiSkillChoice extends GuiScreen {
     private void changeSkillLevel(int add) {
         int orig = parent.skills.get(skill.getSkillName());
         parent.skills.put(skill.getSkillName(), orig + add);
+        parent.skillChanges.put(skill.getSkillName(), add);
     }
 }

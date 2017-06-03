@@ -9,10 +9,6 @@ public interface IPlayerSkill {
 
     int getLevelCost(int currentLevel);
 
-    int getSkillLevel();
-
-    void setSkillLevel(int level);
-
     /**
     *0: Mining; 1: Crafting; 2: Combat
      */
@@ -30,7 +26,7 @@ public interface IPlayerSkill {
      */
     ItemStack getRepresentativeStack();
 
-    boolean isMaxLevel();
+    boolean isMaxLevel(int level);
 
     int getMaxLevel();
 

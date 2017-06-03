@@ -106,7 +106,7 @@ public class XPBonusCrafting extends BaseSkill {
     }
 
     @Override
-    public boolean isMaxLevel() {
+    public boolean isMaxLevel(int level) {
         return true;
     }
 

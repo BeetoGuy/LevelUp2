@@ -45,6 +45,7 @@ public class GuiSkills extends GuiScreen {
     private byte skillTree = 0;
     protected PlayerExtension player;
     protected Map<String, Integer> skills = new HashMap<>();
+    protected Map<String, Integer> skillChanges = new HashMap<>();
     private IPlayerSkill highlightedSkill = null;
     protected int availableLevels = 0;
     protected int levelSpend = 0;
@@ -60,8 +61,9 @@ public class GuiSkills extends GuiScreen {
         yScrollO = targetY;
         yScrollP = targetY;
         skills.clear();
-        for (IPlayerSkill skill : player.getSkills()) {
-            skills.put(skill.getSkillName(), skill.getSkillLevel());
+        for (String str : player.getSkills().keySet()) {
+            skills.put(str, player.getSkills().get(str));
+            skillChanges.put(str, 0);
         }
     }
 
@@ -280,7 +282,7 @@ public class GuiSkills extends GuiScreen {
                     for (IPlayerSkill pre : prerequisite) {
                         int preX = pre.getSkillColumn() * 32 - x + 11;
                         int preY = ((pre.getSkillRow() * 32) - 160) - y + 11;
-                        int lineColor = skill.getSkillLevel() > 0 ? -6250336 : pre.getSkillLevel() > 0 ? -16711936 : -16777216;
+                        int lineColor = skills.get(skill.getSkillName()) > 0 ? -6250336 : skills.get(pre.getSkillName()) > 0 ? -16711936 : -16777216;
                         this.drawHorizontalLine(skillX, preX, skillY, lineColor);
                         this.drawVerticalLine(preX, skillY, preY, lineColor);
                     }
@@ -303,7 +305,7 @@ public class GuiSkills extends GuiScreen {
                     float col = 0.3F;
                     if (this.isMaxLevel(check))
                         col = 0.9F;
-                    else if (check.getSkillLevel() > 0) {
+                    else if (skills.get(check.getSkillName()) > 0) {
                         col = 0.75F;
                     }
                     else if (this.canUnlock(check)) {
@@ -312,13 +314,13 @@ public class GuiSkills extends GuiScreen {
                     GlStateManager.color(col, col, col, 1.0F);
                     mc.getTextureManager().bindTexture(BACKGROUND);
                     GlStateManager.enableBlend();
-                    if (check.isMaxLevel())
+                    if (check.isMaxLevel(skills.get(check.getSkillName())))
                         this.drawTexturedModalRect(checkX, checkY, 26, 202, 26, 26);
                     else
                         this.drawTexturedModalRect(checkX, checkY, 0, 202, 26, 26);
                     GlStateManager.disableBlend();
 
-                    if (check.getSkillLevel() == 0) {
+                    if (skills.get(check.getSkillName()) == 0) {
                         GlStateManager.color(0.1F, 0.1F, 0.1F, 1.0F);
                         this.itemRender.isNotRenderingEffectsInGUI(false);
                     }
@@ -327,7 +329,7 @@ public class GuiSkills extends GuiScreen {
                     mc.getRenderItem().renderItemAndEffectIntoGUI(check.getRepresentativeStack(), checkX + 4, checkY + 4);
                     GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
                     GlStateManager.disableLighting();
-                    if (check.getSkillLevel() == 0) {
+                    if (skills.get(check.getSkillName()) == 0) {
                         this.itemRender.isNotRenderingEffectsInGUI(true);
                     }
 
@@ -360,7 +362,7 @@ public class GuiSkills extends GuiScreen {
             if (this.canUnlock(skill)) {
                 int width = Math.max(this.fontRendererObj.getStringWidth(skillName), 80);
                 int height = this.fontRendererObj.getWordWrappedHeight(skillName, width);
-                int levelCost = skill.getLevelCost(skill.getSkillLevel());
+                int levelCost = skill.getLevelCost(skills.get(skill.getSkillName()));
                 if (levelCost > 0) {
                     height += 12;
                     this.fontRendererObj.drawSplitString(I18n.format("levelup.cost", levelCost), xOff, yOff + 24, width, 0xFBFD6F);
@@ -436,7 +438,7 @@ public class GuiSkills extends GuiScreen {
         List<IPlayerSkill> skills = getPrerequisiteSkills(skill);
         if (!skills.isEmpty()) {
             for (IPlayerSkill check : skills) {
-                if (check.getSkillLevel() == 0) {
+                if (this.skills.get(check.getSkillName()) == 0) {
                     names.add(I18n.format("skill." + check.getSkillName() + ".name"));
                 }
             }
@@ -471,20 +473,14 @@ public class GuiSkills extends GuiScreen {
     @Override
     public void onGuiClosed() {
         if (closedWithButton && skillsChanged()) {
-            List<IPlayerSkill> skills = new ArrayList<>();
-            for (IPlayerSkill skill : player.getSkills()) {
-                skill.setSkillLevel(this.skills.get(skill.getSkillName()));
-                skills.add(skill);
-            }
-            FMLProxyPacket pkt = SkillPacketHandler.getPacket(Side.SERVER, 2, (byte)-1, skills, this.levelSpend);
+           FMLProxyPacket pkt = SkillPacketHandler.getPacket(Side.SERVER, 2, (byte)-1, skillChanges, this.levelSpend);
             SkillPacketHandler.skillChannel.sendToServer(pkt);
         }
     }
 
     private boolean skillsChanged() {
         for (IPlayerSkill skill : SkillRegistry.getSkillRegistry()) {
-            IPlayerSkill compare = player.getSkillFromName(skill.getSkillName());
-            if (this.skills.get(skill.getSkillName()) != compare.getSkillLevel())
+            if (!this.skills.get(skill.getSkillName()).equals(player.getSkills().get(skill.getSkillName())))
                 return true;
         }
         return false;
@@ -492,6 +488,6 @@ public class GuiSkills extends GuiScreen {
 
     private boolean canUnlockSkill(IPlayerSkill skill) {
         int levels = this.availableLevels - this.levelSpend;
-        return canUnlock(skill) && levels > 0 && skill.getLevelCost(skill.getSkillLevel()) >= levels && skill.getLevelCost(skill.getSkillLevel()) > -1;
+        return canUnlock(skill) && levels > 0 && skill.getLevelCost(skills.get(skill.getSkillName())) >= levels && skill.getLevelCost(skills.get(skill.getSkillName())) > -1;
     }
 }

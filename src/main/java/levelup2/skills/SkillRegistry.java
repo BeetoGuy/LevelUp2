@@ -35,6 +35,7 @@ import java.util.*;
 public class SkillRegistry {
     private static Map<ItemStack, Integer> oreBonusXP = new HashMap<>();
     private static List<IPlayerSkill> skillRegistry = new ArrayList<>();
+    private static Map<String, IPlayerSkill> skillHashMap = new HashMap<>();
     private static List<IPlantable> cropBlacklist = new ArrayList<>();
     public static int smallestDisplayColumn = 0;
     public static int smallestDisplayRow = 0;
@@ -161,12 +162,20 @@ public class SkillRegistry {
         return skillRegistry;
     }
 
+    public static IPlayerSkill getSkillFromName(String name) {
+        if (skillHashMap.containsKey(name)) {
+            return skillHashMap.get(name);
+        }
+        return null;
+    }
+
     public static void addSkill(IPlayerSkill skill) {
         skillRegistry.add(skill);
+        skillHashMap.put(skill.getSkillName(), skill);
     }
 
     public static int getSkillLevel(EntityPlayer player, String skill) {
-        return getPlayer(player).getSkillFromName(skill).getSkillLevel();
+        return getPlayer(player).getSkillLevel(skill);
     }
 
     public static IPlayerClass getPlayer(EntityPlayer player) {
@@ -204,7 +213,7 @@ public class SkillRegistry {
 
     public static void increaseSkillLevel(EntityPlayer player, String skillName) {
         IPlayerSkill skill = getPlayer(player).getSkillFromName(skillName);
-        int skillCost = skill.getLevelCost(skill.getSkillLevel());
+        int skillCost = skill.getLevelCost(getPlayer(player).getSkillLevel(skillName));
         if (skillCost > 0) {
             if (player.experienceLevel >= skillCost) {
                 player.experienceLevel -= skillCost;
@@ -216,7 +225,7 @@ public class SkillRegistry {
     public static void loadPlayer(EntityPlayer player) {
         if (player instanceof EntityPlayerMP) {
             byte spec = getPlayer(player).getSpecialization();
-            List<IPlayerSkill> skills = getPlayer(player).getSkills();
+            Map<String, Integer> skills = getPlayer(player).getSkills();
             SkillPacketHandler.initChannel.sendTo(SkillPacketHandler.getPacket(Side.CLIENT, 0, spec, skills), (EntityPlayerMP)player);
         }
     }

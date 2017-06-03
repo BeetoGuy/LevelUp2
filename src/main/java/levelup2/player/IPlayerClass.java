@@ -4,6 +4,7 @@ import levelup2.api.IPlayerSkill;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IPlayerClass {
     NBTTagCompound saveNBTData(NBTTagCompound tag);
@@ -11,6 +12,8 @@ public interface IPlayerClass {
     void loadNBTData(NBTTagCompound tag);
 
     IPlayerSkill getSkillFromName(String skill);
+
+    int getSkillLevel(String name);
 
     void setSkillLevel(String name, int level);
 
@@ -24,5 +27,5 @@ public interface IPlayerClass {
 
     void setSpecialization(byte spec);
 
-    List<IPlayerSkill> getSkills();
+    Map<String, Integer> getSkills();
 }

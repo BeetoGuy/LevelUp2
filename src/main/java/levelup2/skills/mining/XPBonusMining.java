@@ -67,7 +67,7 @@ public class XPBonusMining extends BaseSkill {
     }
 
     @Override
-    public boolean isMaxLevel() {
+    public boolean isMaxLevel(int level) {
         return true;
     }
 
