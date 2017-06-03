@@ -19,10 +19,6 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BrewingEfficiencyBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new BrewingEfficiencyBonus();
-    }
 
     @Override
     public String getSkillName() {

@@ -14,10 +14,6 @@ import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class StealthBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new StealthBonus();
-    }
 
     @Override
     public String getSkillName() {

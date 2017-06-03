@@ -75,9 +75,4 @@ public class XPBonusMining extends BaseSkill {
     public int getMaxLevel() {
         return 1;
     }
-
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new XPBonusMining();
-    }
 }

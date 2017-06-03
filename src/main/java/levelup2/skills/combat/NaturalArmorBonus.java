@@ -11,10 +11,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class NaturalArmorBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new NaturalArmorBonus();
-    }
 
     @Override
     public String getSkillName() {

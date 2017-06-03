@@ -20,10 +20,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Random;
 
 public class FoodHarvestBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new FoodHarvestBonus();
-    }
 
     @Override
     public String getSkillName() {

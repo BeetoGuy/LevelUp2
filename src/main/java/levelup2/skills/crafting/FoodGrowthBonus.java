@@ -15,10 +15,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class FoodGrowthBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new FoodGrowthBonus();
-    }
 
     @Override
     public String getSkillName() {

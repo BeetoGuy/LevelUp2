@@ -13,10 +13,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class SwordDamageBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new SwordDamageBonus();
-    }
 
     @Override
     public String getSkillName() {

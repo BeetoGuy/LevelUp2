@@ -15,10 +15,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Random;
 
 public class WoodcuttingBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new WoodcuttingBonus();
-    }
 
     @Override
     public String getSkillName() {

@@ -27,11 +27,6 @@ public class DrawSpeedBonus extends BaseSkill {
     }
 
     @Override
-    public IPlayerSkill getNewInstance() {
-        return new DrawSpeedBonus();
-    }
-
-    @Override
     public ItemStack getRepresentativeStack() {
         return new ItemStack(Items.BOW);
     }

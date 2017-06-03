@@ -14,10 +14,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class StealthDamage extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new StealthDamage();
-    }
 
     @Override
     public String getSkillName() {

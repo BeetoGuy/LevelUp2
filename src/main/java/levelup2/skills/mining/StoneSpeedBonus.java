@@ -45,9 +45,4 @@ public class StoneSpeedBonus extends MiningSpeedBonus {
     public ItemStack getRepresentativeStack() {
         return new ItemStack(Items.IRON_PICKAXE);
     }
-
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new StoneSpeedBonus();
-    }
 }

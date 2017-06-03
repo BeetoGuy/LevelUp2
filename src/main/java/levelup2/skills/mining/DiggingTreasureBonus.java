@@ -22,10 +22,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Random;
 
 public class DiggingTreasureBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new DiggingTreasureBonus();
-    }
 
     @Override
     public String getSkillName() {

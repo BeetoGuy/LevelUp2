@@ -13,10 +13,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class StealthSpeed extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new StealthSpeed();
-    }
 
     @Override
     public String getSkillName() {

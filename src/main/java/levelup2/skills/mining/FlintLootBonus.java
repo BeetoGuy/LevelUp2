@@ -15,10 +15,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Random;
 
 public class FlintLootBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new FlintLootBonus();
-    }
 
     @Override
     public String getSkillName() {

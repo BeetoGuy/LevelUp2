@@ -114,9 +114,4 @@ public class XPBonusCrafting extends BaseSkill {
     public int getMaxLevel() {
         return 1;
     }
-
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new XPBonusCrafting();
-    }
 }

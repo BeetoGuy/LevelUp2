@@ -15,10 +15,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Random;
 
 public class StoneMiningBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new StoneMiningBonus();
-    }
 
     @Override
     public String getSkillName() {

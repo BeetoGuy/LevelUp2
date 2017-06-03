@@ -26,10 +26,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class FishingLootBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new FishingLootBonus();
-    }
 
     @Override
     public String getSkillName() {

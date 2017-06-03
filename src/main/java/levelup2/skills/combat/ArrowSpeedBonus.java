@@ -28,11 +28,6 @@ public class ArrowSpeedBonus extends BaseSkill {
     }
 
     @Override
-    public IPlayerSkill getNewInstance() {
-        return new ArrowSpeedBonus();
-    }
-
-    @Override
     public ItemStack getRepresentativeStack() {
         return new ItemStack(Items.ARROW);
     }

@@ -26,10 +26,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class FurnaceEfficiencyBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new FurnaceEfficiencyBonus();
-    }
 
     @Override
     public String getSkillName() {

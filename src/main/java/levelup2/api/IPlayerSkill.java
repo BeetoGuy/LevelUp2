@@ -29,6 +29,4 @@ public interface IPlayerSkill {
     boolean isMaxLevel(int level);
 
     int getMaxLevel();
-
-    IPlayerSkill getNewInstance();
 }

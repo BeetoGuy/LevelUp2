@@ -7,10 +7,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 public class FurnaceSmeltBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new FurnaceSmeltBonus();
-    }
 
     @Override
     public String getSkillName() {

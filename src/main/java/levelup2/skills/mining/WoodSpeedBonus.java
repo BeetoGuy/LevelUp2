@@ -45,9 +45,4 @@ public class WoodSpeedBonus extends MiningSpeedBonus {
     public ItemStack getRepresentativeStack() {
         return new ItemStack(Items.IRON_AXE);
     }
-
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new WoodSpeedBonus();
-    }
 }

@@ -70,9 +70,4 @@ public class XPBonusCombat extends BaseSkill {
     public int getMaxLevel() {
         return 1;
     }
-
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new XPBonusCombat();
-    }
 }

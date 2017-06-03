@@ -13,10 +13,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class SprintSpeedBonus extends BaseSkill {
-    @Override
-    public IPlayerSkill getNewInstance() {
-        return new SprintSpeedBonus();
-    }
 
     @Override
     public String getSkillName() {
