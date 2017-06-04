@@ -29,7 +29,7 @@ public class CapabilityFurnace extends PlayerCapability.CapabilityProcessorDefau
                     if (!stack.isEmpty()) {
                         int bonus = SkillRegistry.getSkillLevel(player, "levelup:furnacespeed");
                         if (bonus > 0) {
-                            int time = player.getRNG().nextInt(bonus);
+                            int time = player.getRNG().nextInt(bonus + 1);
                             if (time > 0 && furnace.getField(2) + time < furnace.getField(3)) {
                                 furnace.setField(2, furnace.getField(2) + time);
                             }

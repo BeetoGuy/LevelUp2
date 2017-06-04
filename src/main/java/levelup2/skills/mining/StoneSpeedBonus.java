@@ -1,6 +1,5 @@
 package levelup2.skills.mining;
 
-import levelup2.api.IPlayerSkill;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

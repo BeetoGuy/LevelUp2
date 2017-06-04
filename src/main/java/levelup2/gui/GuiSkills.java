@@ -45,7 +45,6 @@ public class GuiSkills extends GuiScreen {
     private byte skillTree = 0;
     protected PlayerExtension player;
     protected Map<String, Integer> skills = new HashMap<>();
-    protected Map<String, Integer> skillChanges = new HashMap<>();
     private IPlayerSkill highlightedSkill = null;
     protected int availableLevels = 0;
     protected int levelSpend = 0;
@@ -63,7 +62,6 @@ public class GuiSkills extends GuiScreen {
         skills.clear();
         for (String str : player.getSkills().keySet()) {
             skills.put(str, player.getSkills().get(str));
-            skillChanges.put(str, 0);
         }
     }
 
@@ -473,7 +471,7 @@ public class GuiSkills extends GuiScreen {
     @Override
     public void onGuiClosed() {
         if (closedWithButton && skillsChanged()) {
-           FMLProxyPacket pkt = SkillPacketHandler.getPacket(Side.SERVER, 2, (byte)-1, skillChanges, this.levelSpend);
+            FMLProxyPacket pkt = SkillPacketHandler.getPacket(Side.SERVER, 2, (byte)-1, skills, this.levelSpend);
             SkillPacketHandler.skillChannel.sendToServer(pkt);
         }
     }

@@ -1,6 +1,5 @@
 package levelup2.skills.mining;
 
-import levelup2.api.IPlayerSkill;
 import levelup2.config.LevelUpConfig;
 import levelup2.skills.BaseSkill;
 import levelup2.skills.SkillRegistry;
@@ -13,7 +12,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraftforge.event.world.BlockEvent;

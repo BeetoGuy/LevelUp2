@@ -1,8 +1,6 @@
 package levelup2.skills.combat;
 
-import levelup2.api.IPlayerSkill;
 import levelup2.skills.BaseSkill;
-import levelup2.skills.SkillRegistry;
 import levelup2.util.Library;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;

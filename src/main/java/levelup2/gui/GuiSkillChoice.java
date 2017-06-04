@@ -74,6 +74,5 @@ public class GuiSkillChoice extends GuiScreen {
     private void changeSkillLevel(int add) {
         int orig = parent.skills.get(skill.getSkillName());
         parent.skills.put(skill.getSkillName(), orig + add);
-        parent.skillChanges.put(skill.getSkillName(), add);
     }
 }

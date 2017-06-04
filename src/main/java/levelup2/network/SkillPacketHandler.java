@@ -82,22 +82,19 @@ public class SkillPacketHandler {
         int levelSpend = buf.readInt();
         String[] skills = null;
         int[] data = null;
-        int sum = 0;
         if (isInit || button == -1) {
             data = new int[SkillRegistry.getSkillRegistry().size()];
             skills = new String[SkillRegistry.getSkillRegistry().size()];
             for (int i = 0; i < data.length; i++) {
                 skills[i] = ByteBufUtils.readUTF8String(buf);
                 data[i] = buf.readInt();
-                sum += data[i];
             }
         }
         IPlayerClass properties = SkillRegistry.getPlayer(player);
         if (!isInit) {
-            if (data != null && button == -1 && sum == 0) {
+            if (data != null && button == -1) {
                 for (int i = 0; i < data.length; i++) {
-                    if (data[i] != 0)
-                        properties.addToSkill(skills[i], data[i]);
+                    properties.setSkillLevel(skills[i], data[i]);
                 }
                 SkillRegistry.loadPlayer(player);
             }
@@ -120,22 +117,14 @@ public class SkillPacketHandler {
                 for (String str : map.keySet()) {
                     ByteBufUtils.writeUTF8String(buf, str);
                     buf.writeInt(map.get(str));
-                }/*
-                for (IPlayerSkill skill : (List<IPlayerSkill>)data[0]) {
-                    ByteBufUtils.writeUTF8String(buf, skill.getSkillName());
-                    buf.writeInt(skill.getSkillLevel());
-                }*/
+                }
             } else if (data.length == 2 && data[0] instanceof Map && data[1] instanceof Integer) {
                 buf.writeInt((int)data[1]);
                 Map<String, Integer> map = (Map)data[0];
                 for (String str : map.keySet()) {
                     ByteBufUtils.writeUTF8String(buf, str);
                     buf.writeInt(map.get(str));
-                }/*
-                for (IPlayerSkill skill : (List<IPlayerSkill>)data[0]) {
-                    ByteBufUtils.writeUTF8String(buf, skill.getSkillName());
-                    buf.writeInt(skill.getSkillLevel());
-                }*/
+                }
             } else {
                 for (Object dat : data) {
                     if (dat instanceof String) {

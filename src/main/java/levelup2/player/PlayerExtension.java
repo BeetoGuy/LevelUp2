@@ -59,23 +59,17 @@ public final class PlayerExtension implements IPlayerClass {
 
     @Override
     public void addToSkill(String name, int increase) {
-        if (getSkillFromName(name) != null) {
-            setSkillLevel(name, skillMap.get(name) + increase);
-        }
+        setSkillLevel(name, skillMap.get(name) + increase);
     }
 
     @Override
     public int getSkillLevel(String name) {
-        if (skillMap.containsKey(name))
-            return skillMap.get(name);
-        return -1;
+        return skillMap.get(name);
     }
 
     @Override
     public void setSkillLevel(String name, int level) {
-        if (skillMap.containsKey(name)) {
-            skillMap.put(name, level);
-        }
+        skillMap.put(name, level);
     }
 
     @Override
@@ -123,13 +117,6 @@ public final class PlayerExtension implements IPlayerClass {
 
     @Override
     public Map<String, Integer> getSkills() {
-        Map<String, Integer> map = new HashMap<>();
-        for (String str : skillMap.keySet())
-            map.put(str, skillMap.get(str));
-        return map;
-    }
-
-    public static Map<String, Integer> getSkillMap(EntityPlayer player) {
-        return SkillRegistry.getPlayer(player).getSkills();
+        return skillMap;
     }
 }

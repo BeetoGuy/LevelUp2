@@ -1,12 +1,10 @@
 package levelup2.skills.crafting;
 
-import levelup2.api.IPlayerSkill;
 import levelup2.api.IProcessor;
 import levelup2.capability.CapabilityFurnace;
 import levelup2.capability.PlayerCapability;
 import levelup2.skills.BaseSkill;
 import levelup2.util.Library;
-import net.minecraft.block.BlockFurnace;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;

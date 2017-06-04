@@ -1,6 +1,5 @@
 package levelup2.skills.crafting;
 
-import levelup2.api.IPlayerSkill;
 import levelup2.skills.BaseSkill;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.init.Blocks;
