@@ -28,29 +28,31 @@ public class CapabilityFurnace extends PlayerCapability.CapabilityProcessorDefau
                     ItemStack stack = furnace.getStackInSlot(0);
                     if (!stack.isEmpty()) {
                         int bonus = SkillRegistry.getSkillLevel(player, "levelup:furnacespeed");
-                        int time = player.getRNG().nextInt(bonus);
-                        if (time > 0 && furnace.getField(2) + time < furnace.getField(3)) {
-                            furnace.setField(2, furnace.getField(2) + time);
-                        }
-                        if (furnace.getField(2) > furnace.getField(3) - 2) {
-                            bonus = SkillRegistry.getSkillLevel(player, "levelup:furnacebonus");
-                            if (isDoublingValid(furnace) && player.getRNG().nextFloat() < bonus / 40F) {
-                                ItemStack result = FurnaceRecipes.instance().getSmeltingResult(stack).copy();
-                                if (!LevelUpConfig.furnaceEjection) {
-                                    if (furnace.getStackInSlot(2).isEmpty()) {
-                                        furnace.setInventorySlotContents(2, result);
-                                    }
-                                    else {
-                                        ItemStack product = furnace.getStackInSlot(2);
-                                        if (ItemStack.areItemsEqual(result, product)) {
-                                            if (product.getCount() + (result.getCount() * 2) <= product.getMaxStackSize()) {
-                                                furnace.getStackInSlot(2).grow(result.getCount());
+                        if (bonus > 0) {
+                            int time = player.getRNG().nextInt(bonus);
+                            if (time > 0 && furnace.getField(2) + time < furnace.getField(3)) {
+                                furnace.setField(2, furnace.getField(2) + time);
+                            }
+                            if (furnace.getField(2) > furnace.getField(3) - 2) {
+                                bonus = SkillRegistry.getSkillLevel(player, "levelup:furnacebonus");
+                                if (bonus > 0) {
+                                    if (isDoublingValid(furnace) && player.getRNG().nextFloat() < bonus / 40F) {
+                                        ItemStack result = FurnaceRecipes.instance().getSmeltingResult(stack).copy();
+                                        if (!LevelUpConfig.furnaceEjection) {
+                                            if (furnace.getStackInSlot(2).isEmpty()) {
+                                                furnace.setInventorySlotContents(2, result);
+                                            } else {
+                                                ItemStack product = furnace.getStackInSlot(2);
+                                                if (ItemStack.areItemsEqual(result, product)) {
+                                                    if (product.getCount() + (result.getCount() * 2) <= product.getMaxStackSize()) {
+                                                        furnace.getStackInSlot(2).grow(result.getCount());
+                                                    }
+                                                }
                                             }
-                                        }
+                                        } else
+                                            ejectExtraItem(result);
                                     }
                                 }
-                                else
-                                    ejectExtraItem(result);
                             }
                         }
                     }
