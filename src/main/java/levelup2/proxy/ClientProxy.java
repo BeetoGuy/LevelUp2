@@ -5,13 +5,14 @@ import levelup2.event.KeybindEventHandler;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ClientProxy extends CommonProxy {
     @Override
@@ -26,13 +27,19 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void registerItemMeshes() {
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void registerModels(ModelRegistryEvent evt) {
         setModelLocation(SkillRegistry.surfaceOreChunk, "inventory");
         setModelLocation(SkillRegistry.netherOreChunk, "inventory");
         setModelLocation(SkillRegistry.endOreChunk, "inventory");
     }
 
     private void setModelLocation(Item item, String variantSettings) {
-        ModelLoader.setCustomMeshDefinition(item, stack -> new ModelResourceLocation(item.getRegistryName().toString(), variantSettings));
+        ModelLoader.setCustomMeshDefinition(item, stack -> new ModelResourceLocation(item.getRegistryName(), variantSettings));
+        ModelLoader.registerItemVariants(item, item.getRegistryName());
     }
 
     @Override

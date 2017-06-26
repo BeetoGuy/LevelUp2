@@ -74,7 +74,7 @@ public class LevelUpLootManager {
                         System.out.println("[LEVELUP] ERROR: Cannot load loot table " + file.toString());
                         return LootTable.EMPTY_LOOT_TABLE;
                     }
-                    return ForgeHooks.loadLootTable(GSON_INSTANCE, location, s, true);
+                    return ForgeHooks.loadLootTable(GSON_INSTANCE, location, s, true, null);
                 }
                 else {
                     return LootTable.EMPTY_LOOT_TABLE;

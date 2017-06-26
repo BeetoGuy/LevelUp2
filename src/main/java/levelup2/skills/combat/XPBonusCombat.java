@@ -37,10 +37,10 @@ public class XPBonusCombat extends BaseSkill {
 
     @SubscribeEvent
     public void getCombatBonus(LivingDeathEvent evt) {
-        if (evt.getEntityLiving() instanceof EntityMob && evt.getSource().getEntity() instanceof EntityPlayer) {
-            if (SkillRegistry.getSkillLevel((EntityPlayer)evt.getSource().getEntity(), getSkillName()) > 0) {
+        if (evt.getEntityLiving() instanceof EntityMob && evt.getSource().getTrueSource() instanceof EntityPlayer) {
+            if (SkillRegistry.getSkillLevel((EntityPlayer)evt.getSource().getTrueSource(), getSkillName()) > 0) {
                 int deathXP = (int) evt.getEntityLiving().getMaxHealth();
-                SkillRegistry.addExperience((EntityPlayer) evt.getSource().getEntity(), deathXP / 10);
+                SkillRegistry.addExperience((EntityPlayer) evt.getSource().getTrueSource(), deathXP / 10);
             }
         }
     }

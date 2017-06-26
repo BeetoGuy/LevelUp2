@@ -65,8 +65,8 @@ public class StealthDamage extends BaseSkill {
     public void onDamage(LivingHurtEvent evt) {
         DamageSource src = evt.getSource();
         float dmg = evt.getAmount();
-        if (src.getEntity() instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer)src.getEntity();
+        if (src.getTrueSource() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer)src.getTrueSource();
             int level = SkillRegistry.getSkillLevel(player, getSkillName());
             if (level > 0) {
                 if (src instanceof EntityDamageSourceIndirect) {

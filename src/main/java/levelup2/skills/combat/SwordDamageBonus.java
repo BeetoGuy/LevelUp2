@@ -64,8 +64,8 @@ public class SwordDamageBonus extends BaseSkill {
     public void onHurting(LivingHurtEvent evt) {
         DamageSource source = evt.getSource();
         float amount = evt.getAmount();
-        if (source.getEntity() instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer)source.getEntity();
+        if (source.getTrueSource() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer)source.getTrueSource();
             int skill = SkillRegistry.getSkillLevel(player, getSkillName());
             if (skill > 0) {
                 if (!(source instanceof EntityDamageSourceIndirect)) {

@@ -28,13 +28,13 @@ public class GuiSkillChoice extends GuiScreen {
     @Override
     public void initGui() {
         this.buttonList.clear();
-        GuiOptionButton button = new GuiOptionButton(0, this.width / 2 - 65, this.height / 2 + 35, 130, 20, I18n.format("levelup.skill.increase"));
+        GuiButton button = new GuiButton(0, this.width / 2 - 65, this.height / 2 + 35, 130, 20, I18n.format("levelup.skill.increase"));
         button.enabled = canSpendLevels;
         this.buttonList.add(button);
-        button = new GuiOptionButton(1, this.width / 2 - 65, this.height / 2 + 60, 130, 20, I18n.format("levelup.skill.decrease"));
+        button = new GuiButton(1, this.width / 2 - 65, this.height / 2 + 60, 130, 20, I18n.format("levelup.skill.decrease"));
         button.enabled = canDowngrade;
         this.buttonList.add(button);
-        this.buttonList.add(new GuiOptionButton(2, this.width / 2 - 65, this.height / 2 + 85, 130, 20, I18n.format("gui.cancel")));
+        this.buttonList.add(new GuiButton(2, this.width / 2 - 65, this.height / 2 + 85, 130, 20, I18n.format("gui.cancel")));
     }
 
     @Override
@@ -67,8 +67,8 @@ public class GuiSkillChoice extends GuiScreen {
     }
 
     private void drawCenteredString(String str, int posX, int posY, int color) {
-        int centerWidth = this.fontRendererObj.getStringWidth(str) / 2;
-        this.fontRendererObj.drawString(str, posX - centerWidth, posY, color);
+        int centerWidth = this.fontRenderer.getStringWidth(str) / 2;
+        this.fontRenderer.drawString(str, posX - centerWidth, posY, color);
     }
 
     private void changeSkillLevel(int add) {

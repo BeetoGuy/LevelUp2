@@ -35,23 +35,23 @@ public class GuiImage extends GuiButton {
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             mc.getTextureManager().bindTexture(BUTTON_IMAGE);
-            this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             int i = this.getHoverState(this.hovered);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             if (i > 0)
-                this.drawTexturedModalRect(this.xPosition, this.yPosition, (i - 1) * this.width, 0, this.width, this.height);
+                this.drawTexturedModalRect(this.x, this.y, (i - 1) * this.width, 0, this.width, this.height);
             else
-                this.drawTexturedModalRect(this.xPosition, this.yPosition, this.width * 2, 0, this.width, this.height);
-            mc.getRenderItem().renderItemIntoGUI(repStack, this.xPosition + (this.width / 2) - 8, this.yPosition + (this.height / 2) - 8);
+                this.drawTexturedModalRect(this.x, this.y, this.width * 2, 0, this.width, this.height);
+            mc.getRenderItem().renderItemIntoGUI(repStack, this.x + (this.width / 2) - 8, this.y + (this.height / 2) - 8);
             String locName = I18n.format("skill.levelup:" + type + "_bonus.short");
-            this.drawCenteredString(mc.fontRendererObj, locName, this.xPosition + this.width / 2, this.yPosition + 20, this.hovered ? 0xFBFD6F : 0xF9F9F9);
-            this.drawCenteredString(mc.fontRendererObj, I18n.format("skill.levelup:" + type + ".desc"), this.xPosition + this.width / 2, this.yPosition + this.height - 20, this.hovered ? 0xFBFD6F : 0xF9F9F9);
+            this.drawCenteredString(mc.fontRenderer, locName, this.x + this.width / 2, this.y + 20, this.hovered ? 0xFBFD6F : 0xF9F9F9);
+            this.drawCenteredString(mc.fontRenderer, I18n.format("skill.levelup:" + type + ".desc"), this.x + this.width / 2, this.y + this.height - 20, this.hovered ? 0xFBFD6F : 0xF9F9F9);
             this.mouseDragged(mc, mouseX, mouseY);
         }
     }

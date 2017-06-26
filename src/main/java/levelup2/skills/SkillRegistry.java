@@ -21,13 +21,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.*;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import java.util.*;
@@ -47,9 +47,13 @@ public class SkillRegistry {
     public static Item endOreChunk = new ItemOreChunk(LevelUpConfig.endOreList).setUnlocalizedName("levelup:endore").setRegistryName(new ResourceLocation("levelup2", "endore"));
 
     public static void initItems() {
-        GameRegistry.register(surfaceOreChunk);
-        GameRegistry.register(netherOreChunk);
-        GameRegistry.register(endOreChunk);
+        registerItem(surfaceOreChunk);
+        registerItem(netherOreChunk);
+        registerItem(endOreChunk);
+    }
+
+    private static void registerItem(Item item) {
+        GameRegistry.findRegistry(Item.class).register(item);
     }
 
     public static void loadSkills() {
@@ -81,7 +85,6 @@ public class SkillRegistry {
         addSkill(new FishingLootBonus());
         addCropsToBlacklist(LevelUpConfig.cropBlacklist);
         Library.registerLootManager();
-        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Blocks.GRAVEL, 4), new ItemStack(Items.FLINT), new ItemStack(Items.FLINT), new ItemStack(Items.FLINT), new ItemStack(Items.FLINT)));
     }
 
     public static void postLoadSkills() {
@@ -95,7 +98,7 @@ public class SkillRegistry {
             if (row > largestDisplayRow) largestDisplayRow = row;
             else if (row < smallestDisplayRow) smallestDisplayRow = row;
         }
-        initPlankCache();
+        //initPlankCache();
     }
 
     public static void registerRecipes() {
@@ -103,7 +106,7 @@ public class SkillRegistry {
             Library.registerOreToChunk(LevelUpConfig.oreList, surfaceOreChunk);
             Library.addToOreList(LevelUpConfig.oreList);
             registerSmelting(LevelUpConfig.oreList, surfaceOreChunk);
-            registerCrafting(LevelUpConfig.oreList, surfaceOreChunk);
+            //registerCrafting(LevelUpConfig.oreList, surfaceOreChunk);
             Library.registerOres(LevelUpConfig.oreList);
             if (LevelUpConfig.oreList.contains("oreRedstone"))
                 Library.getOreList().add(Blocks.LIT_REDSTONE_ORE);
@@ -112,14 +115,14 @@ public class SkillRegistry {
             Library.registerOreToChunk(LevelUpConfig.netherOreList, netherOreChunk);
             Library.addToOreList(LevelUpConfig.netherOreList);
             registerSmelting(LevelUpConfig.netherOreList, netherOreChunk);
-            registerCrafting(LevelUpConfig.netherOreList, netherOreChunk);
+            //registerCrafting(LevelUpConfig.netherOreList, netherOreChunk);
             Library.registerOres(LevelUpConfig.netherOreList);
         }
         if (!isNullList(LevelUpConfig.endOreList)) {
             Library.registerOreToChunk(LevelUpConfig.endOreList, endOreChunk);
             Library.addToOreList(LevelUpConfig.endOreList);
             registerSmelting(LevelUpConfig.endOreList, endOreChunk);
-            registerCrafting(LevelUpConfig.endOreList, endOreChunk);
+            //registerCrafting(LevelUpConfig.endOreList, endOreChunk);
             Library.registerOres(LevelUpConfig.endOreList);
         }
     }
@@ -132,7 +135,7 @@ public class SkillRegistry {
                 if (!ore.isEmpty()) {
                     if (!FurnaceRecipes.instance().getSmeltingResult(ore).isEmpty()) {
                         ItemStack result = FurnaceRecipes.instance().getSmeltingResult(ore);
-                        FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(item, 1, i), result, FurnaceRecipes.instance().getSmeltingExperience(result));
+                        GameRegistry.addSmelting(new ItemStack(item, 1, i), result, FurnaceRecipes.instance().getSmeltingExperience(result));
                     }
                 }
             }
@@ -147,14 +150,18 @@ public class SkillRegistry {
                 ItemStack ore = getOreEntry(names);
                 if (!ore.isEmpty()) {
                     ItemStack chunk = new ItemStack(item, 1, i);
-                    GameRegistry.addRecipe(new ShapelessOreRecipe(ore.copy(), chunk, chunk));
+                    registerShapelessRecipe(ore.copy(), chunk, chunk);
                     OreDictionary.registerOre(names, chunk);
                 }
             }
         }
     }
 
-    private static boolean isNullList(List<String> list) {
+    private static void registerShapelessRecipe(ItemStack output, Object... inputs) {
+        GameRegistry.findRegistry(IRecipe.class).register(new ShapelessOreRecipe(new ResourceLocation("levelup", "orechunk"), output, inputs));
+    }
+
+    public static boolean isNullList(List<String> list) {
         return !list.isEmpty() && list.get(0).equals("null");
     }
 
@@ -259,65 +266,64 @@ public class SkillRegistry {
         return ItemStack.EMPTY;
     }
 
-    private static void initPlankCache() {
+    public static void initPlankCache() {
+        PlankCache.refresh();
         for (ItemStack log : OreDictionary.getOres("logWood")) {
-            if (log.getItem() != null && log.getItem() instanceof ItemBlock) {
-                Block block = ((ItemBlock)log.getItem()).getBlock();
-                if (log.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+            if (log.getItem() instanceof ItemBlock) {
+                if (log.getMetadata() == OreDictionary.WILDCARD_VALUE) {
                     for (int i = 0; i < 4; i++) {
-                        ItemStack planks = getPlankOutput(new ItemStack(log.getItem(), 1, i));
-                        if (!planks.isEmpty()) {
-                            planks.setCount(2);
-                            PlankCache.addBlock(block, i, planks);
+                        ItemStack logTest = new ItemStack(log.getItem(), 1, i);
+                        ItemStack plank = getPlankOutput(logTest);
+                        if (!plank.isEmpty()) {
+                            registerLog(logTest, plank);
                         }
                     }
                 }
                 else {
-                    ItemStack planks = getPlankOutput(log);
-                    if (!planks.isEmpty()) {
-                        planks.setCount(2);
-                        PlankCache.addBlock(block, log.getMetadata(), planks);
+                    ItemStack plank = getPlankOutput(log);
+                    if (!plank.isEmpty()) {
+                        registerLog(log, plank);
                     }
                 }
             }
         }
     }
 
-    private static ItemStack getPlankOutput(ItemStack input) {
-        List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
-        for (IRecipe recipe : recipes) {
-            if (recipe instanceof ShapedRecipes) {
-                ShapedRecipes shaped = (ShapedRecipes)recipe;
-                if (shaped.getRecipeSize() == 1) {
-                    if (shaped.recipeItems[0].isItemEqual(input))
-                        return shaped.getRecipeOutput().copy();
-                }
-            }
-            else if (recipe instanceof ShapedOreRecipe) {
-                ShapedOreRecipe shaped = (ShapedOreRecipe)recipe;
-                if (shaped.getRecipeSize() == 1) {
-                    if (shaped.getInput()[0] instanceof ItemStack) {
-                        ItemStack stack = (ItemStack)shaped.getInput()[0];
-                        if (stack.isItemEqual(input))
-                            return shaped.getRecipeOutput().copy();
-                    }
-                }
-            }
-            else if (recipe instanceof ShapelessRecipes) {
-                ShapelessRecipes shapeless = (ShapelessRecipes)recipe;
-                if (shapeless.recipeItems.size() == 1 && shapeless.recipeItems.get(0).isItemEqual(input))
-                    return shapeless.getRecipeOutput().copy();
-            }
-            else if (recipe instanceof ShapelessOreRecipe) {
-                ShapelessOreRecipe shapeless = (ShapelessOreRecipe)recipe;
-                if (shapeless.getRecipeSize() == 1) {
-                    if (shapeless.getInput().get(0) instanceof ItemStack) {
-                        if (((ItemStack)shapeless.getInput().get(0)).isItemEqual(input))
-                            return shapeless.getRecipeOutput().copy();
+    private static void registerLog(ItemStack log, ItemStack plank) {
+        Block block = ((ItemBlock)log.getItem()).getBlock();
+        ItemStack plankCopy = plank.copy();
+        plankCopy.setCount(plank.getCount() / 2);
+        PlankCache.addBlock(block, log.getMetadata(), plankCopy);
+    }
+
+    private static ItemStack getPlankOutput(ItemStack log) {
+        Iterator<IRecipe> it = CraftingManager.REGISTRY.iterator();
+        ItemStack stack = ItemStack.EMPTY;
+        while (it.hasNext() && stack.isEmpty()) {
+            IRecipe recipe = it.next();
+            if (recipe.getGroup().equals("planks")) {
+                NonNullList<Ingredient> ing = recipe.getIngredients();
+                if (isPlank(recipe.getRecipeOutput())) {
+                    for (Ingredient in : ing) {
+                        for (ItemStack check : in.getMatchingStacks()) {
+                            if (check.isItemEqual(log)) {
+                                stack = recipe.getRecipeOutput().copy();
+                            }
+                        }
                     }
                 }
             }
         }
-        return ItemStack.EMPTY;
+        return stack;
+    }
+
+    private static boolean isPlank(ItemStack output) {
+        for (ItemStack plank : OreDictionary.getOres("plankWood")) {
+            if (plank.getMetadata() == OreDictionary.WILDCARD_VALUE)
+                return output.getItem() == plank.getItem();
+            else if (plank.isItemEqual(output))
+                return true;
+        }
+        return false;
     }
 }

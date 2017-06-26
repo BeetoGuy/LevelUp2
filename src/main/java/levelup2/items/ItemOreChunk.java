@@ -23,10 +23,10 @@ public class ItemOreChunk extends Item {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item item, CreativeTabs tab, NonNullList<ItemStack> list) {
-        if (!oreTypes.get(0).equals("null")) {
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
+        if (!oreTypes.get(0).equals("null") && this.isInCreativeTab(tab)) {
             for (int i = 0; i < oreTypes.size(); i++)
-                list.add(new ItemStack(item, 1, i));
+                list.add(new ItemStack(this, 1, i));
         }
     }
 

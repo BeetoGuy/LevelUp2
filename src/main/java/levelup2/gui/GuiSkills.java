@@ -30,7 +30,7 @@ public class GuiSkills extends GuiScreen {
     private static final int Y_MIN = SkillRegistry.smallestDisplayRow * 32 - 170;
     private static final int X_MAX = SkillRegistry.largestDisplayColumn * 32 - 77;
     private static final int Y_MAX = SkillRegistry.largestDisplayRow * 32 - 247;
-    private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/achievement/achievement_background.png");
+    private static final ResourceLocation BACKGROUND = new ResourceLocation("levelup2", "textures/gui/background.png");
     private int imageWidth = 256;
     private int imageHeight = 202;
     private int lastX;
@@ -68,9 +68,9 @@ public class GuiSkills extends GuiScreen {
     @Override
     public void initGui() {
         this.buttonList.clear();
-        this.buttonList.add(new GuiOptionButton(3, this.width / 2 + 32, this.height / 2 + 74, 80, 20, I18n.format("gui.done")));
+        this.buttonList.add(new GuiButton(3, this.width / 2 + 32, this.height / 2 + 74, 80, 20, I18n.format("gui.done")));
         for (int i = 0; i < 3; i++) {
-            this.buttonList.add(new GuiOptionButton(i, (width - imageWidth) / 2 + 16 + (i * 48), this.height / 2 + 74, 45, 20, I18n.format("gui.levelup.skillmenu." + i)));
+            this.buttonList.add(new GuiButton(i, (width - imageWidth) / 2 + 16 + (i * 48), this.height / 2 + 74, 45, 20, I18n.format("gui.levelup.skillmenu." + i)));
         }
     }
 
@@ -171,16 +171,16 @@ public class GuiSkills extends GuiScreen {
     private void drawTitle() {
         int edgeX = (this.width - this.imageWidth) / 2;
         int edgeY = (this.height - this.imageHeight) / 2;
-        this.fontRendererObj.drawString(I18n.format("gui.levelup.skillmenu." + this.skillTree), edgeX + 15, edgeY + 5, 4210752);
+        this.fontRenderer.drawString(I18n.format("gui.levelup.skillmenu." + this.skillTree), edgeX + 15, edgeY + 5, 4210752);
         drawLevelOnEnd(edgeX, edgeY);
     }
 
     private void drawLevelOnEnd(int edgeX, int edgeY) {
         String levels = I18n.format("gui.levelup.budget", this.levelSpend);
-        int textWidth = this.fontRendererObj.getStringWidth(levels);
+        int textWidth = this.fontRenderer.getStringWidth(levels);
         int x = edgeX + this.imageWidth - 15 - textWidth;
         int y = edgeY + 5;
-        this.fontRendererObj.drawString(levels, x, y, 0x18891A);
+        this.fontRenderer.drawString(levels, x, y, 0x18891A);
     }
 
     private void drawSkills(int mouseX, int mouseY, float partialTicks) {
@@ -320,16 +320,16 @@ public class GuiSkills extends GuiScreen {
 
                     if (skills.get(check.getSkillName()) == 0) {
                         GlStateManager.color(0.1F, 0.1F, 0.1F, 1.0F);
-                        this.itemRender.isNotRenderingEffectsInGUI(false);
+                        //this.itemRender.isNotRenderingEffectsInGUI(false);
                     }
                     GlStateManager.disableLighting(); //Forge: Make sure Lighting is disabled. Fixes MC-33065
                     GlStateManager.enableCull();
                     mc.getRenderItem().renderItemAndEffectIntoGUI(check.getRepresentativeStack(), checkX + 4, checkY + 4);
                     GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-                    GlStateManager.disableLighting();
+                    GlStateManager.disableLighting();/*
                     if (skills.get(check.getSkillName()) == 0) {
                         this.itemRender.isNotRenderingEffectsInGUI(true);
-                    }
+                    }*/
 
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                     if (xPos >= checkX && xPos <= checkX + 22 && yPos >= checkY && yPos <= checkY + 22) {
@@ -358,41 +358,41 @@ public class GuiSkills extends GuiScreen {
             String skillName = I18n.format("skill." + skill.getSkillName() + ".name");
             String skillLevel = skills.get(skill.getSkillName()) + "/" + skill.getMaxLevel();
             if (this.canUnlock(skill)) {
-                int width = Math.max(this.fontRendererObj.getStringWidth(skillName), 80);
-                int height = this.fontRendererObj.getWordWrappedHeight(skillName, width);
+                int width = Math.max(this.fontRenderer.getStringWidth(skillName), 80);
+                int height = this.fontRenderer.getWordWrappedHeight(skillName, width);
                 int levelCost = skill.getLevelCost(skills.get(skill.getSkillName()));
                 if (levelCost > 0) {
                     height += 12;
-                    this.fontRendererObj.drawSplitString(I18n.format("levelup.cost", levelCost), xOff, yOff + 24, width, 0xFBFD6F);
+                    this.fontRenderer.drawSplitString(I18n.format("levelup.cost", levelCost), xOff, yOff + 24, width, 0xFBFD6F);
                 }
                 this.drawGradientRect(xOff - 3, yOff - 3, xOff + width + 3, yOff + height + 3 + 12, -1073741824, -1073741824);
-                this.fontRendererObj.drawSplitString(skillLevel, xOff, yOff + 12, width, 0xFBFD6F);
+                this.fontRenderer.drawSplitString(skillLevel, xOff, yOff + 12, width, 0xFBFD6F);
             }
             else {
-                int width = Math.max(this.fontRendererObj.getStringWidth(skillName), 80);
+                int width = Math.max(this.fontRenderer.getStringWidth(skillName), 80);
                 if (this.isLockedSkill(skill)) {
-                    int height = this.fontRendererObj.getWordWrappedHeight(skillName, width);
+                    int height = this.fontRenderer.getWordWrappedHeight(skillName, width);
                     this.drawGradientRect(xOff - 3, yOff - 3, xOff + width + 3, yOff + height + 3, -1073741824, -1073741824);
                 }
                 else {
                     if (this.hasPrerequisites(skill)) {
-                        int height = this.fontRendererObj.getWordWrappedHeight(skillName, width) + (12 * this.getMissingPrereqAmount(skill));
+                        int height = this.fontRenderer.getWordWrappedHeight(skillName, width) + (12 * this.getMissingPrereqAmount(skill));
                         if (this.getMissingPrereqAmount(skill) > 0) {
                             List<String> names = this.getMissingPrereqSkills(skill);
                             for (int i = 0; i < names.size(); i++) {
                                 String name = i == 0 ? I18n.format("levelup.prereq", names.get(i)) : names.get(i);
                                 int place = i + 1;
-                                if (this.fontRendererObj.getStringWidth(name) > width) {
-                                    width = this.fontRendererObj.getStringWidth(name);
+                                if (this.fontRenderer.getStringWidth(name) > width) {
+                                    width = this.fontRenderer.getStringWidth(name);
                                 }
-                                this.fontRendererObj.drawSplitString(name, xOff, yOff + (12 * place), width, 0xFBFD6F);
+                                this.fontRenderer.drawSplitString(name, xOff, yOff + (12 * place), width, 0xFBFD6F);
                             }
                         }
                         this.drawGradientRect(xOff - 3, yOff - 3, xOff + width + 3, yOff + height + 3, -1073741824, -1073741824);
                     }
                 }
             }
-            this.fontRendererObj.drawStringWithShadow(skillName, xOff, yOff, -8355712);
+            this.fontRenderer.drawStringWithShadow(skillName, xOff, yOff, -8355712);
         }
 
         if (skill != this.highlightedSkill)

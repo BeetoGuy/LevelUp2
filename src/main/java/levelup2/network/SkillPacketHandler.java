@@ -47,7 +47,7 @@ public class SkillPacketHandler {
     @SubscribeEvent
     public void onServerPacket(FMLNetworkEvent.ServerCustomPacketEvent evt) {
         ByteBuf in = evt.getPacket().payload();
-        EntityPlayerMP player = ((NetHandlerPlayServer)evt.getHandler()).playerEntity;
+        EntityPlayerMP player = ((NetHandlerPlayServer)evt.getHandler()).player;
         if (evt.getPacket().channel().equals(CHANNELS[1])) {
             addTask(evt.getHandler(), () -> handleClassChange(in.readByte(), player));
         } else if (evt.getPacket().channel().equals(CHANNELS[2])) {
@@ -104,7 +104,7 @@ public class SkillPacketHandler {
             properties.setPlayerData(skills, data);
         }
         if (levelSpend > 0)
-            player.removeExperienceLevel(levelSpend);
+            player.addExperienceLevel(-levelSpend);
     }
 
     public static FMLProxyPacket getPacket(Side side, int channel, byte ID, Object... data) {
