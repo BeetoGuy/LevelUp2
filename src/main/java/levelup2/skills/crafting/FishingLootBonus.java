@@ -120,7 +120,7 @@ public class FishingLootBonus extends BaseSkill {
 
     private ItemStack getFishingLoot(World world, EntityPlayer player) {
         if (!world.isRemote) {
-            if (player.getRNG().nextDouble() <= SkillRegistry.getSkillLevel(player, getSkillName()) * 0.5D) {
+            if (player.getRNG().nextDouble() <= SkillRegistry.getSkillLevel(player, getSkillName()) * 0.05D) {
                 LootContext.Builder build = new LootContext.Builder((WorldServer)world);
                 build.withLuck((float) EnchantmentHelper.getMaxEnchantmentLevel(Enchantment.getEnchantmentByLocation("luck_of_the_sea"), player) + player.getLuck());
                 return Library.getLootManager().getLootTableFromLocation(new ResourceLocation("levelup", "fishing/fishing_loot")).generateLootForPools(player.getRNG(), build.build()).get(0).copy();

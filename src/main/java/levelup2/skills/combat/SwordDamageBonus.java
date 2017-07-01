@@ -1,8 +1,10 @@
 package levelup2.skills.combat;
 
+import levelup2.config.LevelUpConfig;
 import levelup2.skills.BaseSkill;
 import levelup2.skills.SkillRegistry;
 import levelup2.util.Library;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -71,6 +73,11 @@ public class SwordDamageBonus extends BaseSkill {
                 if (!(source instanceof EntityDamageSourceIndirect)) {
                     if (!player.getHeldItemMainhand().isEmpty()) {
                         amount *= 1.0F + skill / 20F;
+                        if (LevelUpConfig.damageScaling && !(evt.getEntityLiving() instanceof EntityPlayer) && evt.getEntityLiving().getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue() > 20) {
+                            double health = evt.getEntityLiving().getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue();
+                            float skillOutput = skill / 40F;
+                            amount += health * skillOutput;
+                        }
                         evt.setAmount(amount);
                     }
                 }

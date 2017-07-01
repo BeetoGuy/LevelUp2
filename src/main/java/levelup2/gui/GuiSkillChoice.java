@@ -6,6 +6,8 @@ import net.minecraft.client.gui.GuiOptionButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 
+import java.util.Map;
+
 public class GuiSkillChoice extends GuiScreen {
     private IPlayerSkill skill;
     private GuiSkills parent;
@@ -16,8 +18,23 @@ public class GuiSkillChoice extends GuiScreen {
         this.skill = skill;
         this.parent = parent;
         this.skillLevel = skillLevel;
-        canDowngrade = parent.player.getSkillLevel(skill.getSkillName()) < skillLevel;
+        canDowngrade = parent.player.getSkillLevel(skill.getSkillName()) < skillLevel && isDowngradable(skill, parent);
         canSpendLevels = skill.getLevelCost(skillLevel) <= parent.availableLevels - parent.levelSpend && skill.getLevelCost(skillLevel) > -1 && parent.canUnlock(skill);
+    }
+
+    private boolean isDowngradable(IPlayerSkill skill, GuiSkills parent) {
+        Map<String, Integer> skillList = parent.skills;
+        for (String st : skillList.keySet()) {
+            IPlayerSkill check = parent.player.getSkillFromName(st);
+            if (skillList.get(check.getSkillName()) > 0 && check.getPrerequisites() != null && check.getPrerequisites().length > 0) {
+                for (String checkStr : check.getPrerequisites()) {
+                    if (checkStr.equals(skill.getSkillName())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     @Override
@@ -42,13 +59,18 @@ public class GuiSkillChoice extends GuiScreen {
         this.drawDefaultBackground();
         drawCenteredString(I18n.format("skill." + this.skill.getSkillName() + ".name"), this.width / 2, this.height / 2 - 100, -8355712);
         drawCenteredString(I18n.format(this.skill.getSkillName() + ".desc"), this.width / 2, this.height / 2 - 82, -8355712);
-        boolean secondLine = false;
+        int lineIncrement = 0;
         if (!I18n.format(this.skill.getSkillName() + ".desc.1").equals(this.skill.getSkillName() + ".desc.1")) {
-            secondLine = true;
+            lineIncrement++;
             drawCenteredString(I18n.format(this.skill.getSkillName() + ".desc.1"), this.width / 2, this.height / 2 - 64, -8355712);
+            if (!I18n.format(this.skill.getSkillName() + ".desc.2").equals(this.skill.getSkillName() + ".desc.2")) {
+                lineIncrement++;
+                drawCenteredString(I18n.format(this.skill.getSkillName() + ".desc.2"), this.width / 2, this.height / 2 - 46, -8355712);
+            }
         }
         if (this.skill.getLevelCost(skillLevel) > -1) {
-            drawCenteredString(I18n.format("levelup.cost", this.skill.getLevelCost(skillLevel)), this.width / 2, this.height / 2 - (secondLine ? 46 : 64), -8355712);
+            int offset = 64 - (18 * lineIncrement);
+            drawCenteredString(I18n.format("levelup.cost", this.skill.getLevelCost(skillLevel)), this.width / 2, this.height / 2 - offset, -8355712);
         }
         drawCenteredString(I18n.format("levelup.levels.track", skillLevel, parent.player.getSkillLevel(skill.getSkillName())), this.width / 2, this.height / 2 + 15, -8355712);
         super.drawScreen(mouseX, mouseY, partialTicks);
