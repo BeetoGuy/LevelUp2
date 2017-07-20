@@ -28,7 +28,7 @@ public class GuiSkillChoice extends GuiScreen {
             IPlayerSkill check = parent.player.getSkillFromName(st);
             if (skillList.get(check.getSkillName()) > 0 && check.getPrerequisites() != null && check.getPrerequisites().length > 0) {
                 for (String checkStr : check.getPrerequisites()) {
-                    if (checkStr.equals(skill.getSkillName())) {
+                    if (checkStr.equals(skill.getSkillName()) && skillList.get(skill.getSkillName()) - 1 == 0) {
                         return false;
                     }
                 }
