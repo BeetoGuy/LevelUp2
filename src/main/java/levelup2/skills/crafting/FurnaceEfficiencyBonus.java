@@ -110,8 +110,8 @@ public class FurnaceEfficiencyBonus extends BaseSkill {
                 return;
             TileEntity tile = evt.getWorld().getTileEntity(evt.getPos());
             if (tile != null) {
-                if (tile.hasCapability(PlayerCapability.MACHINE_PROCESSING, null)) {
-                    IProcessor cap = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, null);
+                if (tile.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)) {
+                    IProcessor cap = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP);
                     if (cap != null) {
                         String name = UsernameCache.getLastKnownUsername(player.getGameProfile().getId());
                         if (cap.getPlayerFromUUID() == null) {
@@ -139,8 +139,8 @@ public class FurnaceEfficiencyBonus extends BaseSkill {
         if (evt.phase == TickEvent.Phase.START) {
             if (!evt.world.isRemote) {
                 for (TileEntity tile : evt.world.tickableTileEntities) {
-                    if (tile.hasCapability(PlayerCapability.MACHINE_PROCESSING, null)) {
-                        IProcessor cap = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, null);
+                    if (tile.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)) {
+                        IProcessor cap = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP);
                         if (cap != null && cap.getPlayerFromUUID() != null) {
                             cap.extraProcessing(cap.getPlayerFromUUID());
                         }
