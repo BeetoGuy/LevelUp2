@@ -16,7 +16,7 @@ public class CapabilityBrewingStand extends PlayerCapability.CapabilityProcessor
             if (stand.getField(0) > 0) {
                 int bonus = SkillRegistry.getSkillLevel(player, "levelup:brewingspeed");
                 if (bonus > 0) {
-                    int time = player.getRNG().nextInt(bonus / 10);
+                    int time = player.getRNG().nextInt(bonus + 1);
                     if (time > 0 && stand.getField(0) - time > 0)
                         stand.setField(0, stand.getField(0) - time);
                 }
