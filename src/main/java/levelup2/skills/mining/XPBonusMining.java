@@ -7,6 +7,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class XPBonusMining extends BaseSkill {
     @Override
@@ -40,8 +41,8 @@ public class XPBonusMining extends BaseSkill {
             if (SkillRegistry.getSkillLevel(evt.getHarvester(), getSkillName()) > 0) {
                 IBlockState state = evt.getState();
                 ItemStack stack = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
-                for (ItemStack ore : SkillRegistry.getOreBonusXP().keySet()) {
-                    if (SkillRegistry.stackMatches(stack, ore)) {
+                for (String ore : SkillRegistry.getOreBonusXP().keySet()) {
+                    if (SkillRegistry.listContains(stack, OreDictionary.getOres(ore))) {
                         SkillRegistry.addExperience(evt.getHarvester(), SkillRegistry.getOreBonusXP().get(ore));
                         break;
                     }

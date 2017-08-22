@@ -1,6 +1,7 @@
 package levelup2.util;
 
 import com.google.common.collect.Sets;
+import levelup2.skills.SkillRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -68,6 +69,17 @@ public class Library {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    public static void assignExperienceValues(List<String> oreNames, List<Integer> oreValue) {
+        for (int i = 0; i < oreNames.size(); i++) {
+            String oreName = oreNames.get(i);
+            if (!oreName.equals("null")) {
+                int value = i < oreValue.size() ? oreValue.get(i) : 1;
+                if (value > 0)
+                    SkillRegistry.addStackToOreBonus(oreName, value);
             }
         }
     }

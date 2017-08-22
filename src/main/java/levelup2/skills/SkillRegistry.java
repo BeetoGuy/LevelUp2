@@ -33,7 +33,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import java.util.*;
 
 public class SkillRegistry {
-    private static Map<ItemStack, Integer> oreBonusXP = new HashMap<>();
+    private static Map<String, Integer> oreBonusXP = new HashMap<>();
     private static List<IPlayerSkill> skillRegistry = new ArrayList<>();
     private static Map<String, IPlayerSkill> skillHashMap = new HashMap<>();
     private static List<IPlantable> cropBlacklist = new ArrayList<>();
@@ -105,6 +105,7 @@ public class SkillRegistry {
         if (!isNullList(LevelUpConfig.oreList)) {
             Library.registerOreToChunk(LevelUpConfig.oreList, surfaceOreChunk);
             Library.addToOreList(LevelUpConfig.oreList);
+            Library.assignExperienceValues(LevelUpConfig.oreList, LevelUpConfig.oreExperience);
             registerSmelting(LevelUpConfig.oreList, surfaceOreChunk);
             //registerCrafting(LevelUpConfig.oreList, surfaceOreChunk);
             Library.registerOres(LevelUpConfig.oreList);
@@ -114,6 +115,7 @@ public class SkillRegistry {
         if (!isNullList(LevelUpConfig.netherOreList)) {
             Library.registerOreToChunk(LevelUpConfig.netherOreList, netherOreChunk);
             Library.addToOreList(LevelUpConfig.netherOreList);
+            Library.assignExperienceValues(LevelUpConfig.netherOreList, LevelUpConfig.netherOreExperience);
             registerSmelting(LevelUpConfig.netherOreList, netherOreChunk);
             //registerCrafting(LevelUpConfig.netherOreList, netherOreChunk);
             Library.registerOres(LevelUpConfig.netherOreList);
@@ -121,6 +123,7 @@ public class SkillRegistry {
         if (!isNullList(LevelUpConfig.endOreList)) {
             Library.registerOreToChunk(LevelUpConfig.endOreList, endOreChunk);
             Library.addToOreList(LevelUpConfig.endOreList);
+            Library.assignExperienceValues(LevelUpConfig.endOreList, LevelUpConfig.endOreExperience);
             registerSmelting(LevelUpConfig.endOreList, endOreChunk);
             //registerCrafting(LevelUpConfig.endOreList, endOreChunk);
             Library.registerOres(LevelUpConfig.endOreList);
@@ -189,11 +192,11 @@ public class SkillRegistry {
         return player.getCapability(PlayerCapability.PLAYER_CLASS, null);
     }
 
-    public static void addStackToOreBonus(ItemStack stack, int bonusXP) {
+    public static void addStackToOreBonus(String stack, int bonusXP) {
         oreBonusXP.put(stack, bonusXP);
     }
 
-    public static Map<ItemStack, Integer> getOreBonusXP() {
+    public static Map<String, Integer> getOreBonusXP() {
         return oreBonusXP;
     }
 

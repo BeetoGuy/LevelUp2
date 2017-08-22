@@ -1,5 +1,6 @@
 package levelup2.skills.mining;
 
+import levelup2.config.LevelUpConfig;
 import levelup2.skills.BaseSkill;
 import levelup2.skills.SkillRegistry;
 import levelup2.util.Library;
@@ -87,6 +88,16 @@ public class StoneMiningBonus extends BaseSkill {
                                 int quantity = state.getBlock().quantityDropped(state, evt.getFortuneLevel(), rand);
                                 if (quantity > 0)
                                     evt.getDrops().add(new ItemStack(item, quantity, state.getBlock().damageDropped(state)));
+                            }
+                        }
+                    }
+                    else if (LevelUpConfig.alwaysDropChunks) {
+                        for (ItemStack stack : evt.getDrops()) {
+                            if (!stack.isEmpty() && state.getBlock() == Block.getBlockFromItem(stack.getItem())) {
+                                Library.removeFromList(evt.getDrops(), stack);
+                                ItemStack replace = getReplacementStack(stack);
+                                replace.setCount(1);
+                                evt.getDrops().add(replace);
                             }
                         }
                     }
