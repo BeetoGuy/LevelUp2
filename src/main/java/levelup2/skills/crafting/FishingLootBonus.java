@@ -32,35 +32,8 @@ public class FishingLootBonus extends BaseSkill {
     }
 
     @Override
-    public int getSkillRow() {
-        return 0;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 3;
-    }
-
-    @Override
     public byte getSkillType() {
         return 1;
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 10;
-    }
-
-    @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.highTenLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[0];
     }
 
     @Override
@@ -75,6 +48,7 @@ public class FishingLootBonus extends BaseSkill {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onFishInteract(PlayerInteractEvent.RightClickItem evt) {
+        if (!isActive()) return;
         if (evt.getResult() != Event.Result.DENY) {
             EntityFishHook hook = evt.getEntityPlayer().fishEntity;
             if (hook != null && hook.caughtEntity == null && hook.ticksCatchable > 0) {

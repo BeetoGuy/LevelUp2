@@ -21,35 +21,8 @@ public class FoodGrowthBonus extends BaseSkill {
     }
 
     @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.tenLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 10;
-    }
-
-    @Override
-    public int getSkillRow() {
-        return 0;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 2;
-    }
-
-    @Override
     public byte getSkillType() {
         return 1;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[0];
     }
 
     @Override
@@ -64,6 +37,7 @@ public class FoodGrowthBonus extends BaseSkill {
 
     @SubscribeEvent
     public void onPlayerUpdate(TickEvent.PlayerTickEvent evt) {
+        if (!isActive()) return;
         if (evt.phase == TickEvent.Phase.START) {
             EntityPlayer player = evt.player;
             if (player != null) {

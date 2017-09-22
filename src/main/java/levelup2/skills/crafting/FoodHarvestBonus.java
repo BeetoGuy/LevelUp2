@@ -26,35 +26,8 @@ public class FoodHarvestBonus extends BaseSkill {
     }
 
     @Override
-    public int getSkillRow() {
-        return 1;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 2;
-    }
-
-    @Override
     public byte getSkillType() {
         return 1;
-    }
-
-    @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.tenLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 10;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[] {"levelup:cropgrowth"};
     }
 
     @Override
@@ -69,6 +42,7 @@ public class FoodHarvestBonus extends BaseSkill {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onBlockBroken(BlockEvent.BreakEvent evt) {
+        if (!isActive()) return;
         if (!evt.getWorld().isRemote && evt.getPlayer() != null) {
             if (evt.getState().getBlock() instanceof BlockCrops || evt.getState().getBlock() instanceof BlockStem) {
                 if (!((IGrowable)evt.getState().getBlock()).canGrow(evt.getWorld(), evt.getPos(), evt.getState(), false)) {

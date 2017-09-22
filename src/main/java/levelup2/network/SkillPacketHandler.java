@@ -8,8 +8,10 @@ import levelup2.config.LevelUpConfig;
 import levelup2.player.IPlayerClass;
 import levelup2.player.PlayerExtension;
 import levelup2.skills.SkillRegistry;
+import levelup2.util.SkillProperties;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
@@ -28,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 public class SkillPacketHandler {
-    public static final String[] CHANNELS = {"levelupinit", "levelupclasses", "levelupskills", "levelupcfg"};
-    public static FMLEventChannel initChannel, classChannel, skillChannel, configChannel;
+    public static final String[] CHANNELS = {"levelupinit", "levelupclasses", "levelupskills", "levelupcfg", "levelupproperties", "leveluprefresh"};
+    public static FMLEventChannel initChannel, classChannel, skillChannel, configChannel, propertyChannel, refreshChannel;
 
     public static void init() {
         SkillPacketHandler handler = new SkillPacketHandler();
@@ -41,6 +43,10 @@ public class SkillPacketHandler {
         skillChannel.register(handler);
         configChannel = NetworkRegistry.INSTANCE.newEventDrivenChannel(CHANNELS[3]);
         configChannel.register(handler);
+        propertyChannel = NetworkRegistry.INSTANCE.newEventDrivenChannel(CHANNELS[4]);
+        propertyChannel.register(handler);
+        refreshChannel = NetworkRegistry.INSTANCE.newEventDrivenChannel(CHANNELS[5]);
+        refreshChannel.register(handler);
         MinecraftForge.EVENT_BUS.register(handler);
     }
 
@@ -62,7 +68,10 @@ public class SkillPacketHandler {
             addTask(evt.getHandler(), () -> handlePacket(in, LevelUp2.proxy.getPlayer()));
         } else if (evt.getPacket().channel().equals(CHANNELS[3])) {
             addTask(evt.getHandler(), () -> handleConfig(in));
-        }
+        } else if (evt.getPacket().channel().equals(CHANNELS[4])) {
+            addTask(evt.getHandler(), () -> handleProperties(in));
+        } else if (evt.getPacket().channel().equals(CHANNELS[5]))
+            addTask(evt.getHandler(), () -> refreshValues());
     }
 
     private void addTask(INetHandler netHandler, Runnable runnable) {
@@ -156,5 +165,33 @@ public class SkillPacketHandler {
             properties[i].set(buf.readBoolean());
         }
         LevelUpConfig.useServerProperties();
+    }
+
+    public static FMLProxyPacket getPropertyPackets(IPlayerSkill skill) {
+        SkillProperties prop = SkillRegistry.getProperty(skill);
+        ByteBuf buf = Unpooled.buffer();
+        if (prop != null) {
+            prop.writeToBytes(buf);
+        }
+        FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[4]);
+        pkt.setTarget(Side.CLIENT);
+        return pkt;
+    }
+
+    private void handleProperties(ByteBuf buf) {
+        NBTTagCompound tag = ByteBufUtils.readTag(buf);
+        SkillProperties.fromNBT(tag);
+    }
+
+    public static FMLProxyPacket getRefreshPacket() {
+        ByteBuf buf = Unpooled.buffer();
+        buf.writeBoolean(true);
+        FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[5]);
+        pkt.setTarget(Side.CLIENT);
+        return pkt;
+    }
+
+    private void refreshValues() {
+        SkillRegistry.calculateHighLow();
     }
 }

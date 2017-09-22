@@ -12,38 +12,14 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ArrowSpeedBonus extends BaseSkill {
-    private int[] levels = {11, 17, 29, 37, 41};
-
     @Override
     public String getSkillName() {
         return "levelup:arrowspeed";
     }
 
     @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.fiveLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public ItemStack getRepresentativeStack() {
         return new ItemStack(Items.ARROW);
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[] {"levelup:bowdraw"};
-    }
-
-    @Override
-    public int getSkillRow() {
-        return 1;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 2;
     }
 
     @Override
@@ -56,13 +32,9 @@ public class ArrowSpeedBonus extends BaseSkill {
         return true;
     }
 
-    @Override
-    public int getMaxLevel() {
-        return 5;
-    }
-
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onArrowLoose(EntityJoinWorldEvent evt) {
+        if (!isActive()) return;
         if (evt.getEntity() instanceof EntityArrow) {
             EntityArrow arrow = (EntityArrow)evt.getEntity();
             if (arrow.shootingEntity instanceof EntityPlayer) {

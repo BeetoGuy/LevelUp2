@@ -17,16 +17,6 @@ public class NaturalArmorBonus extends BaseSkill {
     }
 
     @Override
-    public int getSkillRow() {
-        return 1;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 4;
-    }
-
-    @Override
     public byte getSkillType() {
         return 2;
     }
@@ -37,29 +27,13 @@ public class NaturalArmorBonus extends BaseSkill {
     }
 
     @Override
-    public String[] getPrerequisites() {
-        return new String[] {"levelup:shieldblock"};
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 10;
-    }
-
-    @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.highTenLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public ItemStack getRepresentativeStack() {
         return new ItemStack(Items.IRON_CHESTPLATE);
     }
 
     @SubscribeEvent
     public void onDamageTaken(LivingHurtEvent evt) {
+        if (!isActive()) return;
         if (evt.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer)evt.getEntityLiving();
             int skill = SkillRegistry.getSkillLevel(player, getSkillName());

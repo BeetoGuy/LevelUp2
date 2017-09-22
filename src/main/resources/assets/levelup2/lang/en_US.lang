@@ -97,6 +97,7 @@ gui.levelup.skillmenu.1=Crafting
 gui.levelup.skillmenu.2=Combat
 gui.levelup.budget=Levels spent: %s
 levelup.prereq=Prerequisites: %s
+skill.inactive=Skill is inactive.
 
 levelup.interact.register=Machine bound to %s
 levelup.interact.unregister=Machine unbound from %s

@@ -60,6 +60,7 @@ public class LevelUp2 {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent evt) {
         SkillRegistry.postLoadSkills();
+        LevelUpConfig.registerSkillProperties();
         SkillRegistry.registerRecipes();
     }
 

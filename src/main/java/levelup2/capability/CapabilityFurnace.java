@@ -1,5 +1,6 @@
 package levelup2.capability;
 
+import levelup2.api.IPlayerSkill;
 import levelup2.config.LevelUpConfig;
 import levelup2.skills.SkillRegistry;
 import levelup2.util.SmeltingBlacklist;
@@ -28,12 +29,12 @@ public class CapabilityFurnace extends PlayerCapability.CapabilityProcessorDefau
                     ItemStack stack = furnace.getStackInSlot(0);
                     if (!stack.isEmpty()) {
                         int bonus = SkillRegistry.getSkillLevel(player, "levelup:furnacespeed");
-                        if (bonus > 0) {
+                        if (bonus > 0 || !isSkillActive("levelup:furnacespeed")) {
                             int time = player.getRNG().nextInt(bonus + 1);
-                            if (time > 0 && furnace.getField(2) + time < furnace.getField(3)) {
+                            if (isSkillActive("levelup:furnacespeed") && time > 0 && furnace.getField(2) + time < furnace.getField(3)) {
                                 furnace.setField(2, furnace.getField(2) + time);
                             }
-                            if (furnace.getField(2) > furnace.getField(3) - 2) {
+                            if (furnace.getField(2) > furnace.getField(3) - 2 && isSkillActive("levelup:furnacebonus")) {
                                 bonus = SkillRegistry.getSkillLevel(player, "levelup:furnacebonus");
                                 if (bonus > 0) {
                                     if (isDoublingValid(furnace) && player.getRNG().nextFloat() < bonus / 40F) {
@@ -76,5 +77,13 @@ public class CapabilityFurnace extends PlayerCapability.CapabilityProcessorDefau
                 tile.getWorld().spawnEntity(item);
             }
         }
+    }
+
+    private boolean isSkillActive(String skill) {
+        IPlayerSkill sk = SkillRegistry.getSkillFromName(skill);
+        if (sk != null) {
+            return sk.isActive() && sk.isEnabled();
+        }
+        return false;
     }
 }

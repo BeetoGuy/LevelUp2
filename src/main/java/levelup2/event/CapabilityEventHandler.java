@@ -1,5 +1,6 @@
 package levelup2.event;
 
+import levelup2.api.IPlayerSkill;
 import levelup2.capability.PlayerCapability;
 import levelup2.config.LevelUpConfig;
 import levelup2.network.SkillPacketHandler;
@@ -74,6 +75,10 @@ public class CapabilityEventHandler {
         if (evt.player instanceof EntityPlayerMP) {
             SkillRegistry.loadPlayer(evt.player);
             SkillPacketHandler.configChannel.sendTo(SkillPacketHandler.getConfigPacket(LevelUpConfig.getServerProperties()), (EntityPlayerMP)evt.player);
+            for (IPlayerSkill skill : SkillRegistry.getSkillRegistry()) {
+                SkillPacketHandler.propertyChannel.sendTo(SkillPacketHandler.getPropertyPackets(skill), (EntityPlayerMP)evt.player);
+            }
+            SkillPacketHandler.refreshChannel.sendTo(SkillPacketHandler.getRefreshPacket(), (EntityPlayerMP)evt.player);
         }
     }
 }

@@ -23,33 +23,6 @@ public class ShieldBlockBonus extends BaseSkill {
     }
 
     @Override
-    public int getSkillColumn() {
-        return 4;
-    }
-
-    @Override
-    public int getSkillRow() {
-        return 0;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[0];
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 5;
-    }
-
-    @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.fiveLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public boolean hasSubscription() {
         return true;
     }
@@ -61,6 +34,7 @@ public class ShieldBlockBonus extends BaseSkill {
 
     @SubscribeEvent
     public void onDamageTaken(LivingHurtEvent evt) {
+        if (!isActive()) return;
         if (evt.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer)evt.getEntityLiving();
             int skill = SkillRegistry.getSkillLevel(player, getSkillName());

@@ -58,19 +58,26 @@ public class GuiSkillChoice extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
         drawCenteredString(I18n.format("skill." + this.skill.getSkillName() + ".name"), this.width / 2, this.height / 2 - 100, -8355712);
-        drawCenteredString(I18n.format(this.skill.getSkillName() + ".desc"), this.width / 2, this.height / 2 - 82, -8355712);
-        int lineIncrement = 0;
-        if (!I18n.format(this.skill.getSkillName() + ".desc.1").equals(this.skill.getSkillName() + ".desc.1")) {
-            lineIncrement++;
-            drawCenteredString(I18n.format(this.skill.getSkillName() + ".desc.1"), this.width / 2, this.height / 2 - 64, -8355712);
-            if (!I18n.format(this.skill.getSkillName() + ".desc.2").equals(this.skill.getSkillName() + ".desc.2")) {
+        if (this.skill.isActive()) {
+            drawCenteredString(I18n.format(this.skill.getSkillName() + ".desc"), this.width / 2, this.height / 2 - 82, -8355712);
+            int lineIncrement = 0;
+            if (!I18n.format(this.skill.getSkillName() + ".desc.1").equals(this.skill.getSkillName() + ".desc.1")) {
                 lineIncrement++;
-                drawCenteredString(I18n.format(this.skill.getSkillName() + ".desc.2"), this.width / 2, this.height / 2 - 46, -8355712);
+                drawCenteredString(I18n.format(this.skill.getSkillName() + ".desc.1"), this.width / 2, this.height / 2 - 64, -8355712);
+                if (!I18n.format(this.skill.getSkillName() + ".desc.2").equals(this.skill.getSkillName() + ".desc.2")) {
+                    lineIncrement++;
+                    drawCenteredString(I18n.format(this.skill.getSkillName() + ".desc.2"), this.width / 2, this.height / 2 - 46, -8355712);
+                }
             }
-        }
-        if (this.skill.getLevelCost(skillLevel) > -1) {
-            int offset = 64 - (18 * lineIncrement);
-            drawCenteredString(I18n.format("levelup.cost", this.skill.getLevelCost(skillLevel)), this.width / 2, this.height / 2 - offset, -8355712);
+            if (this.skill.getLevelCost(skillLevel) > -1) {
+                int offset = 64 - (18 * lineIncrement);
+                drawCenteredString(I18n.format("levelup.cost", this.skill.getLevelCost(skillLevel)), this.width / 2, this.height / 2 - offset, -8355712);
+            }
+        } else {
+            drawCenteredString(I18n.format("skill.inactive"), this.width / 2, this.height / 2 - 82, -8355712);
+            if (this.skill.getLevelCost(skillLevel) > -1) {
+                drawCenteredString(I18n.format("levelup.cost", this.skill.getLevelCost(skillLevel)), this.width / 2, this.height / 2 - 64, -8355712);
+            }
         }
         drawCenteredString(I18n.format("levelup.levels.track", skillLevel, parent.player.getSkillLevel(skill.getSkillName())), this.width / 2, this.height / 2 + 15, -8355712);
         super.drawScreen(mouseX, mouseY, partialTicks);

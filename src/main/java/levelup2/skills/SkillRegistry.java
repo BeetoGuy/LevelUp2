@@ -1,5 +1,8 @@
 package levelup2.skills;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import levelup2.api.IPlayerSkill;
 import levelup2.capability.PlayerCapability;
 import levelup2.config.LevelUpConfig;
@@ -11,6 +14,7 @@ import levelup2.skills.crafting.*;
 import levelup2.skills.mining.*;
 import levelup2.util.Library;
 import levelup2.util.PlankCache;
+import levelup2.util.SkillProperties;
 import levelup2.util.SmeltingBlacklist;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +25,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.*;
+import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.IPlantable;
@@ -30,12 +35,17 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class SkillRegistry {
     private static Map<String, Integer> oreBonusXP = new HashMap<>();
     private static List<IPlayerSkill> skillRegistry = new ArrayList<>();
     private static Map<String, IPlayerSkill> skillHashMap = new HashMap<>();
+    private static Map<String, SkillProperties> skillProperties = new HashMap<>();
     private static List<IPlantable> cropBlacklist = new ArrayList<>();
     public static int smallestDisplayColumn = 0;
     public static int smallestDisplayRow = 0;
@@ -91,12 +101,6 @@ public class SkillRegistry {
         for (IPlayerSkill skill : skillRegistry) {
             if (skill.hasSubscription())
                 MinecraftForge.EVENT_BUS.register(skill);
-            int column = skill.getSkillColumn();
-            int row = skill.getSkillRow();
-            if (column > largestDisplayColumn) largestDisplayColumn = column;
-            else if (column < smallestDisplayColumn) smallestDisplayColumn = column;
-            if (row > largestDisplayRow) largestDisplayRow = row;
-            else if (row < smallestDisplayRow) smallestDisplayRow = row;
         }
         //initPlankCache();
     }
@@ -144,6 +148,11 @@ public class SkillRegistry {
             }
         }
         SmeltingBlacklist.addItem(new ItemStack(Blocks.SPONGE, 1, 1));
+        for (String ore : OreDictionary.getOreNames()) {
+            if (ore.startsWith("dust")) {
+                SmeltingBlacklist.addOres(ore);
+            }
+        }
     }
 
     private static void registerCrafting(List<String> ores, Item item) {
@@ -328,5 +337,49 @@ public class SkillRegistry {
                 return true;
         }
         return false;
+    }
+
+    public static void registerSkillProperties() {
+        for (IPlayerSkill skill : getSkillRegistry()) {
+            SkillProperties prop = loadFromJson(skill);
+            if (prop != null)
+                skillProperties.put(skill.getSkillName(), prop);
+        }
+        calculateHighLow();
+    }
+
+    private static SkillProperties loadFromJson(IPlayerSkill skill) {
+        SkillProperties prop = null;
+        Path dir = LevelUpConfig.jsonDir.resolve("skills");
+        Path location = dir.resolve(skill.getJsonLocation() + ".json");
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        BufferedReader reader;
+        try {
+            reader = Files.newBufferedReader(location);
+            prop = SkillProperties.fromJson(skill.getSkillName(), JsonUtils.fromJson(gson, reader, JsonObject.class));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return prop;
+    }
+
+    public static SkillProperties getProperty(IPlayerSkill skill) {
+        return skillProperties.get(skill.getSkillName());
+    }
+
+    public static void calculateHighLow() {
+        largestDisplayRow = 0;
+        largestDisplayColumn = 0;
+        smallestDisplayRow = 0;
+        smallestDisplayColumn = 0;
+        for (IPlayerSkill skill : getSkillRegistry()) {
+            IPlayerSkill sk = getSkillFromName(skill.getSkillName());
+            int column = sk.getSkillColumn();
+            int row = sk.getSkillRow();
+            if (column > largestDisplayColumn) largestDisplayColumn = column;
+            else if (column < smallestDisplayColumn) smallestDisplayColumn = column;
+            if (row > largestDisplayRow) largestDisplayRow = row;
+            else if (row < smallestDisplayRow) smallestDisplayRow = row;
+        }
     }
 }

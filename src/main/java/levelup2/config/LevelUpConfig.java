@@ -1,5 +1,7 @@
 package levelup2.config;
 
+import levelup2.api.IPlayerSkill;
+import levelup2.skills.SkillRegistry;
 import levelup2.util.JsonTransfer;
 import levelup2.util.Library;
 import net.minecraftforge.common.config.Configuration;
@@ -45,7 +47,7 @@ public class LevelUpConfig {
     private static Property resetJson;
 
     private static Path configDir;
-    private static Path jsonDir;
+    public static Path jsonDir;
     public static Path lootDir;
 
     public static void init(File file) {
@@ -110,7 +112,19 @@ public class LevelUpConfig {
         files.add("digging/common_dig");
         files.add("digging/uncommon_dig");
         files.add("digging/rare_dig");
-        JsonTransfer.findResources(files).stream().forEach(r -> JsonTransfer.copyResource(r, configDir.resolve(r), resetJsonFiles));
+        JsonTransfer.findResources("json/loot_tables", files).stream().forEach(r -> JsonTransfer.copyResource(r, configDir.resolve(r), resetJsonFiles));
         Library.registerLootTableLocations(files);
+    }
+
+    public static void registerSkillProperties() {
+        Set<String> files = new HashSet<>();
+        for (IPlayerSkill skill : SkillRegistry.getSkillRegistry()) {
+            if (skill.hasExternalJson()) {
+                files.add(skill.getJsonLocation());
+            }
+        }
+        //SkillRegistry.getSkillRegistry().forEach(e -> files.add(e.getJsonLocation()));
+        JsonTransfer.findResources("json/skills", files).stream().forEach(r -> JsonTransfer.copyResource(r, configDir.resolve(r), resetJsonFiles));
+        SkillRegistry.registerSkillProperties();
     }
 }

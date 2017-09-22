@@ -11,6 +11,7 @@ public class CapabilityBrewingStand extends PlayerCapability.CapabilityProcessor
 
     @Override
     public void extraProcessing(EntityPlayer player) {
+        if (!SkillRegistry.getSkillFromName("levelup:brewingspeed").isActive() || !SkillRegistry.getSkillFromName("levelup:brewingspeed").isEnabled()) return;
         if (tile != null) {
             if (tile instanceof TileEntityBrewingStand) {
                 TileEntityBrewingStand stand = (TileEntityBrewingStand) tile;

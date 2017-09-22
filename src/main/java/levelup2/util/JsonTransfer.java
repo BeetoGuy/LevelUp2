@@ -12,10 +12,10 @@ import java.util.Set;
  * @author RlonRyan
  */
 public class JsonTransfer {
-    public static Set<String> findResources(Set<String> fileNames) {
+    public static Set<String> findResources(String filepath, Set<String> fileNames) {
         Set<String> files = new HashSet<>();
         for (String name : fileNames) {
-            String str = "json/loot_tables/" + name + ".json";
+            String str = filepath + "/" + name + ".json";
             files.add(str);
         }
         return files;

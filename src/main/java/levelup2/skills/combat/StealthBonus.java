@@ -19,28 +19,6 @@ public class StealthBonus extends BaseSkill {
     }
 
     @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.tenLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 10;
-    }
-
-    @Override
-    public int getSkillRow() {
-        return 0;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 3;
-    }
-
-    @Override
     public byte getSkillType() {
         return 2;
     }
@@ -48,11 +26,6 @@ public class StealthBonus extends BaseSkill {
     @Override
     public boolean hasSubscription() {
         return true;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[0];
     }
 
     @Override
@@ -64,6 +37,7 @@ public class StealthBonus extends BaseSkill {
 
     @SubscribeEvent
     public void onTargetSet(LivingSetAttackTargetEvent evt) {
+        if (!isActive()) return;
         if (evt.getTarget() instanceof EntityPlayer && evt.getEntityLiving() instanceof EntityMob) {
             if (evt.getTarget().isSneaking() && !StealthLib.entityHasVisionOf(evt.getEntityLiving(), (EntityPlayer)evt.getTarget())
                     && evt.getEntityLiving().getRevengeTimer() != ((EntityMob) evt.getEntityLiving()).ticksExisted) {

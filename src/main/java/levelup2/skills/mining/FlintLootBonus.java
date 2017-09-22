@@ -21,40 +21,13 @@ public class FlintLootBonus extends BaseSkill {
     }
 
     @Override
-    public int getSkillColumn() {
-        return 4;
-    }
-
-    @Override
-    public int getSkillRow() {
-        return 0;
-    }
-
-    @Override
     public boolean hasSubscription() {
         return true;
     }
 
     @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.tenLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public byte getSkillType() {
         return 0;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[0];
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 10;
     }
 
     @Override
@@ -64,6 +37,7 @@ public class FlintLootBonus extends BaseSkill {
 
     @SubscribeEvent
     public void gravelLooting(BlockEvent.HarvestDropsEvent evt) {
+        if (!isActive()) return;
         if (evt.getHarvester() != null && !evt.getWorld().isRemote) {
             IBlockState state = evt.getState();
             Random rand = evt.getHarvester().getRNG();

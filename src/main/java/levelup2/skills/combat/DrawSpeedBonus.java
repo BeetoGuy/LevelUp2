@@ -19,25 +19,8 @@ public class DrawSpeedBonus extends BaseSkill {
     }
 
     @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.tenLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public ItemStack getRepresentativeStack() {
         return new ItemStack(Items.BOW);
-    }
-
-    @Override
-    public int getSkillRow() {
-        return 0;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 2;
     }
 
     @Override
@@ -46,22 +29,13 @@ public class DrawSpeedBonus extends BaseSkill {
     }
 
     @Override
-    public String[] getPrerequisites() {
-        return new String[0];
-    }
-
-    @Override
     public boolean hasSubscription() {
         return true;
     }
 
-    @Override
-    public int getMaxLevel() {
-        return 10;
-    }
-
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onBowUse(ArrowNockEvent evt) {
+        if (!isActive()) return;
         int archery = SkillRegistry.getSkillLevel(evt.getEntityPlayer(), getSkillName());
         if (archery > 0) {
             evt.getEntityPlayer().setActiveHand(evt.getHand());

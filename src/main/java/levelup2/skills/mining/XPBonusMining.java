@@ -75,4 +75,19 @@ public class XPBonusMining extends BaseSkill {
     public int getMaxLevel() {
         return 1;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
+    @Override
+    public boolean hasExternalJson() {
+        return false;
+    }
 }

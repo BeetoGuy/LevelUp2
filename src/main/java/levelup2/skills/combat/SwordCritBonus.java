@@ -24,33 +24,6 @@ public class SwordCritBonus extends BaseSkill {
     }
 
     @Override
-    public int getSkillColumn() {
-        return 1;
-    }
-
-    @Override
-    public int getSkillRow() {
-        return 0;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[0];
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 5;
-    }
-
-    @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.fiveLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public boolean hasSubscription() {
         return true;
     }
@@ -62,6 +35,7 @@ public class SwordCritBonus extends BaseSkill {
 
     @SubscribeEvent
     public void onHurting(LivingHurtEvent evt) {
+        if (!isActive()) return;
         DamageSource source = evt.getSource();
         float amount = evt.getAmount();
         if (source.getTrueSource() instanceof EntityPlayer) {

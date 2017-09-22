@@ -17,6 +17,7 @@ public class WoodSpeedBonus extends MiningSpeedBonus {
 
     @SubscribeEvent
     public void onBreak(PlayerEvent.BreakSpeed evt) {
+        if (!isActive()) return;
         EntityPlayer player = evt.getEntityPlayer();
         if (player != null) {
             int skill = SkillRegistry.getSkillLevel(player, getSkillName());
@@ -28,16 +29,6 @@ public class WoodSpeedBonus extends MiningSpeedBonus {
                 }
             }
         }
-    }
-
-    @Override
-    public int getSkillRow() {
-        return 0;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 2;
     }
 
     @Override

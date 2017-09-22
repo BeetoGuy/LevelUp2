@@ -16,40 +16,13 @@ public class FallDamageBonus extends BaseSkill {
     }
 
     @Override
-    public int getSkillRow() {
-        return 1;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 3;
-    }
-
-    @Override
     public boolean hasSubscription() {
         return true;
     }
 
     @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.fiveLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public byte getSkillType() {
         return 0;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[] {"levelup:sprintspeed"};
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 5;
     }
 
     @Override
@@ -59,6 +32,7 @@ public class FallDamageBonus extends BaseSkill {
 
     @SubscribeEvent
     public void reduceFallDamage(TickEvent.PlayerTickEvent evt) {
+        if (!isActive()) return;
         if (evt.phase == TickEvent.Phase.START) {
             int skill = SkillRegistry.getSkillLevel(evt.player, getSkillName());
             if (skill > 0) {

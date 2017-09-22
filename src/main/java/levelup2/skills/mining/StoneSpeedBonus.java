@@ -17,6 +17,7 @@ public class StoneSpeedBonus extends MiningSpeedBonus {
 
     @SubscribeEvent
     public void onBreak(PlayerEvent.BreakSpeed evt) {
+        if (!isActive()) return;
         EntityPlayer player = evt.getEntityPlayer();
         if (player != null) {
             int skill = SkillRegistry.getSkillLevel(evt.getEntityPlayer(), getSkillName());
@@ -28,16 +29,6 @@ public class StoneSpeedBonus extends MiningSpeedBonus {
                 }
             }
         }
-    }
-
-    @Override
-    public int getSkillRow() {
-        return 0;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 1;
     }
 
     @Override

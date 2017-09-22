@@ -27,40 +27,13 @@ public class DiggingTreasureBonus extends BaseSkill {
     }
 
     @Override
-    public int getSkillRow() {
-        return 1;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 4;
-    }
-
-    @Override
     public boolean hasSubscription() {
         return true;
     }
 
     @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.fiveLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public byte getSkillType() {
         return 0;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[] {"levelup:flintloot"};
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 5;
     }
 
     @Override
@@ -70,6 +43,7 @@ public class DiggingTreasureBonus extends BaseSkill {
 
     @SubscribeEvent
     public void dirtLooting(BlockEvent.HarvestDropsEvent evt) {
+        if (!isActive()) return;
         if (evt.getHarvester() != null && !evt.getWorld().isRemote) {
             IBlockState state = evt.getState();
             Random rand = evt.getHarvester().getRNG();

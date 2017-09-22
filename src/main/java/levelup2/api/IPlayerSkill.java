@@ -9,6 +9,8 @@ public interface IPlayerSkill {
 
     int getLevelCost(int currentLevel);
 
+    void setLevelCosts(int[] levels);
+
     /**
     *0: Mining; 1: Crafting; 2: Combat
      */
@@ -16,9 +18,15 @@ public interface IPlayerSkill {
 
     String[] getPrerequisites();
 
+    void setPrerequisites(String[] prereqs);
+
     int getSkillColumn();
 
+    void setSkillColumn(int column);
+
     int getSkillRow();
+
+    void setSkillRow(int row);
 
     /**
      * The ItemStack that renders in the GUI
@@ -29,4 +37,16 @@ public interface IPlayerSkill {
     boolean isMaxLevel(int level);
 
     int getMaxLevel();
+
+    boolean isEnabled();
+
+    void setEnabled(boolean enabled);
+
+    String getJsonLocation();
+
+    boolean hasExternalJson();
+
+    boolean isActive();
+
+    void setActive(boolean active);
 }

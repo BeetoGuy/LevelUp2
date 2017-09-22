@@ -21,40 +21,13 @@ public class WoodcuttingBonus extends BaseSkill {
     }
 
     @Override
-    public int getSkillRow() {
-        return 1;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 2;
-    }
-
-    @Override
     public boolean hasSubscription() {
         return true;
     }
 
     @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.fiveLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public byte getSkillType() {
         return 0;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[] {"levelup:woodcutting"};
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 5;
     }
 
     @Override
@@ -64,6 +37,7 @@ public class WoodcuttingBonus extends BaseSkill {
 
     @SubscribeEvent
     public void onHarvest(BlockEvent.HarvestDropsEvent evt) {
+        if (!isActive()) return;
         if (evt.getHarvester() != null && !evt.getWorld().isRemote) {
             int skill = SkillRegistry.getSkillLevel(evt.getHarvester(), getSkillName());
             IBlockState state = evt.getState();

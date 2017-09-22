@@ -25,33 +25,6 @@ public class StealthDamage extends BaseSkill {
     }
 
     @Override
-    public int getSkillColumn() {
-        return 3;
-    }
-
-    @Override
-    public int getSkillRow() {
-        return 1;
-    }
-
-    @Override
-    public String[] getPrerequisites() {
-        return new String[] {"levelup:stealth"};
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 5;
-    }
-
-    @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.fiveLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public ItemStack getRepresentativeStack() {
         return new ItemStack(Items.POISONOUS_POTATO);
     }
@@ -63,6 +36,7 @@ public class StealthDamage extends BaseSkill {
 
     @SubscribeEvent
     public void onDamage(LivingHurtEvent evt) {
+        if (!isActive()) return;
         DamageSource src = evt.getSource();
         float dmg = evt.getAmount();
         if (src.getTrueSource() instanceof EntityPlayer) {

@@ -19,16 +19,6 @@ public class StealthSpeed extends BaseSkill {
     }
 
     @Override
-    public int getSkillRow() {
-        return 2;
-    }
-
-    @Override
-    public int getSkillColumn() {
-        return 3;
-    }
-
-    @Override
     public byte getSkillType() {
         return 2;
     }
@@ -39,29 +29,13 @@ public class StealthSpeed extends BaseSkill {
     }
 
     @Override
-    public String[] getPrerequisites() {
-        return new String[] {"levelup:stealth", "levelup:fallprotect"};
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 10;
-    }
-
-    @Override
-    public int getLevelCost(int currentLevel) {
-        if (currentLevel >= 0 && currentLevel < getMaxLevel())
-            return Library.tenLevels[currentLevel];
-        return -1;
-    }
-
-    @Override
     public ItemStack getRepresentativeStack() {
         return new ItemStack(Items.LEATHER_BOOTS);
     }
 
     @SubscribeEvent
     public void onPlayerSneak(TickEvent.PlayerTickEvent evt) {
+        if (!isActive()) return;
         if (evt.phase == TickEvent.Phase.START) {
             int skill = SkillRegistry.getSkillLevel(evt.player, getSkillName());
             if (skill > 0) {

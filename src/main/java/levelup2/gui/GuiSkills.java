@@ -272,7 +272,7 @@ public class GuiSkills extends GuiScreen {
         this.mc.getTextureManager().bindTexture(BACKGROUND);
 
         for (IPlayerSkill skill : SkillRegistry.getSkillRegistry()) {
-            if (skill.getSkillType() == this.skillTree) {
+            if (skill.getSkillType() == this.skillTree && skill.isEnabled()) {
                 List<IPlayerSkill> prerequisite = getPrerequisiteSkills(skill);
                 if (!prerequisite.isEmpty()) {
                     int skillX = skill.getSkillColumn() * 32 - x + 11;
@@ -296,7 +296,7 @@ public class GuiSkills extends GuiScreen {
         GlStateManager.enableRescaleNormal();
         GlStateManager.enableColorMaterial();
         for (IPlayerSkill check : SkillRegistry.getSkillRegistry()) {
-            if (check.getSkillType() == this.skillTree) {
+            if (check.getSkillType() == this.skillTree && check.isEnabled()) {
                 int checkX = check.getSkillColumn() * 32 - x;
                 int checkY = ((check.getSkillRow() * 32) - 160) - y;
                 if (checkX >= -24 && checkY >= -24 && checkX <= 224 && checkY <= 155) {
@@ -420,7 +420,7 @@ public class GuiSkills extends GuiScreen {
         if (hasPrerequisites(skill)) {
             for (String name : skill.getPrerequisites()) {
                 IPlayerSkill check = getSkillFromName(name);
-                if (check != null)
+                if (check != null && check.isEnabled())
                     skills.add(check);
             }
         }

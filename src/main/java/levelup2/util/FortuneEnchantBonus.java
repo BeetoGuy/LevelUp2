@@ -28,9 +28,9 @@ public class FortuneEnchantBonus extends LootFunction {
 
     @Override
     public ItemStack apply(ItemStack stack, Random rand, LootContext context) {
-        Entity entity = context.getKiller();
+        Entity entity = context.getKillerPlayer();
 
-        if (entity instanceof EntityLivingBase) {
+        if (entity != null && entity instanceof EntityLivingBase) {
             int i = EnchantmentHelper.getMaxEnchantmentLevel(Enchantment.getEnchantmentByLocation("fortune"), (EntityLivingBase)entity);
 
             if (i == 0)
