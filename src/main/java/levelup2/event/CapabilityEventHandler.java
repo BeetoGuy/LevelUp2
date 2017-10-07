@@ -76,7 +76,8 @@ public class CapabilityEventHandler {
             SkillRegistry.loadPlayer(evt.player);
             SkillPacketHandler.configChannel.sendTo(SkillPacketHandler.getConfigPacket(LevelUpConfig.getServerProperties()), (EntityPlayerMP)evt.player);
             for (IPlayerSkill skill : SkillRegistry.getSkillRegistry()) {
-                SkillPacketHandler.propertyChannel.sendTo(SkillPacketHandler.getPropertyPackets(skill), (EntityPlayerMP)evt.player);
+                if (skill.hasExternalJson())
+                    SkillPacketHandler.propertyChannel.sendTo(SkillPacketHandler.getPropertyPackets(skill), (EntityPlayerMP)evt.player);
             }
             SkillPacketHandler.refreshChannel.sendTo(SkillPacketHandler.getRefreshPacket(), (EntityPlayerMP)evt.player);
         }

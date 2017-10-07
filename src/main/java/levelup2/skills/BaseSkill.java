@@ -8,12 +8,12 @@ public abstract class BaseSkill implements IPlayerSkill {
     private String[] prereqs = {};
     private int column = 0;
     private int row = 0;
-    private boolean enabled = false;
-    private boolean active = false;
+    private boolean enabled = true;
+    private boolean active = true;
 
     @Override
-    public void setLevelCosts(int[] levels) {
-        this.skillLevels = levels;
+    public void setLevelCosts(int[] levelCosts) {
+        skillLevels = levelCosts;
     }
 
     @Override
@@ -24,8 +24,8 @@ public abstract class BaseSkill implements IPlayerSkill {
     }
 
     @Override
-    public void setPrerequisites(String[] prereqs) {
-        this.prereqs = prereqs;
+    public void setPrerequisites(String[] prerequisites) {
+        prereqs = prerequisites;
     }
 
     @Override
@@ -59,8 +59,8 @@ public abstract class BaseSkill implements IPlayerSkill {
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setEnabled(boolean isEnabled) {
+        enabled = isEnabled;
     }
 
     @Override
@@ -91,7 +91,7 @@ public abstract class BaseSkill implements IPlayerSkill {
     }
 
     @Override
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setActive(boolean isActive) {
+        active = isActive;
     }
 }

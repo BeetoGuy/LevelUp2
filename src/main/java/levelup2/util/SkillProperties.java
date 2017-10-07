@@ -88,7 +88,7 @@ public class SkillProperties {
 
     public static void fromNBT(NBTTagCompound tag) {
         IPlayerSkill skill = SkillRegistry.getSkillFromName(tag.getString("name"));
-        if (skill != null) {
+        if (skill != null && skill.hasExternalJson()) {
             if (tag.hasKey("levels"))
                 skill.setLevelCosts(tag.getIntArray("levels"));
             else skill.setLevelCosts(new int[0]);
