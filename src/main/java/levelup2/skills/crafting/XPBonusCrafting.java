@@ -63,12 +63,13 @@ public class XPBonusCrafting extends BaseSkill {
         boolean notSame = false;
         ItemStack firstStack = ItemStack.EMPTY;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
-            if (!inv.getStackInSlot(i).isEmpty()) {
+            if (!inv.getStackInSlot(i).isEmpty() && !inv.getStackInSlot(i).getItem().hasContainerItem(inv.getStackInSlot(i))) {
                 if (firstStack.isEmpty()) {
                     firstStack = inv.getStackInSlot(i).copy();
                 }
-                else if (!firstStack.isItemEqual(inv.getStackInSlot(i)))
+                else if (!firstStack.isItemEqual(inv.getStackInSlot(i))) {
                     notSame = true;
+                }
             }
         }
         return notSame;
@@ -77,7 +78,7 @@ public class XPBonusCrafting extends BaseSkill {
     private int getCraftingItems(IInventory inv) {
         List<ItemStack> items = new ArrayList<>();
         for (int i = 0; i < inv.getSizeInventory(); i++) {
-            if (!inv.getStackInSlot(i).isEmpty()) {
+            if (!inv.getStackInSlot(i).isEmpty() && !inv.getStackInSlot(i).getItem().hasContainerItem(inv.getStackInSlot(i))) {
                 ItemStack stack = inv.getStackInSlot(i).copy();
                 stack.setCount(1);
                 if (items.isEmpty())
