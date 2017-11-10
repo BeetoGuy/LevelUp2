@@ -3,6 +3,7 @@ package levelup2.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -16,6 +17,7 @@ public class GuiImage extends GuiButton {
     private static ResourceLocation BUTTON_IMAGE;
     private ItemStack repStack;
     private String type;
+    public boolean selected = false;
 
     public GuiImage(int buttonID, int x, int y, int width, int height, String type) {
         super(buttonID, x, y, width, height, "");
@@ -26,12 +28,7 @@ public class GuiImage extends GuiButton {
 
     @Override
     protected int getHoverState(boolean mouseOver) {
-        int i = 1;
-        if (!this.enabled)
-            i = 0;
-        else if (mouseOver)
-            i = 2;
-        return i;
+        return this.selected ? 1 : mouseOver ? 2 : 0;
     }
 
     @Override
@@ -45,10 +42,16 @@ public class GuiImage extends GuiButton {
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             if (i > 0)
-                this.drawTexturedModalRect(this.x, this.y, (i - 1) * this.width, 0, this.width, this.height);
+                this.drawTexturedModalRect(this.x, this.y, (i - 1) * this.width, i == 1 ? this.height : 0, this.width, this.height);
             else
-                this.drawTexturedModalRect(this.x, this.y, this.width * 2, 0, this.width, this.height);
-            mc.getRenderItem().renderItemIntoGUI(repStack, this.x + (this.width / 2) - 8, this.y + (this.height / 2) - 8);
+                this.drawTexturedModalRect(this.x, this.y, 0, 0, this.width, this.height);
+            GlStateManager.pushMatrix();
+            {
+                GlStateManager.scale(2, 2, 2);
+                RenderHelper.enableGUIStandardItemLighting();
+                mc.getRenderItem().renderItemIntoGUI(repStack, (this.x + (this.width / 4) + 8) / 2, this.y + (this.height / 8) - 16);
+            }
+            GlStateManager.popMatrix();
             String locName = I18n.format("skill.levelup:" + type + "_bonus.short");
             this.drawCenteredString(mc.fontRenderer, locName, this.x + this.width / 2, this.y + 20, this.hovered ? 0xFBFD6F : 0xF9F9F9);
             this.drawCenteredString(mc.fontRenderer, I18n.format("skill.levelup:" + type + ".desc"), this.x + this.width / 2, this.y + this.height - 20, this.hovered ? 0xFBFD6F : 0xF9F9F9);

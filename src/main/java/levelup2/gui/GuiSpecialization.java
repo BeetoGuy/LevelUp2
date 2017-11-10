@@ -54,6 +54,13 @@ public class GuiSpecialization extends GuiScreen {
             mc.setIngameFocus();
         } else {
             spec = (byte)(button.id - 1);
+            ((GuiImage)button).selected = true;
+            for (GuiButton b : buttonList) {
+                if (b.id == 0 || b.id == 4) continue;
+                GuiImage img = (GuiImage)b;
+                if (img.id != button.id && img.selected)
+                    img.selected = false;
+            }
         }
     }
 }
