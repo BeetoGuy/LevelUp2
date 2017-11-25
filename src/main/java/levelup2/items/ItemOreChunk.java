@@ -1,5 +1,6 @@
 package levelup2.items;
 
+import levelup2.config.LevelUpConfig;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -24,7 +25,7 @@ public class ItemOreChunk extends Item {
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
-        if (!oreTypes.get(0).equals("null") && this.isInCreativeTab(tab)) {
+        if (!oreTypes.get(0).equals("null") && this.isInCreativeTab(tab) && LevelUpConfig.useOreChunks) {
             for (int i = 0; i < oreTypes.size(); i++)
                 list.add(new ItemStack(this, 1, i));
         }

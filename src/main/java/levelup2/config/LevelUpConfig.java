@@ -18,6 +18,7 @@ public class LevelUpConfig {
     private static boolean resetJsonFiles = false;
     public static boolean damageScaling = false;
     public static boolean alwaysDropChunks = false;
+    public static boolean useOreChunks = true;
     public static List<String> cropBlacklist;
     public static List<String> oreList;
     private static String[] ores = {"oreCoal", "oreIron", "oreGold", "oreDiamond", "oreEmerald", "oreRedstone", "oreLapis", "oreCopper", "oreTin"};
@@ -59,7 +60,8 @@ public class LevelUpConfig {
                 cfg.get(Configuration.CATEGORY_GENERAL, "Reset class on death", resetClassOnDeath, "Does the player lose all levels on death?"),
                 cfg.get(Configuration.CATEGORY_GENERAL, "Furnace ejects bonus items", furnaceEjection, "Does the furnace eject doubled items?"),
                 cfg.get(Configuration.CATEGORY_GENERAL, "Sword skill damage scaling", damageScaling, "Get additional attack power if a mob's max HP is over 20"),
-                cfg.get(Configuration.CATEGORY_GENERAL, "Always drop ore chunks", alwaysDropChunks, "Always drop ore chunks on ore harvest")
+                cfg.get(Configuration.CATEGORY_GENERAL, "Always drop ore chunks", alwaysDropChunks, "Always drop ore chunks on ore harvest"),
+                cfg.get(Configuration.CATEGORY_GENERAL, "Break ores into chunks", useOreChunks, "Use ore chunks for ore doubling")
         };
         cropBlacklist = Arrays.asList(cfg.getStringList("Crops for farming", "Blacklist", new String[] {""}, "Crops that won't be affected by farming growth skill, uses internal block name. No sync to client required."));
         oreList = Arrays.asList(cfg.get(Configuration.CATEGORY_GENERAL, "Surface Ores to double", ores, "Ores that double from mining efficiency").getStringList());
@@ -96,6 +98,7 @@ public class LevelUpConfig {
         furnaceEjection = serverProperties[1].getBoolean();
         damageScaling = serverProperties[2].getBoolean();
         alwaysDropChunks = serverProperties[3].getBoolean();
+        useOreChunks = serverProperties[4].getBoolean();
     }
 
     private static List<Integer> getColorsFromProperty(Property prop) {
