@@ -25,7 +25,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -78,6 +77,11 @@ public class LevelUp2 {
         public static void registerRecipes(RegistryEvent.Register<IRecipe> evt) {
             IForgeRegistry<IRecipe> reg = evt.getRegistry();
             reg.register(new ShapelessOreRecipe(new ResourceLocation("levelup2", "reclaim"), new ItemStack(Blocks.GRAVEL, 4), Items.FLINT, Items.FLINT, Items.FLINT, Items.FLINT).setRegistryName(new ResourceLocation("levelup2", "gravel")));
+            oreLoad(reg);
+            SkillRegistry.initPlankCache();
+        }
+
+        public static void oreLoad(IForgeRegistry<IRecipe> reg) {
             if (!SkillRegistry.isNullList(LevelUpConfig.oreList)) {
                 registerOreRecipes(reg, LevelUpConfig.oreList, SkillRegistry.surfaceOreChunk);
             }
@@ -87,7 +91,6 @@ public class LevelUp2 {
             if (!SkillRegistry.isNullList(LevelUpConfig.endOreList)) {
                 registerOreRecipes(reg, LevelUpConfig.endOreList, SkillRegistry.endOreChunk);
             }
-            SkillRegistry.initPlankCache();
         }
 
         public static void registerItem(IForgeRegistry<Item> reg, Item item) {
@@ -99,11 +102,11 @@ public class LevelUp2 {
                 String names = ores.get(i);
                 if (OreDictionary.doesOreNameExist(names)) {
                     ItemStack ore = SkillRegistry.getOreEntry(names);
+                    ItemStack chunk = new ItemStack(item, 1, i);
                     if (!ore.isEmpty()) {
-                        ItemStack chunk = new ItemStack(item, 1, i);
                         reg.register(new ShapelessOreRecipe(new ResourceLocation("levelup2", "orechunk"), ore.copy(), chunk, chunk).setRegistryName("levelup2", names.toLowerCase()));
-                        OreDictionary.registerOre(names, chunk);
                     }
+                    OreDictionary.registerOre(names, chunk);
                 }
             }
         }
