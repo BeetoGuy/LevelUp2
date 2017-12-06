@@ -111,7 +111,7 @@ public class SkillRegistry {
             Library.assignExperienceValues(LevelUpConfig.oreList, LevelUpConfig.oreExperience);
             registerSmelting(LevelUpConfig.oreList, surfaceOreChunk);
             //registerCrafting(LevelUpConfig.oreList, surfaceOreChunk);
-            Library.registerOres(LevelUpConfig.oreList);
+            //Library.registerOres(LevelUpConfig.oreList);
             if (LevelUpConfig.oreList.contains("oreRedstone"))
                 Library.getOreList().add(Blocks.LIT_REDSTONE_ORE);
         }
@@ -121,7 +121,7 @@ public class SkillRegistry {
             Library.assignExperienceValues(LevelUpConfig.netherOreList, LevelUpConfig.netherOreExperience);
             registerSmelting(LevelUpConfig.netherOreList, netherOreChunk);
             //registerCrafting(LevelUpConfig.netherOreList, netherOreChunk);
-            Library.registerOres(LevelUpConfig.netherOreList);
+            //Library.registerOres(LevelUpConfig.netherOreList);
         }
         if (!isNullList(LevelUpConfig.endOreList)) {
             Library.registerOreToChunk(LevelUpConfig.endOreList, endOreChunk);
@@ -129,8 +129,24 @@ public class SkillRegistry {
             Library.assignExperienceValues(LevelUpConfig.endOreList, LevelUpConfig.endOreExperience);
             registerSmelting(LevelUpConfig.endOreList, endOreChunk);
             //registerCrafting(LevelUpConfig.endOreList, endOreChunk);
-            Library.registerOres(LevelUpConfig.endOreList);
+            //Library.registerOres(LevelUpConfig.endOreList);
         }
+        List<String> names = new ArrayList<>();
+        if (LevelUpConfig.dupeAllOres) {
+            for (String name : OreDictionary.getOreNames()) {
+                if (name.startsWith("ore")) {
+                    names.add(name);
+                }
+                if (!Library.getOreList().contains(Blocks.LIT_REDSTONE_ORE))
+                    Library.getOreList().add(Blocks.LIT_REDSTONE_ORE);
+            }
+        }
+        else {
+            names.addAll(LevelUpConfig.oreList);
+            names.addAll(LevelUpConfig.netherOreList);
+            names.addAll(LevelUpConfig.endOreList);
+        }
+        Library.registerOres(names);
     }
 
     private static void registerSmelting(List<String> ores, Item item) {
