@@ -16,6 +16,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
@@ -64,6 +66,7 @@ public class StoneMiningBonus extends BaseSkill {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void addTooltip(ItemTooltipEvent evt) {
         ItemStack stack = evt.getItemStack();
