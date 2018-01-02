@@ -2,6 +2,7 @@ package levelup2.proxy;
 
 import levelup2.config.LevelUpConfig;
 import levelup2.event.KeybindEventHandler;
+import levelup2.gui.GuiSpecialization;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -28,6 +29,11 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerItemMeshes() {
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @Override
+    public void openSpecializationGui() {
+        Minecraft.getMinecraft().displayGuiScreen(GuiSpecialization.withRespec());
     }
 
     @SubscribeEvent

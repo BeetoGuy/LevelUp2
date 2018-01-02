@@ -1,8 +1,7 @@
 package levelup2.items;
 
+import levelup2.LevelUp2;
 import levelup2.config.LevelUpConfig;
-import levelup2.gui.GuiSpecialization;
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -25,7 +24,7 @@ public class ItemRespecBook extends Item {
 
         if (world.isRemote) {
             if (player.experienceLevel >= LevelUpConfig.reclassCost) {
-                Minecraft.getMinecraft().displayGuiScreen(GuiSpecialization.withRespec());
+                LevelUp2.proxy.openSpecializationGui(); //Minecraft.getMinecraft().displayGuiScreen(GuiSpecialization.withRespec());
                 return new ActionResult<>(EnumActionResult.SUCCESS, stack);
             } else {
                 player.sendStatusMessage(new TextComponentTranslation("levelup.respec.lowlevel", LevelUpConfig.reclassCost), true);

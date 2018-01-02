@@ -14,4 +14,6 @@ public class CommonProxy {
     public void registerItemMeshes() {}
 
     public void registerColors() {}
+
+    public void openSpecializationGui() {}
 }
