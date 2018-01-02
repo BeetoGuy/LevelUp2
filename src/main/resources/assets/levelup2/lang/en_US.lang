@@ -57,6 +57,7 @@ levelup:fishbonus.desc.1=+5 percent chance per level.
 
 item.levelup:orechunk.name=%s Chunk
 item.levelup:orechunk_null.name=Ore Chunk
+item.levelup:respec.name=Book of Specialization Change
 
 skill.levelup:mining_bonus.short=Mining
 skill.levelup:craft_bonus.short=Crafting
@@ -103,6 +104,7 @@ flag.noplace=Cannot be placed
 levelup.interact.register=Machine bound to %s
 levelup.interact.unregister=Machine unbound from %s
 levelup.interact.notowned=Machine is registered to %s
+levelup.respec.lowlevel=§eLevel too low, must be %s §r
 
 sneak.attack=Sneak attack for %d x damage!
 level.invalid=§e§l[Level Up!]§r§e You must reach level 5 before choosing a specialization.§r

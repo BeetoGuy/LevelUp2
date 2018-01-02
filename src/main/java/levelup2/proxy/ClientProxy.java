@@ -35,6 +35,7 @@ public class ClientProxy extends CommonProxy {
         setModelLocation(SkillRegistry.surfaceOreChunk, "inventory");
         setModelLocation(SkillRegistry.netherOreChunk, "inventory");
         setModelLocation(SkillRegistry.endOreChunk, "inventory");
+        setModelLocation(SkillRegistry.respecBook, "inventory");
     }
 
     private void setModelLocation(Item item, String variantSettings) {

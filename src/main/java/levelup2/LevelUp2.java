@@ -71,6 +71,7 @@ public class LevelUp2 {
             registerItem(reg, SkillRegistry.surfaceOreChunk);
             registerItem(reg, SkillRegistry.netherOreChunk);
             registerItem(reg, SkillRegistry.endOreChunk);
+            registerItem(reg, SkillRegistry.respecBook);
         }
 
         @SubscribeEvent

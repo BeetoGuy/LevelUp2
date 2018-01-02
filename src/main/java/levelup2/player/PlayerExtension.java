@@ -104,11 +104,17 @@ public final class PlayerExtension implements IPlayerClass {
             switch (spec) {
                 case 0:
                     setSkillLevel("levelup:mining_bonus", 1);
+                    setSkillLevel("levelup:craft_bonus", 0);
+                    setSkillLevel("levelup:combat_bonus", 0);
                     break;
                 case 1:
+                    setSkillLevel("levelup:mining_bonus", 0);
                     setSkillLevel("levelup:craft_bonus", 1);
+                    setSkillLevel("levelup:combat_bonus", 0);
                     break;
                 case 2:
+                    setSkillLevel("levelup:mining_bonus", 0);
+                    setSkillLevel("levelup:craft_bonus", 0);
                     setSkillLevel("levelup:combat_bonus", 1);
                     break;
             }

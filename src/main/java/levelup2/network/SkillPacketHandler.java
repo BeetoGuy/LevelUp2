@@ -11,6 +11,7 @@ import levelup2.skills.SkillRegistry;
 import levelup2.util.SkillProperties;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -55,7 +56,7 @@ public class SkillPacketHandler {
         ByteBuf in = evt.getPacket().payload();
         EntityPlayerMP player = ((NetHandlerPlayServer)evt.getHandler()).player;
         if (evt.getPacket().channel().equals(CHANNELS[1])) {
-            addTask(evt.getHandler(), () -> handleClassChange(in.readByte(), player));
+            addTask(evt.getHandler(), () -> handleClassChange(in.readByte(), in.readBoolean(), player));
         } else if (evt.getPacket().channel().equals(CHANNELS[2])) {
             addTask(evt.getHandler(), () -> handlePacket(in, player));
         }
@@ -78,8 +79,10 @@ public class SkillPacketHandler {
         FMLCommonHandler.instance().getWorldThread(netHandler).addScheduledTask(runnable);
     }
 
-    private void handleClassChange(byte newClass, EntityPlayerMP player) {
-        if (newClass >= 0) {
+    private void handleClassChange(byte newClass, boolean reclass, EntityPlayerMP player) {
+        if (newClass >= 0 && SkillRegistry.getPlayer(player).getSpecialization() != newClass) {
+            if (LevelUpConfig.reclassCost > 0 && reclass)
+                player.addExperienceLevel(-LevelUpConfig.reclassCost);
             SkillRegistry.getPlayer(player).setSpecialization(newClass);
             SkillRegistry.loadPlayer(player);
         }
@@ -143,6 +146,11 @@ public class SkillPacketHandler {
                     }
                 }
             }
+        }
+        else if (channel == 1) {
+            if (data != null && data[0] != null && data[0] instanceof Boolean)
+                buf.writeBoolean((boolean)data[0]);
+            else buf.writeBoolean(false);
         }
         FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[channel]);
         pkt.setTarget(side);

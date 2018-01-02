@@ -45,6 +45,7 @@ public class LevelUpConfig {
     public static int uncommonChance = 15;
     public static int commonChance = 85;
     public static int combinedChance;
+    public static int reclassCost = 30;
 
     private static Property resetJson;
 
@@ -63,7 +64,8 @@ public class LevelUpConfig {
                 cfg.get(Configuration.CATEGORY_GENERAL, "Sword skill damage scaling", damageScaling, "Get additional attack power if a mob's max HP is over 20"),
                 cfg.get(Configuration.CATEGORY_GENERAL, "Always drop ore chunks", alwaysDropChunks, "Always drop ore chunks on ore harvest"),
                 cfg.get(Configuration.CATEGORY_GENERAL, "Break ores into chunks", useOreChunks, "Use ore chunks for ore doubling"),
-                cfg.get(Configuration.CATEGORY_GENERAL, "Duplicate any ore", dupeAllOres, "All ores can be doubled, even if they don't have a chunk.")
+                cfg.get(Configuration.CATEGORY_GENERAL, "Duplicate any ore", dupeAllOres, "All ores can be doubled, even if they don't have a chunk."),
+                cfg.get(Configuration.CATEGORY_GENERAL, "Reclass level cost", reclassCost, "How many levels it will cost to change classes.", 0, 100)
         };
         cropBlacklist = Arrays.asList(cfg.getStringList("Crops for farming", "Blacklist", new String[] {""}, "Crops that won't be affected by farming growth skill, uses internal block name. No sync to client required."));
         oreList = Arrays.asList(cfg.get(Configuration.CATEGORY_GENERAL, "Surface Ores to double", ores, "Ores that double from mining efficiency").getStringList());
@@ -102,6 +104,7 @@ public class LevelUpConfig {
         alwaysDropChunks = serverProperties[3].getBoolean();
         useOreChunks = serverProperties[4].getBoolean();
         dupeAllOres = serverProperties[5].getBoolean();
+        reclassCost = serverProperties[6].getInt();
     }
 
     private static List<Integer> getColorsFromProperty(Property prop) {

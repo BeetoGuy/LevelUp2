@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "levelup2:respecbook"
+  },
+  "pattern": [
+    " P ",
+    "OBO"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "P": {
+      "item": "minecraft:diamond_pickaxe"
+    },
+    "O": {
+      "ore": "obsidian",
+      "type": "forge:ore_dict"
+    },
+    "B": {
+      "item": "minecraft:book"
+    }
+  }
+}
