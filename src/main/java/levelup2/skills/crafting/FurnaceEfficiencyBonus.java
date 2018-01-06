@@ -23,6 +23,10 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class FurnaceEfficiencyBonus extends BaseSkill {
 
     @Override
@@ -138,13 +142,17 @@ public class FurnaceEfficiencyBonus extends BaseSkill {
     public void doFurnaceTicks(TickEvent.WorldTickEvent evt) {
         if (evt.phase == TickEvent.Phase.START) {
             if (!evt.world.isRemote) {
-                for (TileEntity tile : evt.world.tickableTileEntities) {
-                    if (tile.hasCapability(PlayerCapability.MACHINE_PROCESSING, null)) {
-                        IProcessor cap = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, null);
+                try {
+                    List<TileEntity> tiles = evt.world.loadedTileEntityList.stream().filter(t -> t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
+                    tiles.forEach(t -> {
+                        IProcessor cap = t.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP);
                         if (cap != null && cap.getPlayerFromUUID() != null) {
                             cap.extraProcessing(cap.getPlayerFromUUID());
                         }
-                    }
+                    });
+                }
+                catch (ConcurrentModificationException e) {
+                    e.printStackTrace();
                 }
             }
         }
