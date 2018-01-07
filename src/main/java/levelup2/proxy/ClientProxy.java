@@ -2,6 +2,7 @@ package levelup2.proxy;
 
 import levelup2.config.LevelUpConfig;
 import levelup2.event.KeybindEventHandler;
+import levelup2.gui.GuiSpecialization;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -25,10 +26,16 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
+    public void openSpecializationGui() {
+        Minecraft.getMinecraft().displayGuiScreen(GuiSpecialization.withRespec());
+    }
+
+    @Override
     public void registerItemMeshes() {
         setModelLocation(SkillRegistry.surfaceOreChunk, "inventory");
         setModelLocation(SkillRegistry.netherOreChunk, "inventory");
         setModelLocation(SkillRegistry.endOreChunk, "inventory");
+        setModelLocation(SkillRegistry.respecBook, "inventory");
     }
 
     private void setModelLocation(Item item, String variantSettings) {

@@ -4,6 +4,7 @@ import levelup2.api.IPlayerSkill;
 import levelup2.capability.PlayerCapability;
 import levelup2.config.LevelUpConfig;
 import levelup2.items.ItemOreChunk;
+import levelup2.items.ItemRespecBook;
 import levelup2.network.SkillPacketHandler;
 import levelup2.player.IPlayerClass;
 import levelup2.skills.combat.*;
@@ -45,11 +46,13 @@ public class SkillRegistry {
     public static Item surfaceOreChunk = new ItemOreChunk(LevelUpConfig.oreList).setUnlocalizedName("levelup:surfaceore").setRegistryName(new ResourceLocation("levelup2", "surfaceore"));
     public static Item netherOreChunk = new ItemOreChunk(LevelUpConfig.netherOreList).setUnlocalizedName("levelup:netherore").setRegistryName(new ResourceLocation("levelup2", "netherore"));
     public static Item endOreChunk = new ItemOreChunk(LevelUpConfig.endOreList).setUnlocalizedName("levelup:endore").setRegistryName(new ResourceLocation("levelup2", "endore"));
+    public static Item respecBook = new ItemRespecBook().setUnlocalizedName("levelup:respec").setRegistryName(new ResourceLocation("levelup2", "respecbook"));
 
     public static void initItems() {
         GameRegistry.register(surfaceOreChunk);
         GameRegistry.register(netherOreChunk);
         GameRegistry.register(endOreChunk);
+        GameRegistry.register(respecBook);
     }
 
     public static void loadSkills() {
@@ -122,6 +125,7 @@ public class SkillRegistry {
             registerCrafting(LevelUpConfig.endOreList, endOreChunk);
             Library.registerOres(LevelUpConfig.endOreList);
         }
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(respecBook), " P ", "OBO", 'P', Items.DIAMOND_PICKAXE, 'O', "obsidian", 'B', Items.BOOK));
     }
 
     private static void registerSmelting(List<String> ores, Item item) {

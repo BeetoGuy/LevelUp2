@@ -84,6 +84,16 @@ public class Library {
         return null;
     }
 
+    public static boolean isOre(ItemStack blockStack) {
+        for (String oreName : OreDictionary.getOreNames()) {
+            if (oreName.startsWith("ore")) {
+                if (OreDictionary.containsMatch(false, OreDictionary.getOres(oreName), blockStack))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public static void registerOreToChunk(List<String> ores, Item item) {
         for (int i = 0; i < ores.size(); i++) {
             oreToChunk.put(ores.get(i), new ItemStack(item, 2, i));

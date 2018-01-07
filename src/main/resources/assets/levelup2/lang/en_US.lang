@@ -34,6 +34,7 @@ levelup:fishbonus.desc=Chance of hooking something extra when fishing.
 
 item.levelup:orechunk.name=%s Chunk
 item.levelup:orechunk_null.name=Ore Chunk
+item.levelup:respec.name=Book of Specialization Change
 
 skill.levelup:mining_bonus.short=Mining
 skill.levelup:craft_bonus.short=Crafting
@@ -74,10 +75,12 @@ gui.levelup.skillmenu.1=Crafting
 gui.levelup.skillmenu.2=Combat
 gui.levelup.budget=Levels spent: %s
 levelup.prereq=Prerequisites: %s
+flag.noplace=Cannot be placed
 
 levelup.interact.register=Machine bound to %s
 levelup.interact.unregister=Machine unbound from %s
 levelup.interact.notowned=Machine is registered to %s
+levelup.respec.lowlevel=§eLevel too low, must be %s §r
 
 sneak.attack=Sneak attack for %d x damage!
 level.invalid=§e§l[Level Up!]§r§e You must reach level 5 before choosing a specialization.§r

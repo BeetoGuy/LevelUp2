@@ -9,7 +9,14 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class GuiSpecialization extends GuiScreen {
     private boolean closedWithButton = false;
+    private boolean isRespec = false;
     private byte spec = -1;
+
+    public static GuiSpecialization withRespec() {
+        GuiSpecialization spec = new GuiSpecialization();
+        spec.isRespec = true;
+        return spec;
+    }
 
     @Override
     public boolean doesGuiPauseGame() {
@@ -37,7 +44,7 @@ public class GuiSpecialization extends GuiScreen {
     @Override
     public void onGuiClosed() {
         if (closedWithButton && spec != -1) {
-            FMLProxyPacket pkt = SkillPacketHandler.getPacket(Side.SERVER, 1, spec);
+            FMLProxyPacket pkt = SkillPacketHandler.getPacket(Side.SERVER, 1, spec, isRespec);
             SkillPacketHandler.classChannel.sendToServer(pkt);
         }
     }

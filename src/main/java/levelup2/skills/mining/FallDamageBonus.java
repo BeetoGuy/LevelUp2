@@ -3,10 +3,12 @@ package levelup2.skills.mining;
 import levelup2.skills.BaseSkill;
 import levelup2.skills.SkillRegistry;
 import levelup2.util.Library;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class FallDamageBonus extends BaseSkill {
 
@@ -58,13 +60,12 @@ public class FallDamageBonus extends BaseSkill {
     }
 
     @SubscribeEvent
-    public void reduceFallDamage(TickEvent.PlayerTickEvent evt) {
-        if (evt.phase == TickEvent.Phase.START) {
-            int skill = SkillRegistry.getSkillLevel(evt.player, getSkillName());
+    public void reduceFallDamage(LivingHurtEvent evt) {
+        if (evt.getSource() == DamageSource.FALL && evt.getEntityLiving() instanceof EntityPlayer) {
+            int skill = SkillRegistry.getSkillLevel(((EntityPlayer)evt.getEntityLiving()), getSkillName());
             if (skill > 0) {
-                if (evt.player.fallDistance > 0) {
-                    evt.player.fallDistance *= 1 - skill / 10F;
-                }
+                float reduction = skill * 0.1F;
+                evt.setAmount(evt.getAmount() * (1.0F - reduction));
             }
         }
     }
