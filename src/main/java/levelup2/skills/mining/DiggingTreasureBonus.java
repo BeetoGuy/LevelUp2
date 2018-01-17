@@ -9,6 +9,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -16,6 +17,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Random;
 
@@ -45,16 +47,16 @@ public class DiggingTreasureBonus extends BaseSkill {
     public void dirtLooting(BlockEvent.HarvestDropsEvent evt) {
         if (!isActive()) return;
         if (evt.getHarvester() != null && !evt.getWorld().isRemote) {
-            IBlockState state = evt.getState();
             Random rand = evt.getHarvester().getRNG();
             int skill = SkillRegistry.getSkillLevel(evt.getHarvester(), getSkillName());
             if (skill > 0 && !evt.isSilkTouching()) {
-                if (state.getMaterial() == Material.GROUND) {
+                if (!evt.getDrops().isEmpty() && SkillRegistry.listContains(evt.getDrops().get(0), OreDictionary.getOres("dirt"))) {
+                    ItemStack drop = evt.getDrops().get(0).copy();
                     if (rand.nextFloat() <= skill / 20F) {
                         ItemStack loot = getDigLoot(evt.getHarvester());
                         System.out.println("ItemStack: " + loot.toString());
                         if (!loot.isEmpty()) {
-                            Library.removeFromList(evt.getDrops(), new ItemStack(state.getBlock(), 1, state.getBlock().damageDropped(state)));
+                            Library.removeFromList(evt.getDrops(), drop);
                             evt.getDrops().add(loot.copy());
                         }
                     }
