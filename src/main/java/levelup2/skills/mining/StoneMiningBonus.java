@@ -80,10 +80,11 @@ public class StoneMiningBonus extends BaseSkill {
         if (!Library.getOreList().isEmpty()) {
             if (Library.getOreList().contains(state.getBlock())) {
                 if (rand.nextDouble() <= skill / 20D) {
+                    int fortuneBonus = LevelUpConfig.fortuneOre && evt.getFortuneLevel() > 0 ? rand.nextInt(evt.getFortuneLevel() + 1) : 0;
                     boolean foundBlock = false;
                     for (ItemStack stack : evt.getDrops()) {
                         if (!stack.isEmpty() && state.getBlock() == Block.getBlockFromItem(stack.getItem())) {
-                            ItemStack replace = getReplacementStack(stack, true);
+                            ItemStack replace = getReplacementStack(stack, true, fortuneBonus);
                             if (!replace.isEmpty()) {
                                 Library.removeFromList(evt.getDrops(), stack);
                                 evt.getDrops().add(replace);
@@ -104,7 +105,7 @@ public class StoneMiningBonus extends BaseSkill {
                 else if (LevelUpConfig.useOreChunks && LevelUpConfig.alwaysDropChunks) {
                     for (ItemStack stack : evt.getDrops()) {
                         if (!stack.isEmpty() && state.getBlock() == Block.getBlockFromItem(stack.getItem())) {
-                            ItemStack replace = getReplacementStack(stack, false);
+                            ItemStack replace = getReplacementStack(stack, false, 0);
                             if (!replace.isEmpty() && !replace.isItemEqual(stack)) {
                                 Library.removeFromList(evt.getDrops(), stack);
                                 replace.setCount(1);
@@ -117,19 +118,21 @@ public class StoneMiningBonus extends BaseSkill {
         }
     }
 
-    private ItemStack getReplacementStack(ItemStack stack, boolean duplication) {
-        ItemStack replace = LevelUpConfig.useOreChunks ? Library.getChunkFromName(Library.getOreNameForBlock(stack)) : getDupeStack(stack, duplication);
+    private ItemStack getReplacementStack(ItemStack stack, boolean duplication, int fortune) {
+        ItemStack replace = LevelUpConfig.useOreChunks ? Library.getChunkFromName(Library.getOreNameForBlock(stack), fortune) : getDupeStack(stack, duplication, fortune);
         if (LevelUpConfig.useOreChunks && replace.isEmpty())
-            replace = getDupeStack(stack, duplication);
+            replace = getDupeStack(stack, duplication, fortune);
         return replace;
     }
 
-    private ItemStack getDupeStack(ItemStack stack, boolean duplication) {
+    private ItemStack getDupeStack(ItemStack stack, boolean duplication, int fortune) {
         if (Library.isOre(stack)) {
             ItemStack dupe = stack.copy();
             dupe.grow(stack.getCount());
-            if (duplication)
+            if (duplication) {
+                dupe.grow(fortune);
                 attachNoPlacement(dupe);
+            }
             return dupe;
         }
         return ItemStack.EMPTY;

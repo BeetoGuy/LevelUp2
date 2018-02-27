@@ -51,9 +51,12 @@ public class Library {
         return ores;
     }
 
-    public static ItemStack getChunkFromName(String oreName) {
-        if (oreToChunk.containsKey(oreName))
-            return oreToChunk.get(oreName).copy();
+    public static ItemStack getChunkFromName(String oreName, int fortune) {
+        if (oreToChunk.containsKey(oreName)) {
+            ItemStack chunk = oreToChunk.get(oreName).copy();
+            chunk.grow(fortune);
+            return chunk;
+        }
         return ItemStack.EMPTY;
     }
 
