@@ -1,9 +1,11 @@
 package levelup2.util;
 
 import com.google.common.collect.Sets;
+import levelup2.config.LevelUpConfig;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -71,6 +73,14 @@ public class Library {
                                 ores.add(block);
                         }
                     }
+                }
+            }
+        }
+        if (!LevelUpConfig.oreBlocks.isEmpty()) {
+            for (String ore : LevelUpConfig.oreBlocks) {
+                Block block = Block.REGISTRY.getObject(new ResourceLocation(ore));
+                if (block != Blocks.AIR) {
+                    ores.add(block);
                 }
             }
         }

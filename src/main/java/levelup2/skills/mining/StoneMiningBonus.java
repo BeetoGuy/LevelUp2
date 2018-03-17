@@ -9,6 +9,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -83,7 +84,7 @@ public class StoneMiningBonus extends BaseSkill {
                     int fortuneBonus = LevelUpConfig.fortuneOre && evt.getFortuneLevel() > 0 ? rand.nextInt(evt.getFortuneLevel() + 1) : 0;
                     boolean foundBlock = false;
                     for (ItemStack stack : evt.getDrops()) {
-                        if (!stack.isEmpty() && state.getBlock() == Block.getBlockFromItem(stack.getItem())) {
+                        if (!stack.isEmpty() && (state.getBlock() == Block.getBlockFromItem(stack.getItem()) || Library.isOre(stack))) {
                             ItemStack replace = getReplacementStack(stack, true, fortuneBonus);
                             if (!replace.isEmpty()) {
                                 Library.removeFromList(evt.getDrops(), stack);
@@ -131,7 +132,8 @@ public class StoneMiningBonus extends BaseSkill {
             dupe.grow(stack.getCount());
             if (duplication) {
                 dupe.grow(fortune);
-                attachNoPlacement(dupe);
+                if (stack.getItem() instanceof ItemBlock)
+                    attachNoPlacement(dupe);
             }
             return dupe;
         }

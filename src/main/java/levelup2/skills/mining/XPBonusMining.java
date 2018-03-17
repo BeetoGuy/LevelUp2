@@ -2,6 +2,7 @@ package levelup2.skills.mining;
 
 import levelup2.skills.BaseSkill;
 import levelup2.skills.SkillRegistry;
+import levelup2.util.Library;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -41,10 +42,32 @@ public class XPBonusMining extends BaseSkill {
             if (SkillRegistry.getSkillLevel(evt.getHarvester(), getSkillName()) > 0) {
                 IBlockState state = evt.getState();
                 ItemStack stack = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
+                boolean oreFound = false;
                 for (String ore : SkillRegistry.getOreBonusXP().keySet()) {
                     if (SkillRegistry.listContains(stack, OreDictionary.getOres(ore))) {
                         SkillRegistry.addExperience(evt.getHarvester(), SkillRegistry.getOreBonusXP().get(ore));
+                        oreFound = true;
                         break;
+                    }
+                }
+                if (!oreFound) {
+                    for (ItemStack s : evt.getDrops()) {
+                        String ore = Library.getOreNameForBlock(s);
+                        if (ore != null && SkillRegistry.getOreBonusXP().keySet().contains(ore)) {
+                            SkillRegistry.addExperience(evt.getHarvester(), SkillRegistry.getOreBonusXP().get(ore));
+                            oreFound = true;
+                            break;
+                        }
+                    }
+                    if (!oreFound) {
+                        for (ItemStack s : evt.getDrops()) {
+                            String ore = Library.getOreNameForBlock(s);
+                            if (ore != null && ore.startsWith("ore")) {
+                                int xp = state.getBlock().getHarvestLevel(state) + 1;
+                                SkillRegistry.addExperience(evt.getHarvester(), xp);
+                                break;
+                            }
+                        }
                     }
                 }
             }

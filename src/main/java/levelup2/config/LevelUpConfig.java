@@ -47,6 +47,8 @@ public class LevelUpConfig {
     public static int commonChance = 85;
     public static int combinedChance;
     public static int reclassCost = 30;
+    public static List<String> oreBlocks;
+    private static String[] oreBlockList = {"geolosys:ore_vanilla", "geolosys:ore"};
 
     private static Property resetJson;
 
@@ -69,6 +71,7 @@ public class LevelUpConfig {
                 cfg.get(Configuration.CATEGORY_GENERAL, "Reclass level cost", reclassCost, "How many levels it will cost to change classes.", 0, 100),
                 cfg.get(Configuration.CATEGORY_GENERAL, "Fortune ore doubling", fortuneOre, "Doubled ores are affected by the Fortune enchant.")
         };
+        oreBlocks = Arrays.asList(cfg.getStringList("Special ore cases", "Whitelist", oreBlockList, "Blocks that don't have their own OreDict entry, but still drop registered ores."));
         cropBlacklist = Arrays.asList(cfg.getStringList("Crops for farming", "Blacklist", new String[] {""}, "Crops that won't be affected by farming growth skill, uses internal block name. No sync to client required."));
         oreList = Arrays.asList(cfg.get(Configuration.CATEGORY_GENERAL, "Surface Ores to double", ores, "Ores that double from mining efficiency").getStringList());
         oreColors = getColorsFromProperty(cfg.get(Configuration.CATEGORY_GENERAL, "Surface Ore colors", colors, "Colors for the surface ore item"));
