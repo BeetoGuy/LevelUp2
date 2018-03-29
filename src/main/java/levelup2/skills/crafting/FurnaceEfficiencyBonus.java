@@ -116,8 +116,8 @@ public class FurnaceEfficiencyBonus extends BaseSkill {
         if (evt.phase == TickEvent.Phase.START) {
             if (!evt.world.isRemote) {
                 try {
-                    List<TileEntity> tiles = evt.world.loadedTileEntityList.stream().filter(t -> t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
-                    if (tiles != null && !tiles.isEmpty()) {
+                    List<TileEntity> tiles = evt.world.loadedTileEntityList.stream().filter(t -> t != null && t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
+                    if (!tiles.isEmpty()) {
                         for (TileEntity tile : tiles) {
                             IProcessor cap = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP);
                             if (cap != null && cap.getPlayerFromUUID() != null) {
