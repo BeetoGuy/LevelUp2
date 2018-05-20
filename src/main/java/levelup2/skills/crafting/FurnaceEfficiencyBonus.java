@@ -4,7 +4,6 @@ import levelup2.api.IProcessor;
 import levelup2.capability.CapabilityFurnace;
 import levelup2.capability.PlayerCapability;
 import levelup2.skills.BaseSkill;
-import levelup2.util.Library;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -23,7 +22,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,7 +79,7 @@ public class FurnaceEfficiencyBonus extends BaseSkill {
 
     @SubscribeEvent
     public void onTileInteracted(PlayerInteractEvent.RightClickBlock evt) {
-        if (evt.getEntityPlayer() != null && !evt.getWorld().isRemote) {
+        if (!evt.getWorld().isRemote && evt.getEntityPlayer() != null) {
             EntityPlayer player = evt.getEntityPlayer();
             if (player instanceof FakePlayer || !player.isSneaking() || !evt.getItemStack().isEmpty())
                 return;
@@ -115,21 +113,18 @@ public class FurnaceEfficiencyBonus extends BaseSkill {
     public void doFurnaceTicks(TickEvent.WorldTickEvent evt) {
         if (evt.phase == TickEvent.Phase.START) {
             if (!evt.world.isRemote) {
-                try {
+                synchronized (evt.world.loadedTileEntityList) {
                     List<TileEntity> tiles = evt.world.loadedTileEntityList.stream().filter(t -> t != null && t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
-                    if (!tiles.isEmpty()) {
-                        for (TileEntity tile : tiles) {
-                            IProcessor cap = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP);
-                            if (cap != null && cap.getPlayerFromUUID() != null) {
-                                cap.extraProcessing(cap.getPlayerFromUUID());
-                            }
-                        }
-                    }
-                }
-                catch (ConcurrentModificationException e) {
-                    e.printStackTrace();
+                    tiles.forEach(this::processTick);
                 }
             }
+        }
+    }
+
+    private void processTick(TileEntity tile) {
+        IProcessor cap = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP);
+        if (cap != null && cap.getPlayerFromUUID() != null) {
+            cap.extraProcessing(cap.getPlayerFromUUID());
         }
     }
 }

@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class LevelUpConfig {
-    public static boolean resetClassOnDeath = true;
+    public static boolean resetClassOnDeath = false;
     public static boolean furnaceEjection = false;
     private static boolean resetJsonFiles = false;
     public static boolean damageScaling = false;
