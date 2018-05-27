@@ -45,6 +45,7 @@ public class PlayerCapability {
     }
 
     public static class CapabilityProcessorDefault implements IProcessor {
+        private EntityPlayer player;
         protected UUID playerUUID;
         protected TileEntity tile;
 
@@ -72,8 +73,14 @@ public class PlayerCapability {
 
         @Override
         public EntityPlayer getPlayerFromUUID() {
-            if (playerUUID == null) return null;
-            return Library.getPlayerFromUUID(playerUUID);
+            if (playerUUID == null) {
+                if (player != null) player = null;
+                return null;
+            }
+            if (player == null) {
+                player = Library.getPlayerFromUUID(playerUUID);
+            }
+            return player;
         }
 
         @Override

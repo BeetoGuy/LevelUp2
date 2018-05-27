@@ -21,6 +21,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -111,20 +112,17 @@ public class FurnaceEfficiencyBonus extends BaseSkill {
      */
     @SubscribeEvent
     public void doFurnaceTicks(TickEvent.WorldTickEvent evt) {
-        if (evt.phase == TickEvent.Phase.START) {
-            if (!evt.world.isRemote) {
-                synchronized (evt.world.loadedTileEntityList) {
-                    List<TileEntity> tiles = evt.world.loadedTileEntityList.stream().filter(t -> t != null && t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
-                    tiles.forEach(this::processTick);
-                }
-            }
+        if (evt.world.isRemote || evt.phase == TickEvent.Phase.END || evt.side != Side.SERVER) return;
+        List<IProcessor> tiles;
+        synchronized (evt.world.loadedTileEntityList) {
+            tiles = evt.world.loadedTileEntityList.stream().filter(t -> t != null && t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).map(t -> t.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
         }
+        tiles.forEach(this::processTick);
     }
 
-    private void processTick(TileEntity tile) {
-        IProcessor cap = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP);
-        if (cap != null && cap.getPlayerFromUUID() != null) {
-            cap.extraProcessing(cap.getPlayerFromUUID());
+    private void processTick(IProcessor tile) {
+        if (tile != null && tile.getPlayerFromUUID() != null) {
+            tile.extraProcessing(tile.getPlayerFromUUID());
         }
     }
 }
