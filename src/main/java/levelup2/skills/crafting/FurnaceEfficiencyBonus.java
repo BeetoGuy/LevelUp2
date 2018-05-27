@@ -1,5 +1,6 @@
 package levelup2.skills.crafting;
 
+import com.google.common.collect.Lists;
 import levelup2.api.IProcessor;
 import levelup2.capability.CapabilityFurnace;
 import levelup2.capability.PlayerCapability;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -113,9 +115,13 @@ public class FurnaceEfficiencyBonus extends BaseSkill {
     @SubscribeEvent
     public void doFurnaceTicks(TickEvent.WorldTickEvent evt) {
         if (evt.world.isRemote || evt.phase == TickEvent.Phase.END || evt.side != Side.SERVER) return;
-        List<IProcessor> tiles;
-        synchronized (evt.world.loadedTileEntityList) {
-            tiles = evt.world.loadedTileEntityList.stream().filter(t -> t != null && t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).map(t -> t.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
+        List<IProcessor> tiles = Lists.newArrayList();
+        try {
+            synchronized (evt.world.loadedTileEntityList) {
+                tiles = evt.world.loadedTileEntityList.stream().filter(t -> t != null && t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).map(t -> t.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
+            }
+        } catch (ConcurrentModificationException e) {
+            
         }
         tiles.forEach(this::processTick);
     }
