@@ -60,8 +60,10 @@ public class PlayerCapability {
 
         @Override
         public void readFromNBT(NBTTagCompound tag) {
-            if (tag.hasKey("player_uuid"))
+            if (tag.hasKey("player_uuid")) {
                 playerUUID = UUID.fromString(tag.getString("player_uuid"));
+                player = Library.getPlayerFromUUID(playerUUID);
+            }
         }
 
         @Override
