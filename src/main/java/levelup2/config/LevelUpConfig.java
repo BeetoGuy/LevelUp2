@@ -1,11 +1,18 @@
 package levelup2.config;
 
+import com.google.common.collect.Lists;
 import levelup2.api.IPlayerSkill;
 import levelup2.skills.SkillRegistry;
 import levelup2.util.JsonTransfer;
 import levelup2.util.Library;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -48,6 +55,7 @@ public class LevelUpConfig {
     public static int combinedChance;
     public static int reclassCost = 30;
     public static List<String> oreBlocks;
+    public static List<Ingredient> blacklistOutputs;
     private static String[] oreBlockList = {"geolosys:ore_vanilla", "geolosys:ore"};
 
     private static Property resetJson;
@@ -96,6 +104,24 @@ public class LevelUpConfig {
             resetJson.set(false);
             cfg.save();
         }
+    }
+
+    public static void getBlacklistOutputs() {
+        String[] items = cfg.getStringList("CraftingOutputs", "blacklist", new String[] {}, "Which items, if any, do not give experience upon crafting. Format: modid:item OR modid:item:metadata");
+        List<Ingredient> ing = Lists.newArrayList();
+        if (items.length > 0) {
+            for (String str : items) {
+                String[] parts = str.split(":");
+                int meta = parts.length == 3 ? Integer.parseInt(parts[2]) : OreDictionary.WILDCARD_VALUE;
+                Item item = Item.REGISTRY.getObject(new ResourceLocation(parts[0], parts[1]));
+                if (item != null && item != Items.AIR) {
+                    ing.add(Ingredient.fromStacks(new ItemStack(item, 1, meta)));
+                }
+            }
+        }
+        if (cfg.hasChanged())
+            cfg.save();
+        blacklistOutputs = ing;
     }
 
     public static Property[] getServerProperties() {

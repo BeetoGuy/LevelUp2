@@ -121,7 +121,7 @@ public class FurnaceEfficiencyBonus extends BaseSkill {
                 tiles = evt.world.loadedTileEntityList.stream().filter(t -> t != null && t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).map(t -> t.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
             }
         } catch (ConcurrentModificationException e) {
-            
+
         }
         tiles.forEach(this::processTick);
     }
