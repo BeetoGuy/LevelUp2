@@ -1,31 +1,29 @@
 package levelup2.util;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.OreIngredient;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SmeltingBlacklist {
-    private static List<ItemStack> blacklist = new ArrayList<>();
+    private static List<Ingredient> blacklist = new ArrayList<>();
 
     public static boolean addItem(ItemStack stack) {
-        return blacklist.add(stack.copy());
+        return blacklist.add(Ingredient.fromStacks(stack));
     }
 
     public static void addOres(String name) {
-        for(ItemStack stack : OreDictionary.getOres(name))
-            addItem(stack);
+        blacklist.add(new OreIngredient(name));
     }
 
     public static boolean contains(ItemStack stack) {
-        boolean match = false;
-        boolean wild = stack.getMetadata() == OreDictionary.WILDCARD_VALUE;
-        for (ItemStack black : blacklist) {
-            if (match) break;
-            else if (wild) match = black.getItem() == stack.getItem();
-            else match = ItemStack.areItemsEqual(black, stack) || (black.getMetadata() == OreDictionary.WILDCARD_VALUE && stack.getItem() == black.getItem());
+        for (Ingredient black : blacklist) {
+            if (black.apply(stack))
+                return true;
         }
-        return match;
+        return false;
     }
 }

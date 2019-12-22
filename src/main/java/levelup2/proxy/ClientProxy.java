@@ -4,6 +4,7 @@ import levelup2.config.LevelUpConfig;
 import levelup2.event.KeybindEventHandler;
 import levelup2.gui.GuiSpecialization;
 import levelup2.skills.SkillRegistry;
+import levelup2.util.Library;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -42,6 +43,7 @@ public class ClientProxy extends CommonProxy {
         setModelLocation(SkillRegistry.netherOreChunk, "inventory");
         setModelLocation(SkillRegistry.endOreChunk, "inventory");
         setModelLocation(SkillRegistry.respecBook, "inventory");
+        setModelLocation(SkillRegistry.skillBook, "inventory");
     }
 
     private void setModelLocation(Item item, String variantSettings) {
@@ -52,8 +54,8 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerColors() {
         final ItemColors color = Minecraft.getMinecraft().getItemColors();
-        color.registerItemColorHandler((stack, tintIndex) -> tintIndex == 1 && stack.getMetadata() < LevelUpConfig.oreColors.size() ? LevelUpConfig.oreColors.get(stack.getMetadata()) : -1, SkillRegistry.surfaceOreChunk);
-        color.registerItemColorHandler((stack, tintIndex) -> tintIndex == 1 && stack.getMetadata() < LevelUpConfig.netherOreColors.size() ? LevelUpConfig.netherOreColors.get(stack.getMetadata()) : -1, SkillRegistry.netherOreChunk);
-        color.registerItemColorHandler((stack, tintIndex) -> tintIndex == 1 && stack.getMetadata() < LevelUpConfig.endOreColors.size() ? LevelUpConfig.endOreColors.get(stack.getMetadata()) : -1, SkillRegistry.endOreChunk);
+        color.registerItemColorHandler((stack, tintIndex) -> tintIndex == 1 && !Library.SURFACE_ORES.isEmpty() && stack.getMetadata() < Library.SURFACE_ORES.size() ? Library.SURFACE_ORES.get(stack.getMetadata()).getColor() : -1, SkillRegistry.surfaceOreChunk);
+        color.registerItemColorHandler((stack, tintIndex) -> tintIndex == 1 && !Library.NETHER_ORES.isEmpty() && stack.getMetadata() < Library.NETHER_ORES.size() ? Library.NETHER_ORES.get(stack.getMetadata()).getColor() : -1, SkillRegistry.netherOreChunk);
+        color.registerItemColorHandler((stack, tintIndex) -> tintIndex == 1 && !Library.END_ORES.isEmpty() && stack.getMetadata() < Library.END_ORES.size() ? Library.END_ORES.get(stack.getMetadata()).getColor() : -1, SkillRegistry.endOreChunk);
     }
 }

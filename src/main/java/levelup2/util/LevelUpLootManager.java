@@ -46,15 +46,15 @@ public class LevelUpLootManager {
 
         @Override
         public LootTable load(ResourceLocation location) throws Exception {
-            if (location.getResourcePath().contains(".")) {
-                System.out.println("[LEVELUP] ERROR: Cannot load loot table " + location.getResourcePath());
+            if (location.getPath().contains(".")) {
+                System.out.println("[LEVELUP] ERROR: Cannot load loot table " + location.getPath());
                 return LootTable.EMPTY_LOOT_TABLE;
             }
             else {
                 LootTable table = this.loadLootTable(location);
 
                 if (table == null) {
-                    System.out.println("[LEVELUP] ERROR: Cannot load loot table " + location.getResourcePath());
+                    System.out.println("[LEVELUP] ERROR: Cannot load loot table " + location.getPath());
                     table = LootTable.EMPTY_LOOT_TABLE;
                 }
                 return table;
@@ -62,7 +62,7 @@ public class LevelUpLootManager {
         }
 
         private LootTable loadLootTable(ResourceLocation location) {
-            File file = new File(LevelUpLootManager.this.baseFolder, location.getResourcePath() + ".json");
+            File file = new File(LevelUpLootManager.this.baseFolder, location.getPath() + ".json");
 
             if (file.exists()) {
                 if (file.isFile()) {

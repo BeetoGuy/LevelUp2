@@ -1,24 +1,27 @@
 package levelup2.api;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 public interface IPlayerSkill {
-    boolean hasSubscription();
+    ResourceLocation getSkillName();
 
-    String getSkillName();
+    void setSkillName(ResourceLocation skill);
 
     int getLevelCost(int currentLevel);
 
     void setLevelCosts(int[] levels);
 
     /**
-    *0: Mining; 1: Crafting; 2: Combat
+     * Which skill tab this skill appears in.
      */
-    byte getSkillType();
+    ResourceLocation getSkillType();
 
-    String[] getPrerequisites();
+    void setSkillType(ResourceLocation type);
 
-    void setPrerequisites(String[] prereqs);
+    ResourceLocation[] getPrerequisites();
+
+    void setPrerequisites(ResourceLocation[] prereqs);
 
     int getSkillColumn();
 
@@ -34,6 +37,8 @@ public interface IPlayerSkill {
      */
     ItemStack getRepresentativeStack();
 
+    void setRepresentativeStack(ItemStack stack);
+
     boolean isMaxLevel(int level);
 
     int getMaxLevel();
@@ -41,10 +46,6 @@ public interface IPlayerSkill {
     boolean isEnabled();
 
     void setEnabled(boolean enabled);
-
-    String getJsonLocation();
-
-    boolean hasExternalJson();
 
     boolean isActive();
 

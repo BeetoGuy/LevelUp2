@@ -3,12 +3,14 @@ package levelup2;
 import levelup2.api.IProcessor;
 import levelup2.capability.PlayerCapability;
 import levelup2.config.LevelUpConfig;
+import levelup2.config.OreChunkStorage;
 import levelup2.event.CapabilityEventHandler;
 import levelup2.network.SkillPacketHandler;
 import levelup2.player.IPlayerClass;
 import levelup2.player.PlayerExtension;
 import levelup2.proxy.CommonProxy;
 import levelup2.skills.SkillRegistry;
+import levelup2.util.Library;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -28,8 +30,6 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraftforge.registries.IForgeRegistry;
 
-import java.util.List;
-
 @Mod(modid = LevelUp2.ID, name = "Level Up! Reloaded", version = "${version}")
 public class LevelUp2 {
     public static final String ID = "levelup2";
@@ -44,7 +44,6 @@ public class LevelUp2 {
         CapabilityManager.INSTANCE.register(IPlayerClass.class, new PlayerCapability.CapabilityPlayerClass<>(), PlayerExtension.class);
         CapabilityManager.INSTANCE.register(IProcessor.class, new PlayerCapability.CapabilityProcessorClass<>(), PlayerCapability.CapabilityProcessorDefault.class);
         MinecraftForge.EVENT_BUS.register(new CapabilityEventHandler());
-        //SkillRegistry.initItems();
         proxy.registerItemMeshes();
     }
 
@@ -73,6 +72,7 @@ public class LevelUp2 {
             registerItem(reg, SkillRegistry.netherOreChunk);
             registerItem(reg, SkillRegistry.endOreChunk);
             registerItem(reg, SkillRegistry.respecBook);
+            registerItem(reg, SkillRegistry.skillBook);
         }
 
         @SubscribeEvent
@@ -83,33 +83,27 @@ public class LevelUp2 {
             SkillRegistry.initPlankCache();
         }
 
-        public static void oreLoad(IForgeRegistry<IRecipe> reg) {
-            if (!SkillRegistry.isNullList(LevelUpConfig.oreList)) {
-                registerOreRecipes(reg, LevelUpConfig.oreList, SkillRegistry.surfaceOreChunk);
-            }
-            if (!SkillRegistry.isNullList(LevelUpConfig.netherOreList)) {
-                registerOreRecipes(reg, LevelUpConfig.netherOreList, SkillRegistry.netherOreChunk);
-            }
-            if (!SkillRegistry.isNullList(LevelUpConfig.endOreList)) {
-                registerOreRecipes(reg, LevelUpConfig.endOreList, SkillRegistry.endOreChunk);
+        private static void oreLoad(IForgeRegistry<IRecipe> reg) {
+            if (!Library.ALL_ORES.isEmpty()) {
+                for (OreChunkStorage stor : Library.ALL_ORES) {
+                    registerOreRecipe(reg, stor);
+                }
             }
         }
 
-        public static void registerItem(IForgeRegistry<Item> reg, Item item) {
+        private static void registerItem(IForgeRegistry<Item> reg, Item item) {
             reg.register(item);
         }
 
-        public static void registerOreRecipes(IForgeRegistry<IRecipe> reg, List<String> ores, Item item) {
-            for (int i = 0; i < ores.size(); i++) {
-                String names = ores.get(i);
-                if (OreDictionary.doesOreNameExist(names)) {
-                    ItemStack ore = SkillRegistry.getOreEntry(names);
-                    ItemStack chunk = new ItemStack(item, 1, i);
-                    if (!ore.isEmpty()) {
-                        reg.register(new ShapelessOreRecipe(new ResourceLocation("levelup2", "orechunk"), ore.copy(), chunk, chunk).setRegistryName("levelup2", names.toLowerCase()));
-                    }
-                    OreDictionary.registerOre(names, chunk);
+        private static void registerOreRecipe(IForgeRegistry<IRecipe> reg, OreChunkStorage stor) {
+            String oreName = stor.getOreName();
+            if (OreDictionary.doesOreNameExist(oreName)) {
+                ItemStack ore = SkillRegistry.getOreEntry(oreName);
+                ItemStack chunk = new ItemStack(stor.getBaseItem(), 1, stor.getMetadata());
+                if (!ore.isEmpty()) {
+                    reg.register(new ShapelessOreRecipe(new ResourceLocation("levelup2", "orechunk"), ore.copy(), chunk, chunk).setRegistryName("levelup2", oreName.toLowerCase()));
                 }
+                OreDictionary.registerOre(oreName, chunk);
             }
         }
     }

@@ -1,0 +1,27 @@
+{
+  "name": "levelup:stealthspeed",
+  "type": "levelup:combat_bonus",
+  "levels": [
+    1,
+    2,
+    2,
+    3,
+    4,
+    5,
+    6,
+    6,
+    7,
+    8
+  ],
+  "prerequisites": [
+    "levelup:stealth",
+    "levelup:fallprotect"
+  ],
+  "stack": {
+    "item": "minecraft:bone"
+  },
+  "column": 3,
+  "row": 2,
+  "enabled": true,
+  "active": true
+}

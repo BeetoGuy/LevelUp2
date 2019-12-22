@@ -1,6 +1,6 @@
 package levelup2.items;
 
-import levelup2.config.LevelUpConfig;
+import levelup2.config.OreChunkStorage;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -13,9 +13,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.List;
 
 public class ItemOreChunk extends Item {
-    private List<String> oreTypes;
+    private List<OreChunkStorage> oreTypes;
 
-    public ItemOreChunk(List<String> oreTypes) {
+    public ItemOreChunk(List<OreChunkStorage> oreTypes) {
         super();
         setHasSubtypes(true);
         setCreativeTab(CreativeTabs.MATERIALS);
@@ -25,15 +25,16 @@ public class ItemOreChunk extends Item {
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
-        if (!oreTypes.get(0).equals("null") && this.isInCreativeTab(tab) && LevelUpConfig.useOreChunks) {
+        if (!oreTypes.isEmpty() && this.isInCreativeTab(tab)) {
             for (int i = 0; i < oreTypes.size(); i++)
-                list.add(new ItemStack(this, 1, i));
+                if (oreTypes.get(i).getActivation())
+                    list.add(new ItemStack(this, 1, i));
         }
     }
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        if (!oreTypes.get(0).equals("null")) {
+        if (!oreTypes.isEmpty()) {
             return I18n.translateToLocalFormatted("item.levelup:orechunk.name", getOreName(stack));
         }
         return I18n.translateToLocalFormatted("item.levelup:orechunk_null.name");
@@ -41,10 +42,10 @@ public class ItemOreChunk extends Item {
 
     private String getOreName(ItemStack stack) {
         int meta = stack.getMetadata();
-        if (meta < oreTypes.size()) {
-            ItemStack check = SkillRegistry.getOreEntry(oreTypes.get(meta));
+        if (!oreTypes.isEmpty() && meta < oreTypes.size()) {
+            ItemStack check = SkillRegistry.getOreEntry(oreTypes.get(meta).getOreName());
             if (!check.isEmpty()) {
-                String name = check.getUnlocalizedName();
+                String name = check.getTranslationKey();
                 if (!name.endsWith(".name"))
                     name = name + ".name";
                 return I18n.translateToLocalFormatted(name);

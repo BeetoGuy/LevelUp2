@@ -1,7 +1,9 @@
 package levelup2.player;
 
 import levelup2.api.IPlayerSkill;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 import java.util.Map;
@@ -11,21 +13,39 @@ public interface IPlayerClass {
 
     void loadNBTData(NBTTagCompound tag);
 
-    IPlayerSkill getSkillFromName(String skill);
+    IPlayerSkill getSkillFromName(ResourceLocation skill);
 
-    int getSkillLevel(String name);
+    default int getSkillLevel(ResourceLocation name) {
+        return getSkillLevel(name, true);
+    }
 
-    void setSkillLevel(String name, int level);
+    int getSkillLevel(ResourceLocation name, boolean checkActive);
 
-    void setPlayerData(String[] skills, int[] data);
+    void setSkillLevel(ResourceLocation name, int level);
 
-    void addToSkill(String name, int value);
+    void setPlayerData(ResourceLocation[] skills, int[] data);
+
+    void addToSkill(ResourceLocation name, int value);
 
     boolean hasClass();
 
-    byte getSpecialization();
+    ResourceLocation getPlayerClass();
 
-    void setSpecialization(byte spec);
+    boolean isActive();
 
-    Map<String, Integer> getSkills();
+    void toggleActive();
+
+    void resetClass();
+
+    void setPlayerClass(ResourceLocation location);
+
+    int getLevelBank();
+
+    boolean addLevelFromExperience(EntityPlayer player);
+
+    void changeLevelBank(int levels);
+
+    ResourceLocation getSpecialization();
+
+    Map<ResourceLocation, Integer> getSkills();
 }

@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "levelup2:skillbook"
+  },
+  "pattern": [
+    " P ",
+    "OBO"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "P": {
+      "item": "minecraft:stone_pickaxe"
+    },
+    "O": {
+      "ore": "dye",
+      "type": "forge:ore_dict"
+    },
+    "B": {
+      "item": "minecraft:book"
+    }
+  }
+}

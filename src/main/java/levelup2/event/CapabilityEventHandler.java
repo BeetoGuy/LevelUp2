@@ -1,5 +1,6 @@
 package levelup2.event;
 
+import levelup2.api.ICharacterClass;
 import levelup2.api.IPlayerSkill;
 import levelup2.capability.PlayerCapability;
 import levelup2.config.LevelUpConfig;
@@ -10,8 +11,10 @@ import levelup2.util.Library;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -70,16 +73,42 @@ public class CapabilityEventHandler {
         SkillRegistry.loadPlayer(evt.player);
     }
 
+    private static final String BOOK_TAG = "levelup:bookspawn";
+
     @SubscribeEvent
     public void onPlayerLogin(PlayerLoggedInEvent evt) {
         if (evt.player instanceof EntityPlayerMP) {
+            spawnBook(evt.player);
             SkillRegistry.loadPlayer(evt.player);
             SkillPacketHandler.configChannel.sendTo(SkillPacketHandler.getConfigPacket(LevelUpConfig.getServerProperties()), (EntityPlayerMP)evt.player);
-            for (IPlayerSkill skill : SkillRegistry.getSkillRegistry()) {
-                if (skill.hasExternalJson())
-                    SkillPacketHandler.propertyChannel.sendTo(SkillPacketHandler.getPropertyPackets(skill), (EntityPlayerMP)evt.player);
+            for (ResourceLocation loc : SkillRegistry.getSkills().keySet()) {
+                IPlayerSkill skill = SkillRegistry.getSkillFromName(loc);
+                SkillPacketHandler.propertyChannel.sendTo(SkillPacketHandler.getPropertyPackets(skill), (EntityPlayerMP)evt.player);
+            }
+            for (ResourceLocation loc : SkillRegistry.getClasses().keySet()) {
+                ICharacterClass cl = SkillRegistry.getClassFromName(loc);
+                SkillPacketHandler.classChannel.sendTo(SkillPacketHandler.getClassPackets(cl), (EntityPlayerMP)evt.player);
             }
             SkillPacketHandler.refreshChannel.sendTo(SkillPacketHandler.getRefreshPacket(), (EntityPlayerMP)evt.player);
         }
+    }
+
+    private void spawnBook(EntityPlayer player) {
+        NBTTagCompound playerData = player.getEntityData();
+        NBTTagCompound data = getTag(playerData, EntityPlayer.PERSISTED_NBT_TAG);
+        if (!data.getBoolean(BOOK_TAG)) {
+            ItemStack book = new ItemStack(SkillRegistry.skillBook);
+            if (!player.addItemStackToInventory(book)) {
+                player.dropItem(book, true);
+            }
+            data.setBoolean(BOOK_TAG, true);
+            playerData.setTag(EntityPlayer.PERSISTED_NBT_TAG, data);
+        }
+    }
+
+    private NBTTagCompound getTag(NBTTagCompound base, String tag) {
+        if (base == null)
+            return new NBTTagCompound();
+        return base.getCompoundTag(tag);
     }
 }

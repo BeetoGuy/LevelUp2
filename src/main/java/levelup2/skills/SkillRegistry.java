@@ -1,22 +1,24 @@
 package levelup2.skills;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import levelup2.api.BaseClass;
+import levelup2.api.BaseSkill;
+import levelup2.api.ICharacterClass;
 import levelup2.api.IPlayerSkill;
 import levelup2.capability.PlayerCapability;
 import levelup2.config.LevelUpConfig;
+import levelup2.config.OreChunkStorage;
+import levelup2.items.ItemExperienceBook;
 import levelup2.items.ItemOreChunk;
 import levelup2.items.ItemRespecBook;
 import levelup2.network.SkillPacketHandler;
 import levelup2.player.IPlayerClass;
-import levelup2.skills.combat.*;
-import levelup2.skills.crafting.*;
-import levelup2.skills.mining.*;
-import levelup2.util.Library;
-import levelup2.util.PlankCache;
-import levelup2.util.SkillProperties;
-import levelup2.util.SmeltingBlacklist;
+import levelup2.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -29,7 +31,6 @@ import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
@@ -37,121 +38,99 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
 public class SkillRegistry {
-    private static Map<String, Integer> oreBonusXP = new HashMap<>();
-    private static List<IPlayerSkill> skillRegistry = new ArrayList<>();
-    private static Map<String, IPlayerSkill> skillHashMap = new HashMap<>();
-    private static Map<String, SkillProperties> skillProperties = new HashMap<>();
-    private static List<IPlantable> cropBlacklist = new ArrayList<>();
+    private static Map<String, Integer> oreBonusXP = Maps.newHashMap();
+    private static Map<ResourceLocation, IPlayerSkill> skillHashMap = Maps.newHashMap();
+    private static Map<ResourceLocation, ICharacterClass> classMap = Maps.newHashMap();
+    private static Map<ResourceLocation, SkillProperties> skillProperties = Maps.newHashMap();
+    private static Map<ResourceLocation, ClassProperties> classProperties = Maps.newHashMap();
+    private static Map<ResourceLocation, List<IPlayerSkill>> specSkillCache = Maps.newHashMap();
+    private static List<IPlantable> cropBlacklist = Lists.newArrayList();
+    private static List<ResourceLocation> specializations = Lists.newArrayList();
     public static int smallestDisplayColumn = 0;
     public static int smallestDisplayRow = 0;
     public static int largestDisplayColumn = 0;
     public static int largestDisplayRow = 0;
 
-    public static Item surfaceOreChunk = new ItemOreChunk(LevelUpConfig.oreList).setUnlocalizedName("levelup:surfaceore").setRegistryName(new ResourceLocation("levelup2", "surfaceore"));
-    public static Item netherOreChunk = new ItemOreChunk(LevelUpConfig.netherOreList).setUnlocalizedName("levelup:netherore").setRegistryName(new ResourceLocation("levelup2", "netherore"));
-    public static Item endOreChunk = new ItemOreChunk(LevelUpConfig.endOreList).setUnlocalizedName("levelup:endore").setRegistryName(new ResourceLocation("levelup2", "endore"));
-    public static Item respecBook = new ItemRespecBook().setUnlocalizedName("levelup:respec").setRegistryName(new ResourceLocation("levelup2", "respecbook"));
+    public static Item surfaceOreChunk = new ItemOreChunk(Library.SURFACE_ORES).setTranslationKey("levelup:surfaceore").setRegistryName(new ResourceLocation("levelup2", "surfaceore"));
+    public static Item netherOreChunk = new ItemOreChunk(Library.NETHER_ORES).setTranslationKey("levelup:netherore").setRegistryName(new ResourceLocation("levelup2", "netherore"));
+    public static Item endOreChunk = new ItemOreChunk(Library.END_ORES).setTranslationKey("levelup:endore").setRegistryName(new ResourceLocation("levelup2", "endore"));
+    public static Item respecBook = new ItemRespecBook().setTranslationKey("levelup:respec").setRegistryName(new ResourceLocation("levelup2", "respecbook"));
+    public static Item skillBook = new ItemExperienceBook().setTranslationKey("levelup:skill").setRegistryName(new ResourceLocation("levelup2", "skillbook"));
 
     public static void loadSkills() {
-        addSkill(new XPBonusCombat());
-        addSkill(new XPBonusCrafting());
-        addSkill(new XPBonusMining());
-        addSkill(new StoneSpeedBonus());
-        addSkill(new StoneMiningBonus());
-        addSkill(new WoodSpeedBonus());
-        addSkill(new WoodcuttingBonus());
-        addSkill(new FlintLootBonus());
-        addSkill(new DiggingTreasureBonus());
-        addSkill(new SwordCritBonus());
-        addSkill(new SwordDamageBonus());
-        addSkill(new DrawSpeedBonus());
-        addSkill(new ArrowSpeedBonus());
-        addSkill(new StealthBonus());
-        addSkill(new StealthDamage());
-        addSkill(new ShieldBlockBonus());
-        addSkill(new NaturalArmorBonus());
-        addSkill(new FoodGrowthBonus());
-        addSkill(new FoodHarvestBonus());
-        addSkill(new SprintSpeedBonus());
-        addSkill(new FallDamageBonus());
-        addSkill(new StealthSpeed());
-        addSkill(new FurnaceEfficiencyBonus());
-        addSkill(new FurnaceSmeltBonus());
-        addSkill(new BrewingEfficiencyBonus());
-        addSkill(new FishingLootBonus());
         addCropsToBlacklist(LevelUpConfig.cropBlacklist);
         Library.registerLootManager();
+        loadOreDict();
     }
 
-    public static void postLoadSkills() {
+    public static void postLoadSkills() {/*
         for (IPlayerSkill skill : skillRegistry) {
             if (skill.hasSubscription())
                 MinecraftForge.EVENT_BUS.register(skill);
-        }
+        }*/
         //initPlankCache();
     }
 
-    public static void registerRecipes() {
-        if (!isNullList(LevelUpConfig.oreList)) {
-            Library.registerOreToChunk(LevelUpConfig.oreList, surfaceOreChunk);
-            Library.addToOreList(LevelUpConfig.oreList);
-            Library.assignExperienceValues(LevelUpConfig.oreList, LevelUpConfig.oreExperience);
-            registerSmelting(LevelUpConfig.oreList, surfaceOreChunk);
-            //registerCrafting(LevelUpConfig.oreList, surfaceOreChunk);
-            //Library.registerOres(LevelUpConfig.oreList);
-            if (LevelUpConfig.oreList.contains("oreRedstone"))
-                Library.getOreList().add(Blocks.LIT_REDSTONE_ORE);
+    private static void loadOreDict() {
+        List<String> names = Lists.newArrayList();
+        for (OreChunkStorage stor : Library.ALL_ORES) {
+            names.add(stor.getOreName());
         }
-        if (!isNullList(LevelUpConfig.netherOreList)) {
-            Library.registerOreToChunk(LevelUpConfig.netherOreList, netherOreChunk);
-            Library.addToOreList(LevelUpConfig.netherOreList);
-            Library.assignExperienceValues(LevelUpConfig.netherOreList, LevelUpConfig.netherOreExperience);
-            registerSmelting(LevelUpConfig.netherOreList, netherOreChunk);
-            //registerCrafting(LevelUpConfig.netherOreList, netherOreChunk);
-            //Library.registerOres(LevelUpConfig.netherOreList);
-        }
-        if (!isNullList(LevelUpConfig.endOreList)) {
-            Library.registerOreToChunk(LevelUpConfig.endOreList, endOreChunk);
-            Library.addToOreList(LevelUpConfig.endOreList);
-            Library.assignExperienceValues(LevelUpConfig.endOreList, LevelUpConfig.endOreExperience);
-            registerSmelting(LevelUpConfig.endOreList, endOreChunk);
-            //registerCrafting(LevelUpConfig.endOreList, endOreChunk);
-            //Library.registerOres(LevelUpConfig.endOreList);
-        }
-        List<String> names = new ArrayList<>();
-        if (LevelUpConfig.dupeAllOres) {
-            for (String name : OreDictionary.getOreNames()) {
-                if (name.startsWith("ore")) {
-                    names.add(name);
-                }
-                if (!Library.getOreList().contains(Blocks.LIT_REDSTONE_ORE))
-                    Library.getOreList().add(Blocks.LIT_REDSTONE_ORE);
-            }
-        }
-        else {
-            names.addAll(LevelUpConfig.oreList);
-            names.addAll(LevelUpConfig.netherOreList);
-            names.addAll(LevelUpConfig.endOreList);
+        if (names.contains("oreRedstone")) {
+            Library.getOreList().add(Blocks.LIT_REDSTONE_ORE);
         }
         Library.registerOres(names);
     }
 
-    private static void registerSmelting(List<String> ores, Item item) {
-        for (int i = 0; i < ores.size(); i++) {
-            String names = ores.get(i);
-            if (OreDictionary.doesOreNameExist(names)) {
-                ItemStack ore = getOreEntry(names);
-                if (!ore.isEmpty()) {
-                    if (!FurnaceRecipes.instance().getSmeltingResult(ore).isEmpty()) {
-                        ItemStack result = FurnaceRecipes.instance().getSmeltingResult(ore);
-                        GameRegistry.addSmelting(new ItemStack(item, 1, i), result, FurnaceRecipes.instance().getSmeltingExperience(result));
-                    }
-                }
+    public static void registerRecipes() {
+        if (!Library.SURFACE_ORES.isEmpty()) {
+            for (OreChunkStorage stor : Library.SURFACE_ORES) {
+                stor.setBaseItem(surfaceOreChunk);
+                stor.registerOre();
+            }
+            Library.ALL_ORES.addAll(Library.SURFACE_ORES);
+        }
+        if (!Library.NETHER_ORES.isEmpty()) {
+            for (OreChunkStorage stor : Library.NETHER_ORES) {
+                stor.setBaseItem(netherOreChunk);
+                stor.registerOre();
+            }
+            Library.ALL_ORES.addAll(Library.NETHER_ORES);
+        }
+        if (!Library.END_ORES.isEmpty()) {
+            for (OreChunkStorage stor : Library.END_ORES) {
+                stor.setBaseItem(endOreChunk);
+                stor.registerOre();
+            }
+            Library.ALL_ORES.addAll(Library.END_ORES);
+        }
+        registerSmelting();/*
+        List<String> names = Lists.newArrayList();
+        for (OreChunkStorage stor : Library.ALL_ORES) {
+            names.add(stor.getOreName());
+        }
+        if (names.contains("oreRedstone")) {
+            Library.getOreList().add(Blocks.LIT_REDSTONE_ORE);
+        }
+        Library.registerOres(names);*/
+        for (OreChunkStorage stor : Library.ALL_ORES) {
+            stor.registerOreIngredientLate();
+        }
+    }
+
+    private static void registerSmelting() {
+        for (OreChunkStorage stor : Library.ALL_ORES) {
+            ItemStack result = stor.getSmeltingResult();
+            if (!result.isEmpty()) {
+                Item item = stor.getBaseItem();
+                float exp = FurnaceRecipes.instance().getSmeltingExperience(result);
+                GameRegistry.addSmelting(new ItemStack(item, 1, stor.getMetadata()), result, exp);
             }
         }
         SmeltingBlacklist.addItem(new ItemStack(Blocks.SPONGE, 1, 1));
@@ -162,45 +141,21 @@ public class SkillRegistry {
         }
     }
 
-    private static void registerCrafting(List<String> ores, Item item) {
-        for (int i = 0; i < ores.size(); i++) {
-            String names = ores.get(i);
-            if (OreDictionary.doesOreNameExist(names)) {
-                ItemStack ore = getOreEntry(names);
-                if (!ore.isEmpty()) {
-                    ItemStack chunk = new ItemStack(item, 1, i);
-                    registerShapelessRecipe(ore.copy(), chunk, chunk);
-                    OreDictionary.registerOre(names, chunk);
-                }
-            }
+    public static ICharacterClass getClassFromName(ResourceLocation name) {
+        if (classMap.containsKey(name)) {
+            return classMap.get(name);
         }
+        return null;
     }
 
-    private static void registerShapelessRecipe(ItemStack output, Object... inputs) {
-        GameRegistry.findRegistry(IRecipe.class).register(new ShapelessOreRecipe(new ResourceLocation("levelup", "orechunk"), output, inputs));
-    }
-
-    public static boolean isNullList(List<String> list) {
-        return !list.isEmpty() && list.get(0).equals("null");
-    }
-
-    public static List<IPlayerSkill> getSkillRegistry() {
-        return skillRegistry;
-    }
-
-    public static IPlayerSkill getSkillFromName(String name) {
+    public static IPlayerSkill getSkillFromName(ResourceLocation name) {
         if (skillHashMap.containsKey(name)) {
             return skillHashMap.get(name);
         }
         return null;
     }
 
-    public static void addSkill(IPlayerSkill skill) {
-        skillRegistry.add(skill);
-        skillHashMap.put(skill.getSkillName(), skill);
-    }
-
-    public static int getSkillLevel(EntityPlayer player, String skill) {
+    public static int getSkillLevel(EntityPlayer player, ResourceLocation skill) {
         return getPlayer(player).getSkillLevel(skill);
     }
 
@@ -237,29 +192,23 @@ public class SkillRegistry {
         return false;
     }
 
-    public static void increaseSkillLevel(EntityPlayer player, String skillName) {
-        IPlayerSkill skill = getPlayer(player).getSkillFromName(skillName);
-        int skillCost = skill.getLevelCost(getPlayer(player).getSkillLevel(skillName));
-        if (skillCost > 0) {
-            if (player.experienceLevel >= skillCost) {
-                player.experienceLevel -= skillCost;
-                getPlayer(player).addToSkill(skillName, 1);
-            }
-        }
-    }
-
     public static void loadPlayer(EntityPlayer player) {
         if (player instanceof EntityPlayerMP) {
-            byte spec = getPlayer(player).getSpecialization();
-            Map<String, Integer> skills = getPlayer(player).getSkills();
-            SkillPacketHandler.initChannel.sendTo(SkillPacketHandler.getPacket(Side.CLIENT, 0, spec, skills), (EntityPlayerMP)player);
+            Map<ResourceLocation, Integer> skills = Maps.newHashMap();
+            for (ResourceLocation name : skillHashMap.keySet()) {
+                int level = getPlayer(player).getSkillLevel(name, false);
+                if (level > 0)
+                    skills.put(name, level);
+            }
+            ResourceLocation cl = getPlayer(player).getPlayerClass();
+            SkillPacketHandler.initChannel.sendTo(SkillPacketHandler.getSkillPacket(Side.CLIENT, 0, skills, getPlayer(player).getLevelBank(), cl), (EntityPlayerMP)player);
         }
     }
 
     public static void addCropsToBlacklist(List<String> blacklist) {
         for (String str : blacklist) {
             Block block = Block.REGISTRY.getObject(new ResourceLocation(str));
-            if (block != null) {
+            if (block != null && block != Blocks.AIR) {
                 if (block instanceof IPlantable)
                     cropBlacklist.add((IPlantable)block);
             }
@@ -276,7 +225,7 @@ public class SkillRegistry {
                 for (ItemStack stack : OreDictionary.getOres(ore)) {
                     if (stack.getItem() instanceof ItemBlock) {
                         if (!stack.hasTagCompound()) {
-                            return new ItemStack(stack.getItem(), 1, stack.getMetadata());
+                            return stack;
                         }
                     }
                 }
@@ -320,14 +269,12 @@ public class SkillRegistry {
         ItemStack stack = ItemStack.EMPTY;
         while (it.hasNext() && stack.isEmpty()) {
             IRecipe recipe = it.next();
-            if (recipe.getGroup().equals("planks")) {
-                NonNullList<Ingredient> ing = recipe.getIngredients();
-                if (isPlank(recipe.getRecipeOutput())) {
-                    for (Ingredient in : ing) {
-                        for (ItemStack check : in.getMatchingStacks()) {
-                            if (check.isItemEqual(log)) {
+            NonNullList<Ingredient> ing = recipe.getIngredients();
+            if (isPlank(recipe.getRecipeOutput())) {
+                for (Ingredient in : ing) {
+                    for (ItemStack check : in.getMatchingStacks()) {
+                        if (check.isItemEqual(log)) {
                                 stack = recipe.getRecipeOutput().copy();
-                            }
                         }
                     }
                 }
@@ -346,28 +293,79 @@ public class SkillRegistry {
         return false;
     }
 
+    public static void resetForNewProps() {
+        skillHashMap.clear();
+        classMap.clear();
+        specializations.clear();
+        specSkillCache.clear();
+    }
+
+    public static void addClass(ICharacterClass charClass) {
+        classMap.put(charClass.getClassName(), charClass);
+    }
+
+    public static void addSkill(IPlayerSkill skill) {
+        skillHashMap.put(skill.getSkillName(), skill);
+    }
+
+    public static Map<ResourceLocation, IPlayerSkill> getSkills() {
+        return skillHashMap;
+    }
+
+    public static Map<ResourceLocation, ICharacterClass> getClasses() {
+        return classMap;
+    }
+
+    public static List<ResourceLocation> getSpecializations() {
+        return specializations;
+    }
+
+    public static List<IPlayerSkill> getSkillsForSpec(ResourceLocation location) {
+        return specSkillCache.get(location);
+    }
+
     public static void registerSkillProperties() {
-        for (IPlayerSkill skill : getSkillRegistry()) {
-            SkillProperties prop = loadFromJson(skill);
-            if (prop != null)
-                skillProperties.put(skill.getSkillName(), prop);
+        try {
+            Files.walk(LevelUpConfig.skillDir).filter(Files::isRegularFile).forEach(l -> loadSkillsFromJson(l));
+            Files.walk(LevelUpConfig.classDir).filter(Files::isRegularFile).forEach(l -> loadClassesFromJson(l));
+        } catch(IOException e) {
+            e.printStackTrace();
         }
         calculateHighLow();
     }
 
-    private static SkillProperties loadFromJson(IPlayerSkill skill) {
-        SkillProperties prop = null;
-        Path dir = LevelUpConfig.jsonDir.resolve("skills");
-        Path location = dir.resolve(skill.getJsonLocation() + ".json");
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        BufferedReader reader;
-        try {
-            reader = Files.newBufferedReader(location);
-            prop = SkillProperties.fromJson(skill.getSkillName(), JsonUtils.fromJson(gson, reader, JsonObject.class));
-        } catch (IOException e) {
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    private static void loadSkillsFromJson(Path location) {
+        if (!Files.exists(location)) {
+            return;
+        }
+
+        try (Reader read = Files.newBufferedReader(location)) {
+            SkillProperties prop = SkillProperties.fromJson(JsonUtils.fromJson(gson, read, JsonObject.class));
+            skillProperties.put(prop.getName(), prop);
+            skillHashMap.put(prop.getName(), BaseSkill.fromProps(prop));
+        } catch (IOException | JsonParseException | NullPointerException e) {
             e.printStackTrace();
         }
-        return prop;
+    }
+
+    private static void loadClassesFromJson(Path location) {
+        if (!Files.exists(location)) {
+            return;
+        }
+
+        try (Reader read = Files.newBufferedReader(location)) {
+            ClassProperties prop = ClassProperties.fromJson(JsonUtils.fromJson(gson, read, JsonObject.class));
+            classProperties.put(prop.getClassName(), prop);
+            classMap.put(prop.getClassName(), BaseClass.fromProperties(prop));
+        } catch (IOException | JsonParseException | NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static ClassProperties getProperty(ICharacterClass cl) {
+        return classProperties.get(cl.getClassName());
     }
 
     public static SkillProperties getProperty(IPlayerSkill skill) {
@@ -379,14 +377,21 @@ public class SkillRegistry {
         largestDisplayColumn = 0;
         smallestDisplayRow = 0;
         smallestDisplayColumn = 0;
-        for (IPlayerSkill skill : getSkillRegistry()) {
-            IPlayerSkill sk = getSkillFromName(skill.getSkillName());
-            int column = sk.getSkillColumn();
-            int row = sk.getSkillRow();
-            if (column > largestDisplayColumn) largestDisplayColumn = column;
-            else if (column < smallestDisplayColumn) smallestDisplayColumn = column;
-            if (row > largestDisplayRow) largestDisplayRow = row;
-            else if (row < smallestDisplayRow) smallestDisplayRow = row;
+        for (ResourceLocation skill : skillHashMap.keySet()) {
+            IPlayerSkill sk = getSkillFromName(skill);
+            if (sk != null) {
+                if (!specializations.contains(sk.getSkillType())) {
+                    specializations.add(sk.getSkillType());
+                    specSkillCache.put(sk.getSkillType(), Lists.newArrayList());
+                }
+                getSkillsForSpec(sk.getSkillType()).add(sk);
+                int column = sk.getSkillColumn();
+                int row = sk.getSkillRow();
+                if (column > largestDisplayColumn) largestDisplayColumn = column;
+                else if (column < smallestDisplayColumn) smallestDisplayColumn = column;
+                if (row > largestDisplayRow) largestDisplayRow = row;
+                else if (row < smallestDisplayRow) smallestDisplayRow = row;
+            }
         }
     }
 }

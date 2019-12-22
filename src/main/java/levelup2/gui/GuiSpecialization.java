@@ -44,8 +44,8 @@ public class GuiSpecialization extends GuiScreen {
     @Override
     public void onGuiClosed() {
         if (closedWithButton && spec != -1) {
-            FMLProxyPacket pkt = SkillPacketHandler.getPacket(Side.SERVER, 1, spec, isRespec);
-            SkillPacketHandler.classChannel.sendToServer(pkt);
+            //FMLProxyPacket pkt = SkillPacketHandler.getPacket(Side.SERVER, 1, spec, isRespec);
+            //SkillPacketHandler.classChannel.sendToServer(pkt);
         }
     }
 
