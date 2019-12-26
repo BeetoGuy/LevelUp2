@@ -5,6 +5,9 @@ import levelup2.capability.PlayerCapability;
 import levelup2.config.LevelUpConfig;
 import levelup2.config.OreChunkStorage;
 import levelup2.event.CapabilityEventHandler;
+import levelup2.event.CombatSkillHandler;
+import levelup2.event.CraftingSkillHandler;
+import levelup2.event.MiningSkillHandler;
 import levelup2.network.SkillPacketHandler;
 import levelup2.player.IPlayerClass;
 import levelup2.player.PlayerExtension;
@@ -44,6 +47,9 @@ public class LevelUp2 {
         CapabilityManager.INSTANCE.register(IPlayerClass.class, new PlayerCapability.CapabilityPlayerClass<>(), PlayerExtension.class);
         CapabilityManager.INSTANCE.register(IProcessor.class, new PlayerCapability.CapabilityProcessorClass<>(), PlayerCapability.CapabilityProcessorDefault.class);
         MinecraftForge.EVENT_BUS.register(new CapabilityEventHandler());
+        MinecraftForge.EVENT_BUS.register(MiningSkillHandler.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(CombatSkillHandler.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(CraftingSkillHandler.INSTANCE);
         proxy.registerItemMeshes();
     }
 

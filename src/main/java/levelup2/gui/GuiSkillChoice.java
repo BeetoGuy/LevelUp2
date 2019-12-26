@@ -40,7 +40,7 @@ public class GuiSkillChoice extends GuiScreen {
                 }
             }
         }
-        return true;
+        return skillLevel > cl.getBonusSkillLevel(skill);
     }
 
     @Override

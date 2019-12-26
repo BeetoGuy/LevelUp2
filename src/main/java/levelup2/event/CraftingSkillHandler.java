@@ -58,6 +58,10 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class CraftingSkillHandler {
+    public static final CraftingSkillHandler INSTANCE = new CraftingSkillHandler();
+
+    private CraftingSkillHandler() {}
+
     private Random rand = new Random();
     private static final ResourceLocation FURNACEMODS = new ResourceLocation("levelup", "furnacemods");
     private static final ResourceLocation FISHBONUS = new ResourceLocation("levelup", "fishbonus");

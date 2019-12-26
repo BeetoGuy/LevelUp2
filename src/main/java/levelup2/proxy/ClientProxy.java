@@ -2,7 +2,9 @@ package levelup2.proxy;
 
 import levelup2.config.LevelUpConfig;
 import levelup2.event.KeybindEventHandler;
+import levelup2.gui.GuiSkills;
 import levelup2.gui.GuiSpecialization;
+import levelup2.gui.classselect.GuiClassSelect;
 import levelup2.skills.SkillRegistry;
 import levelup2.util.Library;
 import net.minecraft.client.Minecraft;
@@ -17,6 +19,14 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ClientProxy extends CommonProxy {
+    @Override
+    public void displayGuiForPlayer(EntityPlayer player) {
+        if (!SkillRegistry.getPlayer(player).hasClass())
+            Minecraft.getMinecraft().displayGuiScreen(new GuiClassSelect());
+        else
+            Minecraft.getMinecraft().displayGuiScreen(new GuiSkills());
+    }
+
     @Override
     public void registerGui() {
         MinecraftForge.EVENT_BUS.register(KeybindEventHandler.INSTANCE);

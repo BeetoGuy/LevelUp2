@@ -23,6 +23,9 @@ import net.minecraftforge.oredict.OreDictionary;
 import java.util.Random;
 
 public class MiningSkillHandler {
+    public static final MiningSkillHandler INSTANCE = new MiningSkillHandler();
+
+    private MiningSkillHandler() {}
     private static final ResourceLocation TREASUREHUNTING = new ResourceLocation("levelup", "treasurehunting");
     private static final ResourceLocation FLINTLOOT = new ResourceLocation("levelup", "flintloot");
     private static final ResourceLocation PROSPECTING = new ResourceLocation("levelup", "prospecting");

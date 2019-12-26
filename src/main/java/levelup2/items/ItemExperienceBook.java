@@ -2,12 +2,8 @@ package levelup2.items;
 
 import com.google.common.collect.Maps;
 import levelup2.LevelUp2;
-import levelup2.gui.GuiSkills;
-import levelup2.gui.GuiSpecialization;
-import levelup2.gui.classselect.GuiClassSelect;
 import levelup2.network.SkillPacketHandler;
 import levelup2.skills.SkillRegistry;
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -31,10 +27,7 @@ public class ItemExperienceBook extends Item {
         ItemStack stack = player.getHeldItem(hand);
 
         if (!player.isSneaking() && world.isRemote) {
-            if (!SkillRegistry.getPlayer(player).hasClass())
-                Minecraft.getMinecraft().displayGuiScreen(new GuiClassSelect());
-            else
-                Minecraft.getMinecraft().displayGuiScreen(new GuiSkills());
+            LevelUp2.proxy.displayGuiForPlayer(player);
         } else if (player.isSneaking() && !world.isRemote) {
             if (SkillRegistry.getPlayer(player).addLevelFromExperience(player)) {
                 FMLProxyPacket pkt = SkillPacketHandler.getSkillPacket(Side.CLIENT, 0, Maps.newHashMap(), SkillRegistry.getPlayer(player).getLevelBank(), null);

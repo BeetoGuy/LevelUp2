@@ -23,6 +23,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class CombatSkillHandler {
+    public static final CombatSkillHandler INSTANCE = new CombatSkillHandler();
+
+    private CombatSkillHandler() {}
+
     private static final ResourceLocation ARROWSPEED = new ResourceLocation("levelup", "arrowspeed");
     private static final ResourceLocation ARROWDRAW = new ResourceLocation("levelup", "bowdraw");
     private static final ResourceLocation NATURALARMOR = new ResourceLocation("levelup", "naturalarmor");
