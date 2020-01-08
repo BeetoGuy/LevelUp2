@@ -3,6 +3,7 @@ package levelup2.config;
 import levelup2.items.ItemOreChunk;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.OreIngredient;
 
@@ -65,7 +66,21 @@ public class OreChunkStorage {
     }
 
     public ItemStack getSmeltingResult() {
-        if (smeltingItem == null) smeltingItem = LevelUpConfig.getStackFromString(smeltingResult);
+        if (smeltingItem == null) {
+            smeltingItem = LevelUpConfig.getStackFromString(smeltingResult);
+            if (smeltingItem.isEmpty()) {
+                String type = getOreTypePlace() > 0 ? oreName.substring(getOreTypePlace()) : oreName;
+                NonNullList<ItemStack> ores = OreDictionary.getOres("ingot" + type);
+                if (!ores.isEmpty()) {
+                    smeltingItem = ores.get(0);
+                } else {
+                    ores = OreDictionary.getOres("gem" + type);
+                    if (!ores.isEmpty()) {
+                        smeltingItem = ores.get(0);
+                    }
+                }
+            }
+        }
         return smeltingItem.copy();
     }
 
@@ -94,5 +109,13 @@ public class OreChunkStorage {
         if (fortune > 0)
             count += rand.nextInt(fortune + 1);
         return new ItemStack(baseItem, count, itemMeta);
+    }
+
+    private int getOreTypePlace() {
+        for (int i = 0; i < oreName.length(); i++) {
+            if (Character.isUpperCase(oreName.charAt(i)))
+                return i;
+        }
+        return 0;
     }
 }

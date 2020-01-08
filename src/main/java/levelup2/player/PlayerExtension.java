@@ -209,10 +209,20 @@ public class PlayerExtension implements IPlayerClass {
 
     @Override
     public void setPlayerClass(ResourceLocation location) {
-        this.playerClass = location;
         ICharacterClass cl = SkillRegistry.getClassFromName(location);
+        if (this.playerClass != null && cl != null) {
+            ICharacterClass oldClass = SkillRegistry.getClassFromName(this.playerClass);
+            if (oldClass != null && !oldClass.getSkillBonuses().isEmpty()) {
+                skillMap.put(oldClass.getSpecializationSkill().getSkillName(), skillMap.get(oldClass.getSpecializationSkill().getSkillName()) - 1);
+                for (PlayerSkillStorage sk : oldClass.getSkillBonuses()) {
+                    int level = skillMap.get(sk.getSkill().getSkillName());
+                    skillMap.put(sk.getSkill().getSkillName(), Math.max(0, level - sk.getLevel()));
+                }
+            }
+        }
         if (cl != null) {
-            skillMap.put(cl.getSpecializationSkill().getSkillName(), 1);
+            if (skillMap.get(cl.getSpecializationSkill().getSkillName()) < 1)
+                skillMap.put(cl.getSpecializationSkill().getSkillName(), 1);
             if (!cl.getSkillBonuses().isEmpty()) {
                 for (PlayerSkillStorage sk : cl.getSkillBonuses()) {
                     if (skillMap.get(sk.getSkill().getSkillName()) < sk.getLevel())
@@ -220,5 +230,6 @@ public class PlayerExtension implements IPlayerClass {
                 }
             }
         }
+        this.playerClass = location;
     }
 }

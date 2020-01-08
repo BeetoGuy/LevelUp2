@@ -140,3 +140,6 @@ levelup.skill.inactive=§e§l[Level Up!]§r Skills deactivated
 
 sneak.attack=Sneak attack for %d x damage!
 level.invalid=§e§l[Level Up!]§r§e You must reach level 5 before choosing a specialization.§r
+
+levelup.howto.getlevels.0=Sneak-Right-Click this book with 5 or more
+levelup.howto.getlevels.1=levels to trade levels for a skill point.

@@ -1,9 +1,7 @@
 package levelup2.proxy;
 
-import levelup2.config.LevelUpConfig;
 import levelup2.event.KeybindEventHandler;
 import levelup2.gui.GuiSkills;
-import levelup2.gui.GuiSpecialization;
 import levelup2.gui.classselect.GuiClassSelect;
 import levelup2.skills.SkillRegistry;
 import levelup2.util.Library;
@@ -44,7 +42,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void openSpecializationGui() {
-        Minecraft.getMinecraft().displayGuiScreen(GuiSpecialization.withRespec());
+        Minecraft.getMinecraft().displayGuiScreen(GuiClassSelect.withReclass());
     }
 
     @SubscribeEvent

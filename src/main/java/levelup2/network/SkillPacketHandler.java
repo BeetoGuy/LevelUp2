@@ -105,9 +105,10 @@ public class SkillPacketHandler {
         player.sendStatusMessage(new TextComponentTranslation(active), true);
     }
 
-    public static FMLProxyPacket getClassChangePacket(ResourceLocation name) {
+    public static FMLProxyPacket getClassChangePacket(ResourceLocation name, boolean reclass) {
         ByteBuf buf = Unpooled.buffer();
         ByteBufUtils.writeUTF8String(buf, name.toString());
+        buf.writeBoolean(reclass);
         FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[1]);
         pkt.setTarget(Side.SERVER);
         return pkt;
@@ -115,7 +116,8 @@ public class SkillPacketHandler {
 
     private void handleClassChange(ByteBuf buf, EntityPlayerMP player) {
         ResourceLocation cl = new ResourceLocation(ByteBufUtils.readUTF8String(buf));
-        if (SkillRegistry.getPlayer(player).getPlayerClass() == null) {
+        boolean reclass = buf.readBoolean();
+        if (SkillRegistry.getPlayer(player).getPlayerClass() == null || reclass) {
             SkillRegistry.getPlayer(player).setPlayerClass(cl);
             SkillRegistry.loadPlayer(player);
         }

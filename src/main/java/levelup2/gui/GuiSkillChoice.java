@@ -28,6 +28,7 @@ public class GuiSkillChoice extends GuiScreen {
     }
 
     private boolean isDowngradable(IPlayerSkill skill, GuiSkills parent) {
+        if (parent.skillTrees.contains(skill.getSkillName())) return false;
         Map<ResourceLocation, Integer> skillList = parent.skills;
         for (ResourceLocation resource : skillList.keySet()) {
             IPlayerSkill check = parent.player.getSkillFromName(resource);

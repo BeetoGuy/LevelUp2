@@ -14,6 +14,13 @@ public class GuiClassSelect extends GuiScreen {
     private GuiListClassSelection selectionList;
     private GuiButton select;
     private boolean closedWithChoice = false;
+    private boolean isReclass = false;
+
+    public static GuiClassSelect withReclass() {
+        GuiClassSelect cl = new GuiClassSelect();
+        cl.isReclass = true;
+        return cl;
+    }
 
     @Override
     public void initGui() {
@@ -27,7 +34,7 @@ public class GuiClassSelect extends GuiScreen {
     @Override
     public void onGuiClosed() {
         if (closedWithChoice && selectionList.getSelectedClass() != null) {
-            FMLProxyPacket pkt = SkillPacketHandler.getClassChangePacket(selectionList.getSelectedClass().getCharacterClass().getClassName());
+            FMLProxyPacket pkt = SkillPacketHandler.getClassChangePacket(selectionList.getSelectedClass().getCharacterClass().getClassName(), isReclass);
             SkillPacketHandler.classChannel.sendToServer(pkt);
         }
     }

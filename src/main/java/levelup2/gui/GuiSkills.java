@@ -43,7 +43,7 @@ public class GuiSkills extends GuiScreen {
     private double targetY;
     private boolean isScrolling;
     private byte skillTree = 0;
-    private List<ResourceLocation> skillTrees;
+    protected List<ResourceLocation> skillTrees;
     protected PlayerExtension player;
     protected Map<ResourceLocation, Integer> skills = Maps.newHashMap();
     private IPlayerSkill highlightedSkill = null;
