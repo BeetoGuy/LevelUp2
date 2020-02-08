@@ -4,7 +4,6 @@ import levelup2.api.ICharacterClass;
 import levelup2.api.IPlayerSkill;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiOptionButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
@@ -24,7 +23,7 @@ public class GuiSkillChoice extends GuiScreen {
         cl = SkillRegistry.getClassFromName(parent.player.getPlayerClass());
         this.skillLevel = skillLevel;
         canDowngrade = isDowngradable(skill, parent);
-        canSpendLevels = skill.getLevelCost(skillLevel) <= parent.availableLevels && skill.getLevelCost(skillLevel) > -1 && parent.canUnlock(skill);
+        canSpendLevels = skill.getLevelCost(skillLevel) <= parent.player.getLevelBank() && skill.getLevelCost(skillLevel) > -1 && parent.canUnlock(skill);
     }
 
     private boolean isDowngradable(IPlayerSkill skill, GuiSkills parent) {
@@ -102,12 +101,15 @@ public class GuiSkillChoice extends GuiScreen {
 
     @Override
     protected void actionPerformed(GuiButton button) {
+        int levels = parent.player.getLevelBank();
         if (button.id == 0) {
             changeSkillLevel(1);
-            parent.availableLevels -= this.skill.getLevelCost(skillLevel);
+            parent.player.changeLevelBank(levels - this.skill.getLevelCost(skillLevel));
+            //parent.availableLevels -= this.skill.getLevelCost(skillLevel);
         } else if (button.id == 1) {
             changeSkillLevel(-1);
-            parent.availableLevels += this.skill.getLevelCost(skillLevel - 1);
+            parent.player.changeLevelBank(levels + this.skill.getLevelCost(skillLevel - 1));
+            //parent.availableLevels += this.skill.getLevelCost(skillLevel - 1);
         }
         mc.displayGuiScreen(parent);
     }

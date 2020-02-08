@@ -40,12 +40,14 @@ public class MiningSkillHandler {
             int skill = SkillRegistry.getSkillLevel(evt.getEntityPlayer(), STONECUTTING);
             float speed = evt.getNewSpeed();
             if (skill > 0 && evt.getState().getMaterial() == Material.ROCK) {
-                evt.setNewSpeed(speed + (skill * 0.3F));
+                float speedMod = 1.0F + (skill * 0.3F);
+                evt.setNewSpeed(speed * speedMod);
                 return;
             }
             skill = SkillRegistry.getSkillLevel(evt.getEntityPlayer(), WOODCUTTING);
             if (skill > 0 && evt.getState().getMaterial() == Material.WOOD) {
-                evt.setNewSpeed(speed + (skill * 0.2F));
+                float speedMod = 1.0F + (skill * 0.2F);
+                evt.setNewSpeed(speed * speedMod);
             }
         }
     }

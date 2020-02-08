@@ -197,8 +197,7 @@ public class SkillRegistry {
             Map<ResourceLocation, Integer> skills = Maps.newHashMap();
             for (ResourceLocation name : skillHashMap.keySet()) {
                 int level = getPlayer(player).getSkillLevel(name, false);
-                if (level > 0)
-                    skills.put(name, level);
+                skills.put(name, level);
             }
             ResourceLocation cl = getPlayer(player).getPlayerClass();
             SkillPacketHandler.initChannel.sendTo(SkillPacketHandler.getSkillPacket(Side.CLIENT, 0, skills, getPlayer(player).getLevelBank(), cl), (EntityPlayerMP)player);

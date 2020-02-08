@@ -35,8 +35,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import java.util.Map;
 
 public class SkillPacketHandler {
-    public static final String[] CHANNELS = {"levelupinit", "levelupclasses", "levelupskills", "levelupcfg", "levelupproperties", "leveluprefresh", "levelupclass", "leveluptoggle"};
-    public static FMLEventChannel initChannel, classChannel, skillChannel, configChannel, propertyChannel, refreshChannel, classPropChannel, toggleChannel;
+    public static final String[] CHANNELS = {"levelupinit", "levelupclasses", "levelupskills", "levelupcfg", "levelupproperties", "leveluprefresh", "levelupclass", "leveluptoggle", "levelchange", "levelreturn"};
+    public static FMLEventChannel initChannel, classChannel, skillChannel, configChannel, propertyChannel, refreshChannel, classPropChannel, toggleChannel, levelChannel, levelReturn;
 
     public static void init() {
         SkillPacketHandler handler = new SkillPacketHandler();
@@ -56,6 +56,10 @@ public class SkillPacketHandler {
         classPropChannel.register(handler);
         toggleChannel = NetworkRegistry.INSTANCE.newEventDrivenChannel(CHANNELS[7]);
         toggleChannel.register(handler);
+        levelChannel = NetworkRegistry.INSTANCE.newEventDrivenChannel(CHANNELS[8]);
+        levelChannel.register(handler);
+        levelReturn = NetworkRegistry.INSTANCE.newEventDrivenChannel(CHANNELS[9]);
+        levelReturn.register(handler);
         MinecraftForge.EVENT_BUS.register(handler);
     }
 
@@ -69,6 +73,8 @@ public class SkillPacketHandler {
             addTask(evt.getHandler(), () -> handlePacket(in, player));
         } else if (evt.getPacket().channel().equals(CHANNELS[7])) {
             addTask(evt.getHandler(), () -> toggleActive(player));
+        } else if (evt.getPacket().channel().equals(CHANNELS[8])) {
+            addTask(evt.getHandler(), () -> addSkillLevel(player));
         }
     }
 
@@ -85,10 +91,42 @@ public class SkillPacketHandler {
             addTask(evt.getHandler(), () -> refreshValues());
         else if (evt.getPacket().channel().equals(CHANNELS[6]))
             addTask(evt.getHandler(), () -> handleClassProps(in));
+        else if (evt.getPacket().channel().equals(CHANNELS[9]))
+            addTask(evt.getHandler(), () -> handleLevelPacket(in, LevelUp2.proxy.getPlayer()));
     }
 
     private void addTask(INetHandler netHandler, Runnable runnable) {
         FMLCommonHandler.instance().getWorldThread(netHandler).addScheduledTask(runnable);
+    }
+
+    private void addSkillLevel(EntityPlayerMP player) {
+        if (SkillRegistry.getPlayer(player).addLevelFromExperience(player)) {
+            sendReturnPacket(player);
+        }
+    }
+
+    private void sendReturnPacket(EntityPlayerMP player) {
+        levelReturn.sendTo(getLevelPacket(player), player);
+    }
+
+    private FMLProxyPacket getLevelPacket(EntityPlayerMP player) {
+        ByteBuf buf = Unpooled.buffer();
+        buf.writeInt(SkillRegistry.getPlayer(player).getLevelBank());
+        FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[9]);
+        pkt.setTarget(Side.CLIENT);
+        return pkt;
+    }
+
+    private void handleLevelPacket(ByteBuf buf, EntityPlayer player) {
+        SkillRegistry.getPlayer(player).changeLevelBank(buf.readInt());
+    }
+
+    public static FMLProxyPacket getLevelUpPacket() {
+        ByteBuf buf = Unpooled.buffer();
+        buf.writeBoolean(false);
+        FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[8]);
+        pkt.setTarget(Side.SERVER);
+        return pkt;
     }
 
     public static FMLProxyPacket getActivationPacket() {
@@ -132,64 +170,17 @@ public class SkillPacketHandler {
         ByteBuf buf = Unpooled.buffer();
         buf.writeInt(levels);
         NBTTagCompound tag = writeSkillsAsNBT(map);
-        if (cl != null)
+        if (cl != null && channel == 0)
             tag.setString("class", cl.toString());
         ByteBufUtils.writeTag(buf, tag);
         FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[channel]);
         pkt.setTarget(side);
         return pkt;
     }
-/*
-    public static FMLProxyPacket getPacket(Side side, int channel, byte ID, Object... data) {
-        ByteBuf buf = Unpooled.buffer();
-        buf.writeByte(ID);
-        if ((ID < 0 || channel == 0) && data != null) {
-            if (data.length == 1 && data[0] instanceof Map) {
-                Map<String, Integer> map = (Map)data[0];
-                buf.writeInt(0);
-                for (String str : map.keySet()) {
-                    ByteBufUtils.writeUTF8String(buf, str);
-                    buf.writeInt(map.get(str));
-                }
-            } else if (data.length == 2 && data[0] instanceof Map && data[1] instanceof Integer) {
-                buf.writeInt((int)data[1]);
-                Map<String, Integer> map = (Map)data[0];
-                for (String str : map.keySet()) {
-                    ByteBufUtils.writeUTF8String(buf, str);
-                    buf.writeInt(map.get(str));
-                }
-            } else {
-                for (Object dat : data) {
-                    if (dat instanceof String) {
-                        ByteBufUtils.writeUTF8String(buf, (String) dat);
-                    } else if (dat instanceof Integer) {
-                        buf.writeInt((int) dat);
-                    }
-                }
-            }
-        }
-        else if (channel == 1) {
-            if (data != null && data[0] != null && data[0] instanceof Boolean)
-                buf.writeBoolean((boolean)data[0]);
-            else buf.writeBoolean(false);
-        }
-        FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[channel]);
-        pkt.setTarget(side);
-        return pkt;
-    }*/
 
     public static FMLProxyPacket getConfigPacket(NBTTagCompound dat) {
         ByteBuf buf = Unpooled.buffer();
         ByteBufUtils.writeTag(buf, dat);
-        /*
-        for (int i = 0; i < dat.length; i++) {
-            if (i == 6) {
-                buf.writeInt(dat[i].getInt());
-            } else if (i == 8) {
-                buf.writeDouble(dat[i].getDouble());
-            } else
-                buf.writeBoolean(dat[i].getBoolean());
-        }*/
         FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[3]);
         pkt.setTarget(Side.CLIENT);
         return pkt;
@@ -243,15 +234,6 @@ public class SkillPacketHandler {
     private void refreshValues() {
         SkillRegistry.calculateHighLow();
     }
-/*
-    public static FMLProxyPacket getSkillsPacket(Map<ResourceLocation, Integer> map, int levelPool, Side side) {
-        ByteBuf buf = Unpooled.buffer();
-        buf.writeInt(levelPool);
-        ByteBufUtils.writeTag(buf, writeSkillsAsNBT(map));
-        FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[2]);
-        pkt.setTarget(side);
-        return pkt;
-    }*/
 
     private void handleSkillsPacket(ByteBuf buf, EntityPlayer player) {
         IPlayerClass p = SkillRegistry.getPlayer(player);

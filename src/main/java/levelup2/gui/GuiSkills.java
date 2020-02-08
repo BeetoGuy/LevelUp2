@@ -47,12 +47,10 @@ public class GuiSkills extends GuiScreen {
     protected PlayerExtension player;
     protected Map<ResourceLocation, Integer> skills = Maps.newHashMap();
     private IPlayerSkill highlightedSkill = null;
-    protected int availableLevels;
     private boolean closedWithButton = false;
 
     public GuiSkills() {
         this.player = (PlayerExtension)SkillRegistry.getPlayer(LevelUp2.proxy.getPlayer());
-        availableLevels = player.getLevelBank();
         targetX = -12;
         targetY = Y_MIN;
         xScrollO = targetX;
@@ -71,11 +69,8 @@ public class GuiSkills extends GuiScreen {
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(3, this.width / 2 + 32, this.height / 2 + 74, 80, 20, I18n.format("gui.done")));
         this.buttonList.add(new GuiButton(0, (width - imageWidth) / 2 + 16, this.height / 2 + 74, 20, 20, "<"));
-        this.buttonList.add(new GuiButton(1, (width - imageWidth) / 2 + 40, this.height / 2 + 74, 60, 20, I18n.format("gui.skills")));
-        this.buttonList.add(new GuiButton(2, (width - imageWidth) / 2 + 104, this.height / 2 + 74, 20, 20, ">"));/*
-        for (int i = 0; i < 3; i++) {
-            this.buttonList.add(new GuiButton(i, (width - imageWidth) / 2 + 16 + (i * 48), this.height / 2 + 74, 45, 20, I18n.format("gui.levelup.skillmenu." + i)));
-        }*/
+        this.buttonList.add(new GuiButton(1, (width - imageWidth) / 2 + 40, this.height / 2 + 74, 60, 20, I18n.format("gui.addlevel")));
+        this.buttonList.add(new GuiButton(2, (width - imageWidth) / 2 + 104, this.height / 2 + 74, 20, 20, ">"));
     }
 
     @Override
@@ -93,7 +88,7 @@ public class GuiSkills extends GuiScreen {
                 case 2:
                     skillTree = skillTree != skillTrees.size() - 1 ? (byte)(skillTree+1) : 0;
                     break;
-                default: //TODO: Skill List Menu(?)
+                default: SkillPacketHandler.levelChannel.sendToServer(SkillPacketHandler.getLevelUpPacket());
             }
         }
     }
@@ -186,7 +181,7 @@ public class GuiSkills extends GuiScreen {
     }
 
     private void drawLevelOnEnd(int edgeX, int edgeY) {
-        String levels = I18n.format("gui.levelup.budget", this.availableLevels);
+        String levels = I18n.format("gui.levelup.budget", player.getLevelBank());
         int textWidth = this.fontRenderer.getStringWidth(levels);
         int x = edgeX + this.imageWidth - 15 - textWidth;
         int y = edgeY + 5;
@@ -422,12 +417,7 @@ public class GuiSkills extends GuiScreen {
     }
 
     private IPlayerSkill getSkillFromName(ResourceLocation name) {
-        return SkillRegistry.getSkillFromName(name);/*
-        for (IPlayerSkill skill : SkillRegistry.getSkillRegistry()) {
-            if (skill.getSkillName().equals(name))
-                return skill;
-        }
-        return null;*/
+        return SkillRegistry.getSkillFromName(name);
     }
 
     private List<IPlayerSkill> getPrerequisiteSkills(IPlayerSkill skill) {
@@ -487,7 +477,7 @@ public class GuiSkills extends GuiScreen {
     public void onGuiClosed() {
         Map<ResourceLocation, Integer> map = skillsChanged();
         if (closedWithButton && !map.isEmpty()) {
-            FMLProxyPacket pkt = SkillPacketHandler.getSkillPacket(Side.SERVER, 2, map, availableLevels, null);
+            FMLProxyPacket pkt = SkillPacketHandler.getSkillPacket(Side.SERVER, 2, map, player.getLevelBank(), null);
             SkillPacketHandler.skillChannel.sendToServer(pkt);
         }
     }
@@ -502,7 +492,7 @@ public class GuiSkills extends GuiScreen {
     }
 
     private boolean canUnlockSkill(IPlayerSkill skill) {
-        int levels = this.availableLevels;
+        int levels = player.getLevelBank();
         return canUnlock(skill) && levels > 0 && skill.getLevelCost(skills.get(skill.getSkillName())) >= levels && skill.getLevelCost(skills.get(skill.getSkillName())) > -1;
     }
 }
