@@ -2,6 +2,7 @@ package levelup2.gui;
 
 import levelup2.api.ICharacterClass;
 import levelup2.api.IPlayerSkill;
+import levelup2.network.SkillPacketHandler;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -105,10 +106,12 @@ public class GuiSkillChoice extends GuiScreen {
         if (button.id == 0) {
             changeSkillLevel(1);
             parent.player.changeLevelBank(levels - this.skill.getLevelCost(skillLevel));
+            SkillPacketHandler.levelChannel.sendToServer(SkillPacketHandler.getLevelUpPacket());
             //parent.availableLevels -= this.skill.getLevelCost(skillLevel);
         } else if (button.id == 1) {
             changeSkillLevel(-1);
             parent.player.changeLevelBank(levels + this.skill.getLevelCost(skillLevel - 1));
+            SkillPacketHandler.levelChannel.sendToServer(SkillPacketHandler.getLevelUpPacket());
             //parent.availableLevels += this.skill.getLevelCost(skillLevel - 1);
         }
         mc.displayGuiScreen(parent);

@@ -47,7 +47,6 @@ public class GuiSkills extends GuiScreen {
     protected PlayerExtension player;
     protected Map<ResourceLocation, Integer> skills = Maps.newHashMap();
     private IPlayerSkill highlightedSkill = null;
-    private boolean closedWithButton = false;
 
     public GuiSkills() {
         this.player = (PlayerExtension)SkillRegistry.getPlayer(LevelUp2.proxy.getPlayer());
@@ -76,7 +75,6 @@ public class GuiSkills extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) {
         if (button.id == 3) {
-            closedWithButton = true;
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
         }
@@ -476,7 +474,7 @@ public class GuiSkills extends GuiScreen {
     @Override
     public void onGuiClosed() {
         Map<ResourceLocation, Integer> map = skillsChanged();
-        if (closedWithButton && !map.isEmpty()) {
+        if (!map.isEmpty()) {
             FMLProxyPacket pkt = SkillPacketHandler.getSkillPacket(Side.SERVER, 2, map, player.getLevelBank(), null);
             SkillPacketHandler.skillChannel.sendToServer(pkt);
         }
