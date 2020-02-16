@@ -74,7 +74,7 @@ public class SkillPacketHandler {
         } else if (evt.getPacket().channel().equals(CHANNELS[7])) {
             addTask(evt.getHandler(), () -> toggleActive(player));
         } else if (evt.getPacket().channel().equals(CHANNELS[8])) {
-            addTask(evt.getHandler(), () -> addSkillLevel(player));
+            addTask(evt.getHandler(), () -> addSkillLevel(in, player));
         }
     }
 
@@ -99,8 +99,14 @@ public class SkillPacketHandler {
         FMLCommonHandler.instance().getWorldThread(netHandler).addScheduledTask(runnable);
     }
 
-    private void addSkillLevel(EntityPlayerMP player) {
-        if (SkillRegistry.getPlayer(player).addLevelFromExperience(player)) {
+    private void addSkillLevel(ByteBuf buf, EntityPlayerMP player) {
+        int level = buf.readInt();
+        if (level == -1) {
+            if (SkillRegistry.getPlayer(player).addLevelFromExperience(player)) {
+                sendReturnPacket(player);
+            }
+        } else {
+            SkillRegistry.getPlayer(player).changeLevelBank(level);
             sendReturnPacket(player);
         }
     }
@@ -121,9 +127,9 @@ public class SkillPacketHandler {
         SkillRegistry.getPlayer(player).changeLevelBank(buf.readInt());
     }
 
-    public static FMLProxyPacket getLevelUpPacket() {
+    public static FMLProxyPacket getLevelUpPacket(int level) {
         ByteBuf buf = Unpooled.buffer();
-        buf.writeBoolean(false);
+        buf.writeInt(level);
         FMLProxyPacket pkt = new FMLProxyPacket(new PacketBuffer(buf), CHANNELS[8]);
         pkt.setTarget(Side.SERVER);
         return pkt;

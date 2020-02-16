@@ -86,7 +86,7 @@ public class GuiSkills extends GuiScreen {
                 case 2:
                     skillTree = skillTree != skillTrees.size() - 1 ? (byte)(skillTree+1) : 0;
                     break;
-                default: SkillPacketHandler.levelChannel.sendToServer(SkillPacketHandler.getLevelUpPacket());
+                default: SkillPacketHandler.levelChannel.sendToServer(SkillPacketHandler.getLevelUpPacket(-1));
             }
         }
     }

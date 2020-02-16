@@ -105,13 +105,13 @@ public class GuiSkillChoice extends GuiScreen {
         int levels = parent.player.getLevelBank();
         if (button.id == 0) {
             changeSkillLevel(1);
-            parent.player.changeLevelBank(levels - this.skill.getLevelCost(skillLevel));
-            SkillPacketHandler.levelChannel.sendToServer(SkillPacketHandler.getLevelUpPacket());
+            //parent.player.changeLevelBank(levels - this.skill.getLevelCost(skillLevel));
+            SkillPacketHandler.levelChannel.sendToServer(SkillPacketHandler.getLevelUpPacket(levels - this.skill.getLevelCost(skillLevel)));
             //parent.availableLevels -= this.skill.getLevelCost(skillLevel);
         } else if (button.id == 1) {
             changeSkillLevel(-1);
-            parent.player.changeLevelBank(levels + this.skill.getLevelCost(skillLevel - 1));
-            SkillPacketHandler.levelChannel.sendToServer(SkillPacketHandler.getLevelUpPacket());
+            //parent.player.changeLevelBank(levels + this.skill.getLevelCost(skillLevel - 1));
+            SkillPacketHandler.levelChannel.sendToServer(SkillPacketHandler.getLevelUpPacket(levels + this.skill.getLevelCost(skillLevel - 1)));
             //parent.availableLevels += this.skill.getLevelCost(skillLevel - 1);
         }
         mc.displayGuiScreen(parent);
