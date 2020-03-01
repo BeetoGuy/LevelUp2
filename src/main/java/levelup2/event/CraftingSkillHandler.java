@@ -1,6 +1,7 @@
 package levelup2.event;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import levelup2.api.IProcessor;
 import levelup2.capability.CapabilityBrewingStand;
 import levelup2.capability.CapabilityFurnace;
@@ -44,6 +45,8 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -51,10 +54,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CraftingSkillHandler {
@@ -328,9 +328,92 @@ public class CraftingSkillHandler {
         }
     }
 
+    private Map<Integer, List<TileEntity>> processors = Maps.newHashMap();
+    private Map<Integer, List<TileEntity>> toAdd = Maps.newHashMap();
+    private Map<Integer, List<TileEntity>> toRemove = Maps.newHashMap();
+
+    @SubscribeEvent
+    public void onChunkLoad(ChunkEvent.Load evt) {
+        if (!evt.getWorld().isRemote) {
+            Map<BlockPos, TileEntity> tiles = evt.getChunk().getTileEntityMap();
+            List<TileEntity> toAdd = this.toAdd.get(evt.getWorld().provider.getDimension());
+            for (BlockPos pos : tiles.keySet()) {
+                TileEntity tile = evt.getWorld().getTileEntity(pos);
+                if (tile != null && tile.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)) {
+                    toAdd.add(tile);
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onChunkUnload(ChunkEvent.Unload evt) {
+        if (!evt.getWorld().isRemote) {
+            Map<BlockPos, TileEntity> tiles = evt.getChunk().getTileEntityMap();
+            List<TileEntity> toRemove = this.toRemove.get(evt.getWorld().provider.getDimension());
+            List<TileEntity> processors = this.processors.get(evt.getWorld().provider.getDimension());
+            for (TileEntity tile : tiles.values()) {
+                if (processors.contains(tile)) {
+                    toRemove.add(tile);
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onWorldLoad(WorldEvent.Load evt) {
+        if (!evt.getWorld().isRemote) {
+            processors.put(evt.getWorld().provider.getDimension(), Lists.newArrayList());
+            toAdd.put(evt.getWorld().provider.getDimension(), Lists.newArrayList());
+            toRemove.put(evt.getWorld().provider.getDimension(), Lists.newArrayList());
+        }
+    }
+
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload evt) {
+        if (!evt.getWorld().isRemote) {
+            processors.remove(evt.getWorld().provider.getDimension());
+            toAdd.remove(evt.getWorld().provider.getDimension());
+            toRemove.remove(evt.getWorld().provider.getDimension());
+        }
+    }
+
     @SubscribeEvent
     public void doFurnaceTicks(TickEvent.WorldTickEvent evt) {
         if (evt.world.isRemote || evt.phase == TickEvent.Phase.END || evt.side != Side.SERVER) return;
+        if (processors.containsKey(evt.world.provider.getDimension())) {
+            List<TileEntity> processors = this.processors.get(evt.world.provider.getDimension());
+            if (evt.world.getWorldTime() % 100 == 0) {
+                List<TileEntity> loadedTiles = evt.world.loadedTileEntityList.stream().filter(t -> t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
+                for (TileEntity tile : processors) {
+                    if (!loadedTiles.contains(tile))
+                        toRemove.get(evt.world.provider.getDimension()).add(tile);
+                }
+                for (TileEntity tile : loadedTiles) {
+                    if (!processors.contains(tile))
+                        processors.add(tile);
+                }
+            }
+            if (toAdd.containsKey(evt.world.provider.getDimension()) && !toAdd.get(evt.world.provider.getDimension()).isEmpty()) {
+                List<TileEntity> toAdd = this.toAdd.get(evt.world.provider.getDimension());
+                processors.addAll(toAdd);
+                toAdd.clear();
+            }
+            if (toRemove.containsKey(evt.world.provider.getDimension()) && !toRemove.get(evt.world.provider.getDimension()).isEmpty()) {
+                List<TileEntity> toRemove = this.toRemove.get(evt.world.provider.getDimension());
+                processors.removeAll(toRemove);
+                toRemove.clear();
+            }
+            if (!processors.isEmpty()) {
+                for (TileEntity tile : processors) {
+                    if (tile != null && tile.getWorld().getChunk(tile.getPos()).isLoaded()) {
+                        IProcessor p = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP);
+                        processTick(p);
+                    }
+                }
+            }
+        }
+        /*
         List<IProcessor> tiles = Lists.newArrayList();
         try {
             synchronized (evt.world.loadedTileEntityList) {
@@ -339,7 +422,7 @@ public class CraftingSkillHandler {
         } catch (ConcurrentModificationException e) {
 
         }
-        tiles.forEach(this::processTick);
+        tiles.forEach(this::processTick);*/
     }
 
     private void processTick(IProcessor tile) {
