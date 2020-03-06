@@ -39,6 +39,8 @@ public class LevelUpConfig {
     public static double refundValue = 0.5F;
     public static List<String> oreBlocks;
     public static List<Ingredient> blacklistOutputs;
+    public static boolean giveSkillBook = true;
+    public static int levelCost = 5;
     private static String[] oreBlockList = {"geolosys:ore_vanilla", "geolosys:ore"};
     private static String[] surfaceOresDefault = {"oreCoal,0x343434,1,minecraft:coal", "oreIron,0xBC9980,1,minecraft:iron_ingot", "oreGold,0xFCEE4B,2,minecraft:gold_ingot", "oreDiamond,0x5DECF5,4,minecraft:diamond", "oreEmerald,0x17DD62,4,minecraft:emerald", "oreRedstone,0xFF0000,2,minecraft:redstone", "oreLapis,0x193CB4,2,minecraft:dye:4", "oreCopper,0xFF6D11,1,thermalfoundation:material:128", "oreTin,0x8FB0CE,1,thermalfoundation:material:129",
     "oreSilver,0xA9CDDC,2,thermalfoundation:material:130", "oreLead,0x515C73,2,thermalfoundation:material:131", "oreAluminum,0xE2CEE1,2,thermalfoundation:material:132", "oreNickel,0xAAA37B,2,thermalfoundation:material:133", "orePlatinum,0xA1DCFF,3,thermalfoundation:material:134", "oreIridium,0xB7BFDC,4,thermalfoundation:material:135", "oreMithril,0x64B9D8,4,thermalfoundation:material:136"};
@@ -63,6 +65,8 @@ public class LevelUpConfig {
         PROP_SYNC.put("classreset", cfg.get(Configuration.CATEGORY_GENERAL, "Reset class on death", resetClassOnDeath, "Does the player lose all levels on death?"));
         PROP_SYNC.put("furnaceeject", cfg.get(Configuration.CATEGORY_GENERAL, "Furnace ejects bonus items", furnaceEjection, "Does the furnace eject doubled items?"));
         PROP_SYNC.put("skillrefund", cfg.get(Configuration.CATEGORY_GENERAL, "Skill refund cost", refundValue, "The refund value of lowering skill levels."));
+        PROP_SYNC.put("levelcost", cfg.get(Configuration.CATEGORY_GENERAL, "Skill level cost", levelCost, "The amount of levels needed to gain a skill point.", 1, 30));
+        PROP_SYNC.put("skillbook", cfg.get(Configuration.CATEGORY_GENERAL, "Spawn with book", giveSkillBook, "If the player spawns with a skill book."));
         /*
         serverProperties = new Property[] {
                 cfg.get(Configuration.CATEGORY_GENERAL, "Reset class on death", resetClassOnDeath, "Does the player lose all levels on death?"),
@@ -146,6 +150,8 @@ public class LevelUpConfig {
         tag.setBoolean("classreset", PROP_SYNC.get("classreset").getBoolean());
         tag.setBoolean("furnaceeject", PROP_SYNC.get("furnaceeject").getBoolean());
         tag.setDouble("skillrefund", PROP_SYNC.get("skillrefund").getDouble());
+        tag.setInteger("levelcost", PROP_SYNC.get("levelcost").getInt());
+        tag.setBoolean("skillbook", PROP_SYNC.get("skillbook").getBoolean());
         return tag;
     }
 /*
@@ -157,6 +163,8 @@ public class LevelUpConfig {
         resetClassOnDeath = PROP_SYNC.get("classreset").getBoolean();
         furnaceEjection = PROP_SYNC.get("furnaceeject").getBoolean();
         refundValue = PROP_SYNC.get("skillrefund").getDouble();
+        levelCost = PROP_SYNC.get("levelcost").getInt();
+        giveSkillBook = PROP_SYNC.get("skillbook").getBoolean();
         /*
         resetClassOnDeath = serverProperties[0].getBoolean();
         furnaceEjection = serverProperties[1].getBoolean();
@@ -173,6 +181,8 @@ public class LevelUpConfig {
         resetClassOnDeath = tag.getBoolean("classreset");
         furnaceEjection = tag.getBoolean("furnaceeject");
         refundValue = tag.getDouble("skillrefund");
+        levelCost = tag.getInteger("levelcost");
+        giveSkillBook = tag.getBoolean("skillbook");
         SkillRegistry.resetForNewProps();
     }
 /*

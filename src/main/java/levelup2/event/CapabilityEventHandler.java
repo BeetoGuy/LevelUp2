@@ -94,15 +94,17 @@ public class CapabilityEventHandler {
     }
 
     private void spawnBook(EntityPlayer player) {
-        NBTTagCompound playerData = player.getEntityData();
-        NBTTagCompound data = getTag(playerData, EntityPlayer.PERSISTED_NBT_TAG);
-        if (!data.getBoolean(BOOK_TAG)) {
-            ItemStack book = new ItemStack(SkillRegistry.skillBook);
-            if (!player.addItemStackToInventory(book)) {
-                player.dropItem(book, true);
+        if (LevelUpConfig.giveSkillBook) {
+            NBTTagCompound playerData = player.getEntityData();
+            NBTTagCompound data = getTag(playerData, EntityPlayer.PERSISTED_NBT_TAG);
+            if (!data.getBoolean(BOOK_TAG)) {
+                ItemStack book = new ItemStack(SkillRegistry.skillBook);
+                if (!player.addItemStackToInventory(book)) {
+                    player.dropItem(book, true);
+                }
+                data.setBoolean(BOOK_TAG, true);
+                playerData.setTag(EntityPlayer.PERSISTED_NBT_TAG, data);
             }
-            data.setBoolean(BOOK_TAG, true);
-            playerData.setTag(EntityPlayer.PERSISTED_NBT_TAG, data);
         }
     }
 

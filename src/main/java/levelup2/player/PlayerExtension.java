@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import levelup2.api.ICharacterClass;
 import levelup2.api.IPlayerSkill;
 import levelup2.api.PlayerSkillStorage;
+import levelup2.config.LevelUpConfig;
 import levelup2.skills.SkillRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -139,9 +140,9 @@ public class PlayerExtension implements IPlayerClass {
 
     @Override
     public boolean addLevelFromExperience(EntityPlayer player) {
-        if (player.experienceLevel >= 5) {
+        if (player.experienceLevel >= LevelUpConfig.levelCost) {
             levels++;
-            player.addExperienceLevel(-5);
+            player.addExperienceLevel(-LevelUpConfig.levelCost);
             return true;
         }
         return false;
