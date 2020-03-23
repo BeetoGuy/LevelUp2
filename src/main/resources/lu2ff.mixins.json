@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "levelup2.mixin.fastfurnace",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.levelup2.refmap.json",
+  "minVersion": "0.7",
+  "mixins": [
+    "MixinFastFurnace"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

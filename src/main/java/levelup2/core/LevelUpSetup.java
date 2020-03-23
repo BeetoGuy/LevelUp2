@@ -14,6 +14,8 @@ public class LevelUpSetup implements IFMLCallHook {
     public Void call() {
         MixinBootstrap.init();
         Mixins.addConfiguration("levelup2.mixins.json");
+        if (LevelUpCore.isFastFurnacePresent)
+            Mixins.addConfiguration("lu2ff.mixins.json");
         return null;
     }
 }
