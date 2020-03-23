@@ -326,7 +326,7 @@ public class CraftingSkillHandler {
                 }
             }
         }
-    }
+    }/*
 
     private Map<Integer, List<TileEntity>> processors = Maps.newHashMap();
     private Map<Integer, List<TileEntity>> toAdd = Maps.newHashMap();
@@ -413,7 +413,6 @@ public class CraftingSkillHandler {
                 }
             }
         }
-        /*
         List<IProcessor> tiles = Lists.newArrayList();
         try {
             synchronized (evt.world.loadedTileEntityList) {
@@ -422,12 +421,12 @@ public class CraftingSkillHandler {
         } catch (ConcurrentModificationException e) {
 
         }
-        tiles.forEach(this::processTick);*/
+        tiles.forEach(this::processTick);
     }
 
     private void processTick(IProcessor tile) {
         if (tile != null && tile.getPlayerFromUUID() != null) {
             tile.extraProcessing(tile.getPlayerFromUUID());
         }
-    }
+    }*/
 }

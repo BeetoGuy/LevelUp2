@@ -32,6 +32,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraftforge.registries.IForgeRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod(modid = LevelUp2.ID, name = "Level Up! Reloaded", version = "${version}")
 public class LevelUp2 {
@@ -40,6 +42,8 @@ public class LevelUp2 {
     public static LevelUp2 INSTANCE;
     @SidedProxy(clientSide = "levelup2.proxy.ClientProxy", serverSide = "levelup2.proxy.CommonProxy")
     public static CommonProxy proxy;
+
+    public static final Logger LOGGER = LogManager.getLogger();
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent evt) {
@@ -67,6 +71,7 @@ public class LevelUp2 {
         SkillRegistry.postLoadSkills();
         LevelUpConfig.registerSkillProperties();
         SkillRegistry.registerRecipes();
+        LOGGER.info("[Level Up 2] Mod initialized!");
     }
 
     @Mod.EventBusSubscriber(modid = LevelUp2.ID)

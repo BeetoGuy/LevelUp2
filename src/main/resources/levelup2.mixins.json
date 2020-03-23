@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "levelup2.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.levelup2.refmap.json",
+  "minVersion": "0.7",
+  "mixins": [
+    "MixinFurnace",
+    "MixinBrewingStand"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
