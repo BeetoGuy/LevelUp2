@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TileEntityFurnace.class)
-public abstract class MixinFurnace  implements ICapabilityProvider {
+public abstract class MixinFurnace implements ICapabilityProvider {
     private static final ResourceLocation FURNACESPEED = new ResourceLocation("levelup", "furnacespeed");
     private static final ResourceLocation FURNACEBONUS = new ResourceLocation("levelup", "furnacebonus");
 

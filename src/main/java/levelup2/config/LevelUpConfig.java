@@ -81,9 +81,9 @@ public class LevelUpConfig {
         };*/
         oreBlocks = Arrays.asList(cfg.getStringList("Special ore cases", "Whitelist", oreBlockList, "Blocks that don't have their own OreDict entry, but still drop registered ores."));
         cropBlacklist = Arrays.asList(cfg.getStringList("Crops for farming", "Blacklist", new String[] {""}, "Crops that won't be affected by farming growth skill, uses internal block name. No sync to client required."));
-        assembleOreChunks(Library.SURFACE_ORES, cfg.getStringList("surfaceores", Configuration.CATEGORY_GENERAL, surfaceOresDefault, "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result, (optional) defined chunk"));
-        assembleOreChunks(Library.NETHER_ORES, cfg.getStringList("netherores", Configuration.CATEGORY_GENERAL, netherOresDefault, "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result, (optional) defined chunk"));
-        assembleOreChunks(Library.END_ORES, cfg.getStringList("endores", Configuration.CATEGORY_GENERAL, new String[0], "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result, (optional) defined chunk"));
+        assembleOreChunks(Library.SURFACE_ORES, cfg.getStringList("surfaceores", Configuration.CATEGORY_GENERAL, surfaceOresDefault, "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), (optional) defined chunk"));
+        assembleOreChunks(Library.NETHER_ORES, cfg.getStringList("netherores", Configuration.CATEGORY_GENERAL, netherOresDefault, "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), (optional) defined chunk"));
+        assembleOreChunks(Library.END_ORES, cfg.getStringList("endores", Configuration.CATEGORY_GENERAL, new String[0], "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), (optional) defined chunk"));
         resetJson = cfg.get("debug", "Reset json files", resetJsonFiles, "Forces Level Up! to restore external json files to default");
         resetJsonFiles = resetJson.getBoolean();
         rareChance = cfg.getInt("Rare Digging Loot Chance", "digloot", rareChance, 0, 100, "Chances that a rare loot drop will appear");
@@ -119,10 +119,11 @@ public class LevelUpConfig {
 
     public static ItemStack getStackFromString(String str) {
         String[] parts = str.split(":");
-        int meta = parts.length == 3 ? Integer.parseInt(parts[2]) : 0;
+        int meta = parts.length > 3 ? Integer.parseInt(parts[2]) : 0;
+        int stackSize = parts.length == 4 ? Integer.parseInt(parts[3]) : 1;
         Item item = Item.REGISTRY.getObject(new ResourceLocation(parts[0], parts[1]));
         if (item != null && item != Items.AIR) {
-            return new ItemStack(item, 1, meta);
+            return new ItemStack(item, stackSize, meta);
         }
         return ItemStack.EMPTY;
     }
