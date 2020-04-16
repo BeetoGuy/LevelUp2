@@ -42,8 +42,8 @@ public class LevelUpConfig {
     public static boolean giveSkillBook = true;
     public static int levelCost = 5;
     private static String[] oreBlockList = {"geolosys:ore_vanilla", "geolosys:ore"};
-    private static String[] surfaceOresDefault = {"oreCoal,0x343434,1,minecraft:coal", "oreIron,0xBC9980,1,minecraft:iron_ingot", "oreGold,0xFCEE4B,2,minecraft:gold_ingot", "oreDiamond,0x5DECF5,4,minecraft:diamond", "oreEmerald,0x17DD62,4,minecraft:emerald", "oreRedstone,0xFF0000,2,minecraft:redstone", "oreLapis,0x193CB4,2,minecraft:dye:4", "oreCopper,0xFF6D11,1,thermalfoundation:material:128", "oreTin,0x8FB0CE,1,thermalfoundation:material:129",
-    "oreSilver,0xA9CDDC,2,thermalfoundation:material:130", "oreLead,0x515C73,2,thermalfoundation:material:131", "oreAluminum,0xE2CEE1,2,thermalfoundation:material:132", "oreNickel,0xAAA37B,2,thermalfoundation:material:133", "orePlatinum,0xA1DCFF,3,thermalfoundation:material:134", "oreIridium,0xB7BFDC,4,thermalfoundation:material:135", "oreMithril,0x64B9D8,4,thermalfoundation:material:136"};
+    private static String[] surfaceOresDefault = {"oreCoal,0x343434,1,minecraft:coal,Coal", "oreIron,0xBC9980,1,minecraft:iron_ingot,Iron", "oreGold,0xFCEE4B,2,minecraft:gold_ingot,Gold", "oreDiamond,0x5DECF5,4,minecraft:diamond,Diamond", "oreEmerald,0x17DD62,4,minecraft:emerald,Emerald", "oreRedstone,0xFF0000,2,minecraft:redstone,Redstone", "oreLapis,0x193CB4,2,minecraft:dye:4,Lapis", "oreCopper,0xFF6D11,1,thermalfoundation:material:128,Copper", "oreTin,0x8FB0CE,1,thermalfoundation:material:129,Tin",
+    "oreSilver,0xA9CDDC,2,thermalfoundation:material:130,Silver", "oreLead,0x515C73,2,thermalfoundation:material:131,Lead", "oreAluminum,0xE2CEE1,2,thermalfoundation:material:132,Aluminum", "oreNickel,0xAAA37B,2,thermalfoundation:material:133,Nickel", "orePlatinum,0xA1DCFF,3,thermalfoundation:material:134,Platinum", "oreIridium,0xB7BFDC,4,thermalfoundation:material:135,Iridium", "oreMithril,0x64B9D8,4,thermalfoundation:material:136,Mana-Infused"};
     private static String[] netherOresDefault = {"oreQuartz,0xE5DED5,2,minecraft:quartz", "oreCobalt,0x2979e7,4,tconstruct:ingots", "oreArdite,0xFFBD24,5,tconstruct:ingots:1"};
 
     private static Property resetJson;
@@ -81,9 +81,9 @@ public class LevelUpConfig {
         };*/
         oreBlocks = Arrays.asList(cfg.getStringList("Special ore cases", "Whitelist", oreBlockList, "Blocks that don't have their own OreDict entry, but still drop registered ores."));
         cropBlacklist = Arrays.asList(cfg.getStringList("Crops for farming", "Blacklist", new String[] {""}, "Crops that won't be affected by farming growth skill, uses internal block name. No sync to client required."));
-        assembleOreChunks(Library.SURFACE_ORES, cfg.getStringList("surfaceores", Configuration.CATEGORY_GENERAL, surfaceOresDefault, "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), (optional) defined chunk"));
-        assembleOreChunks(Library.NETHER_ORES, cfg.getStringList("netherores", Configuration.CATEGORY_GENERAL, netherOresDefault, "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), (optional) defined chunk"));
-        assembleOreChunks(Library.END_ORES, cfg.getStringList("endores", Configuration.CATEGORY_GENERAL, new String[0], "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), (optional) defined chunk"));
+        assembleOreChunks(Library.SURFACE_ORES, cfg.getStringList("surfaceores", Configuration.CATEGORY_GENERAL, surfaceOresDefault, "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), chunk name, (optional) defined chunk"));
+        assembleOreChunks(Library.NETHER_ORES, cfg.getStringList("netherores", Configuration.CATEGORY_GENERAL, netherOresDefault, "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), chunk name, (optional) defined chunk"));
+        assembleOreChunks(Library.END_ORES, cfg.getStringList("endores", Configuration.CATEGORY_GENERAL, new String[0], "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), chunk name, (optional) defined chunk"));
         resetJson = cfg.get("debug", "Reset json files", resetJsonFiles, "Forces Level Up! to restore external json files to default");
         resetJsonFiles = resetJson.getBoolean();
         rareChance = cfg.getInt("Rare Digging Loot Chance", "digloot", rareChance, 0, 100, "Chances that a rare loot drop will appear");
@@ -109,10 +109,11 @@ public class LevelUpConfig {
                 int experience = Integer.parseInt(parts[2]);
                 String stack = parts[3];
                 //ItemStack stack = getStackFromString(parts[3]);
-                if (parts.length == 5)
-                    chunkItem.add(new OreChunkStorage(oreName, stack, color, experience, i, parts[4]));
+                String name = parts[4];
+                if (parts.length == 6)
+                    chunkItem.add(new OreChunkStorage(oreName, stack, color, experience, i, name, parts[5]));
                 else
-                    chunkItem.add(new OreChunkStorage(oreName, stack, color, experience, i));
+                    chunkItem.add(new OreChunkStorage(oreName, stack, color, experience, i, name));
             }
         }
     }

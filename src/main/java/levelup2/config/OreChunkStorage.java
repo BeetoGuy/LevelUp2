@@ -19,20 +19,22 @@ public class OreChunkStorage {
     private final int metadata;
     private boolean active;
     private Item baseItem;
+    private String itemName;
     private String placeholderItem;
     private int itemMeta;
 
-    public OreChunkStorage(String oreName, String smelting, int color, int experience, int metadata) {
-        this(oreName, smelting, color, experience, metadata, "");
+    public OreChunkStorage(String oreName, String smelting, int color, int experience, int metadata, String name) {
+        this(oreName, smelting, color, experience, metadata, name, "");
     }
 
-    public OreChunkStorage(String oreName, String smelting, int color, int experience, int metadata, String placeholderItem) {
+    public OreChunkStorage(String oreName, String smelting, int color, int experience, int metadata, String name, String placeholderItem) {
         this.oreName = oreName;
         this.smeltingResult = smelting;
         this.color = color;
         this.experienceYield = experience;
         this.metadata = metadata;
         itemMeta = metadata;
+        itemName = name;
         this.placeholderItem = placeholderItem;
     }
 
@@ -109,6 +111,10 @@ public class OreChunkStorage {
         if (fortune > 0)
             count += rand.nextInt(fortune + 1);
         return new ItemStack(baseItem, count, itemMeta);
+    }
+
+    public String getItemName() {
+        return itemName;
     }
 
     private int getOreTypePlace() {

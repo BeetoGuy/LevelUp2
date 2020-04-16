@@ -43,13 +43,15 @@ public class ItemOreChunk extends Item {
     private String getOreName(ItemStack stack) {
         int meta = stack.getMetadata();
         if (!oreTypes.isEmpty() && meta < oreTypes.size()) {
+            return oreTypes.get(meta).getItemName() + " " + I18n.translateToLocal("item.levelup.ore.name");
+            /*
             ItemStack check = SkillRegistry.getOreEntry(oreTypes.get(meta).getOreName());
             if (!check.isEmpty()) {
                 String name = check.getTranslationKey();
                 if (!name.endsWith(".name"))
                     name = name + ".name";
                 return I18n.translateToLocalFormatted(name);
-            }
+            }*/
         }
         return "Ore";
     }

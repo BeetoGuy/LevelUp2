@@ -7,20 +7,23 @@ buildscript {
         }
         maven { url = 'https://repo.spongepowered.org/maven' }
         maven {
-            name = "sonatype-nexus-public"
-            url = "https://oss.sonatype.org/content/repositories/public/"
+            //name = "sonatype-nexus-public"
+            //url = "https://oss.sonatype.org/content/repositories/public/"
+            url 'https://plugins.gradle.org/m2/'
         }
     }
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
         classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
-        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.2"
+        //classpath "com.github.jengelman.gradle.plugins:shadow:2.0.2"
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
     }
 }
 
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "org.spongepowered.mixin"
-apply plugin: "com.github.johnrengelman.shadow"
+//apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "com.matthewprenger.cursegradle"
 
 version = modVersion
 group = modGroup
@@ -39,11 +42,20 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
+configurations {
+    embed
+    implementation.extendsFrom(embed)
+}
+
 repositories {
     mavenCentral()
+    //maven {
+        //name = 'sonatype-nexus-public'
+        //url = 'https://oss.sonatype.org/content/repositories/public/'
+    //}
     maven {
-        name = 'sonatype-nexus-public'
-        url = 'https://oss.sonatype.org/content/repositories/public/'
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven/"
     }
     maven { url "https://repo.spongepowered.org/maven"}
 }
@@ -51,29 +63,23 @@ repositories {
 dependencies {
     compile files('libs/')
 
-    compile "org.spongepowered:mixin:0.7.10-SNAPSHOT"
+    //compile "org.spongepowered:mixin:0.7.10-SNAPSHOT"
+    embed("org.spongepowered:mixin:0.8") {transitive = false}
 }
 
 //Fix forges AT breaking everything because the AT checker is stupid
 [tasks.deobfMcMCP, tasks.deobfMcSRG].each { it.failOnAtError = false }
 
 jar{
+    from(configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
+    }
+
     manifest {
         attributes(
                 "FMLAT": 'lu_at.cfg',
-                "Specification-Title": "levelup2",
-                "Specification-Vendor": "Beeto",
-                "Specification-Version": "1",
-                "Implementation-Title": "levelup2",
-                "Implementation-Vendor": "Beeto",
-                "Implementation-Version": "${version}",
-                "MixinConnector": "levelup2.mixin.Connector",
-                'Premain-Class': 'org.spongepowered.tools.agent.MixinAgent',
-                'Agent-Class': 'org.spongepowered.tools.agent.MixinAgent',
                 "FMLCorePluginContainsFMLMod": true,
                 'ForceLoadAsMod': true,
-                'Can-Redefine-Classes': true,
-                'Can-Retransform-Classes': true,
                 "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
                 'TweakOrder': 0,
                 "FMLCorePlugin": "levelup2.core.LevelUpCore",
@@ -82,31 +88,35 @@ jar{
     }
 }
 
-shadowJar {
-    mainSpec.sourcePaths.clear()
-    dependsOn reobfJar
-    classifier 'shaded'
-    exclude 'dummyThing'
-    exclude 'MixinBootstrap-1.0.2.jar'
-    dependencies {
-        include dependency('org.spongepowered:mixin')
-    }
-    afterEvaluate {
-        from zipTree(reobfJar.jar)
-    }
-}
-
-artifacts {
-    archives shadowJar
-}
+//shadowJar {
+//    mainSpec.sourcePaths.clear()
+//    dependsOn reobfJar
+//    classifier 'shaded'
+//    exclude 'dummyThing'
+//    exclude 'MixinBootstrap-1.0.2.jar'
+//    exclude 'FastFurnace-1.12.2-1.3.1-dev.jar'
+//    dependencies {
+//        include dependency('org.spongepowered:mixin')
+//    }
+//    afterEvaluate {
+//        from zipTree(reobfJar.jar)
+//    }
+//}
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier "dev"
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    description = 'Creates a JAR containing the source code.'
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
 artifacts {
     archives deobfJar
+    archives sourcesJar
 }
 
 mixin {
