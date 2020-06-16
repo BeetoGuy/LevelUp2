@@ -124,6 +124,8 @@ public class MiningSkillHandler {
             if (!drop.isEmpty()) {
                 Library.removeFromList(evt.getDrops(), test);
                 evt.getDrops().add(drop.copy());
+            } else if (!Library.getOreChunk(new ItemStack(evt.getState().getBlock(), 1, evt.getState().getBlock().damageDropped(evt.getState())), evt.getHarvester().getRNG(), evt.getFortuneLevel()).isEmpty()) {
+                evt.getDrops().addAll(evt.getState().getBlock().getDrops(evt.getWorld(), evt.getPos(), evt.getState(), evt.getFortuneLevel()));
             }
         }
     }

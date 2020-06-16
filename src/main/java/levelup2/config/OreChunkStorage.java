@@ -1,9 +1,11 @@
 package levelup2.config;
 
 import levelup2.items.ItemOreChunk;
+import levelup2.skills.SkillRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.OreIngredient;
 
@@ -34,7 +36,10 @@ public class OreChunkStorage {
         this.experienceYield = experience;
         this.metadata = metadata;
         itemMeta = metadata;
-        itemName = name;
+        if (!name.equals(""))
+            itemName = name + " " + I18n.translateToLocal("item.levelup.ore.name");
+        else
+            itemName = name;
         this.placeholderItem = placeholderItem;
     }
 
@@ -64,7 +69,16 @@ public class OreChunkStorage {
 
     public void registerOreIngredientLate() {
         ore = new OreIngredient(oreName);
-        active = OreDictionary.getOres(oreName).size() > 1;
+        active = OreDictionary.getOres(oreName) != null && OreDictionary.getOres(oreName).size() > 1;
+        if (active && itemName.equals("")) {
+            ItemStack check = SkillRegistry.getOreEntry(getOreName());
+            if (!check.isEmpty()) {
+                String name = check.getTranslationKey();
+                if (!name.endsWith(".name"))
+                    name = name + ".name";
+                this.itemName = I18n.translateToLocalFormatted(name);
+            }
+        }
     }
 
     public ItemStack getSmeltingResult() {
