@@ -119,7 +119,7 @@ public class LevelUpConfig {
 
     public static ItemStack getStackFromString(String str) {
         String[] parts = str.split(":");
-        int meta = parts.length > 3 ? Integer.parseInt(parts[2]) : 0;
+        int meta = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
         int stackSize = parts.length == 4 ? Integer.parseInt(parts[3]) : 1;
         Item item = Item.REGISTRY.getObject(new ResourceLocation(parts[0], parts[1]));
         if (item != null && item != Items.AIR) {
