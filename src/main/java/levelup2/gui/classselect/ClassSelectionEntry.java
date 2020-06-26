@@ -1,13 +1,18 @@
 package levelup2.gui.classselect;
 
 import levelup2.api.ICharacterClass;
+import levelup2.skills.SkillRegistry;
+import levelup2.util.ClassProperties;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class ClassSelectionEntry implements GuiListExtended.IGuiListEntry {
     private final GuiListClassSelection container;
     private final Minecraft mc;
@@ -21,7 +26,8 @@ public class ClassSelectionEntry implements GuiListExtended.IGuiListEntry {
 
     @Override
     public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
-        String className = I18n.format(charClass.getUnlocalizedName());
+        ClassProperties prop = SkillRegistry.getProperty(charClass);
+        String className = !prop.getLocalizedName().equals("") ? prop.getLocalizedName() : I18n.format(charClass.getUnlocalizedName());
         ItemStack stack = charClass.getRepresentativeStack();
         if (!stack.isEmpty()) {
             GlStateManager.pushMatrix();
