@@ -17,6 +17,7 @@
     "levelup:stealth",
     "levelup:fallprotect"
   ],
+  "divisor": 10,
   "stack": {
     "item": "minecraft:bone"
   },

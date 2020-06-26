@@ -147,7 +147,7 @@ public class CraftingSkillHandler {
         Random rand = evt.getPlayer().getRNG();
         int skill = SkillRegistry.getSkillLevel(evt.getPlayer(), HARVESTBONUS);
         if (skill > 0) {
-            if (rand.nextInt(10) < skill) {
+            if (rand.nextInt((int)CapabilityEventHandler.getDivisor(HARVESTBONUS)) < skill) {
                 Item item = evt.getState().getBlock().getItemDropped(evt.getState(), rand, 0);
                 if (item == Items.AIR || item == null) {
                     if (evt.getState().getBlock() == Blocks.PUMPKIN_STEM)
@@ -235,7 +235,8 @@ public class CraftingSkillHandler {
 
     private ItemStack getFishingLoot(World world, EntityPlayer player) {
         if (!world.isRemote) {
-            if (player.getRNG().nextDouble() <= SkillRegistry.getSkillLevel(player, FISHBONUS) * 0.05D) {
+            double divisor = 1D / CapabilityEventHandler.getDivisor(FISHBONUS);
+            if (player.getRNG().nextDouble() <= SkillRegistry.getSkillLevel(player, FISHBONUS) * divisor) {
                 LootContext.Builder build = new LootContext.Builder((WorldServer)world);
                 build.withLuck((float) EnchantmentHelper.getMaxEnchantmentLevel(Enchantment.getEnchantmentByLocation("luck_of_the_sea"), player) + player.getLuck());
                 return Library.getLootManager().getLootTableFromLocation(new ResourceLocation("levelup", "fishing/fishing_loot")).generateLootForPools(player.getRNG(), build.build()).get(0).copy();
@@ -326,107 +327,5 @@ public class CraftingSkillHandler {
                 }
             }
         }
-    }/*
-
-    private Map<Integer, List<TileEntity>> processors = Maps.newHashMap();
-    private Map<Integer, List<TileEntity>> toAdd = Maps.newHashMap();
-    private Map<Integer, List<TileEntity>> toRemove = Maps.newHashMap();
-
-    @SubscribeEvent
-    public void onChunkLoad(ChunkEvent.Load evt) {
-        if (!evt.getWorld().isRemote) {
-            Map<BlockPos, TileEntity> tiles = evt.getChunk().getTileEntityMap();
-            List<TileEntity> toAdd = this.toAdd.get(evt.getWorld().provider.getDimension());
-            for (BlockPos pos : tiles.keySet()) {
-                TileEntity tile = evt.getWorld().getTileEntity(pos);
-                if (tile != null && tile.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)) {
-                    toAdd.add(tile);
-                }
-            }
-        }
     }
-
-    @SubscribeEvent
-    public void onChunkUnload(ChunkEvent.Unload evt) {
-        if (!evt.getWorld().isRemote) {
-            Map<BlockPos, TileEntity> tiles = evt.getChunk().getTileEntityMap();
-            List<TileEntity> toRemove = this.toRemove.get(evt.getWorld().provider.getDimension());
-            List<TileEntity> processors = this.processors.get(evt.getWorld().provider.getDimension());
-            for (TileEntity tile : tiles.values()) {
-                if (processors.contains(tile)) {
-                    toRemove.add(tile);
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onWorldLoad(WorldEvent.Load evt) {
-        if (!evt.getWorld().isRemote) {
-            processors.put(evt.getWorld().provider.getDimension(), Lists.newArrayList());
-            toAdd.put(evt.getWorld().provider.getDimension(), Lists.newArrayList());
-            toRemove.put(evt.getWorld().provider.getDimension(), Lists.newArrayList());
-        }
-    }
-
-    @SubscribeEvent
-    public void onWorldUnload(WorldEvent.Unload evt) {
-        if (!evt.getWorld().isRemote) {
-            processors.remove(evt.getWorld().provider.getDimension());
-            toAdd.remove(evt.getWorld().provider.getDimension());
-            toRemove.remove(evt.getWorld().provider.getDimension());
-        }
-    }
-
-    @SubscribeEvent
-    public void doFurnaceTicks(TickEvent.WorldTickEvent evt) {
-        if (evt.world.isRemote || evt.phase == TickEvent.Phase.END || evt.side != Side.SERVER) return;
-        if (processors.containsKey(evt.world.provider.getDimension())) {
-            List<TileEntity> processors = this.processors.get(evt.world.provider.getDimension());
-            if (evt.world.getWorldTime() % 100 == 0) {
-                List<TileEntity> loadedTiles = evt.world.loadedTileEntityList.stream().filter(t -> t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
-                for (TileEntity tile : processors) {
-                    if (!loadedTiles.contains(tile))
-                        toRemove.get(evt.world.provider.getDimension()).add(tile);
-                }
-                for (TileEntity tile : loadedTiles) {
-                    if (!processors.contains(tile))
-                        processors.add(tile);
-                }
-            }
-            if (toAdd.containsKey(evt.world.provider.getDimension()) && !toAdd.get(evt.world.provider.getDimension()).isEmpty()) {
-                List<TileEntity> toAdd = this.toAdd.get(evt.world.provider.getDimension());
-                processors.addAll(toAdd);
-                toAdd.clear();
-            }
-            if (toRemove.containsKey(evt.world.provider.getDimension()) && !toRemove.get(evt.world.provider.getDimension()).isEmpty()) {
-                List<TileEntity> toRemove = this.toRemove.get(evt.world.provider.getDimension());
-                processors.removeAll(toRemove);
-                toRemove.clear();
-            }
-            if (!processors.isEmpty()) {
-                for (TileEntity tile : processors) {
-                    if (tile != null && tile.getWorld().getChunk(tile.getPos()).isLoaded()) {
-                        IProcessor p = tile.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP);
-                        processTick(p);
-                    }
-                }
-            }
-        }
-        List<IProcessor> tiles = Lists.newArrayList();
-        try {
-            synchronized (evt.world.loadedTileEntityList) {
-                tiles = evt.world.loadedTileEntityList.stream().filter(t -> t != null && t.hasCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).map(t -> t.getCapability(PlayerCapability.MACHINE_PROCESSING, EnumFacing.UP)).collect(Collectors.toList());
-            }
-        } catch (ConcurrentModificationException e) {
-
-        }
-        tiles.forEach(this::processTick);
-    }
-
-    private void processTick(IProcessor tile) {
-        if (tile != null && tile.getPlayerFromUUID() != null) {
-            tile.extraProcessing(tile.getPlayerFromUUID());
-        }
-    }*/
 }

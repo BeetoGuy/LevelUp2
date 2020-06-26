@@ -11,6 +11,7 @@
   "prerequisites": [
     "levelup:stonecutting"
   ],
+  "divisor": 20,
   "stack": {
     "item": "minecraft:gold_ore"
   },

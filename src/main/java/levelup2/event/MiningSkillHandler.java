@@ -40,13 +40,15 @@ public class MiningSkillHandler {
             int skill = SkillRegistry.getSkillLevel(evt.getEntityPlayer(), STONECUTTING);
             float speed = evt.getNewSpeed();
             if (skill > 0 && evt.getState().getMaterial() == Material.ROCK) {
-                float speedMod = 1.0F + (skill * 0.3F);
+                float divisor = (float)(CapabilityEventHandler.getDivisor(STONECUTTING) / 20F);
+                float speedMod = 1.0F + (skill * divisor);
                 evt.setNewSpeed(speed * speedMod);
                 return;
             }
             skill = SkillRegistry.getSkillLevel(evt.getEntityPlayer(), WOODCUTTING);
             if (skill > 0 && evt.getState().getMaterial() == Material.WOOD) {
-                float speedMod = 1.0F + (skill * 0.2F);
+                float divisor = (float)(CapabilityEventHandler.getDivisor(WOODCUTTING) / 20F);
+                float speedMod = 1.0F + (skill * divisor);
                 evt.setNewSpeed(speed * speedMod);
             }
         }
@@ -61,7 +63,7 @@ public class MiningSkillHandler {
             if (skill > 0 && !evt.isSilkTouching()) {
                 if (!evt.getDrops().isEmpty() && SkillRegistry.listContains(evt.getDrops().get(0), OreDictionary.getOres("dirt"))) {
                     ItemStack drop = evt.getDrops().get(0).copy();
-                    if (rand.nextFloat() <= skill / 20F) {
+                    if (rand.nextFloat() <= skill / (float)CapabilityEventHandler.getDivisor(TREASUREHUNTING)) {
                         ItemStack loot = getDigLoot(evt.getHarvester());
                         if (!loot.isEmpty()) {
                             Library.removeFromList(evt.getDrops(), drop);
@@ -74,7 +76,7 @@ public class MiningSkillHandler {
             skill = SkillRegistry.getSkillLevel(evt.getHarvester(), FLINTLOOT);
             if (!evt.isSilkTouching() && skill > 0) {
                 if (state.getBlock() instanceof BlockGravel) {
-                    if (rand.nextInt(10) < skill) {
+                    if (rand.nextInt((int)CapabilityEventHandler.getDivisor(FLINTLOOT)) < skill) {
                         Library.removeFromList(evt.getDrops(), new ItemStack(state.getBlock()));
                         evt.getDrops().add(new ItemStack(Items.FLINT));
                         return;
@@ -90,16 +92,17 @@ public class MiningSkillHandler {
                 }
             }
             skill = SkillRegistry.getSkillLevel(evt.getHarvester(), PROSPECTING);
-            if (skill > 0 && rand.nextDouble() <= skill / 20D) {
+            if (skill > 0 && rand.nextDouble() <= skill / CapabilityEventHandler.getDivisor(PROSPECTING)) {
                 getOreChunk(evt);
             }
             else if (SkillRegistry.getSkillLevel(evt.getHarvester(), LUMBERING) > 0 && PlankCache.contains(state.getBlock(), state.getBlock().damageDropped(state))) {
-                if (rand.nextDouble() <= skill / 30D) {
+                double divisor = CapabilityEventHandler.getDivisor(LUMBERING);
+                if (rand.nextDouble() <= skill / divisor) {
                     ItemStack planks = PlankCache.getProduct(state.getBlock(), state.getBlock().damageDropped(state));
                     if (!planks.isEmpty())
                         evt.getDrops().add(planks.copy());
                 }
-                if (rand.nextDouble() <= skill / 30D) {
+                if (rand.nextDouble() <= skill / divisor) {
                     evt.getDrops().add(new ItemStack(Items.STICK, 2));
                 }
             }

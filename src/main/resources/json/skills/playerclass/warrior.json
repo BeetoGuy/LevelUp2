@@ -1,6 +1,8 @@
 {
   "name": "levelup:warrior",
   "bonus": "levelup:combat_bonus",
+  "localized_name": "Warrior",
+  "description": "All-around combat class",
   "skills": [
     {
       "name": "levelup:swordcrit",

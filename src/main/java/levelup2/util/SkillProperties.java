@@ -25,6 +25,7 @@ public class SkillProperties {
     private int row;
     private boolean enabled;
     private boolean active;
+    private double divisor;
     private ItemStack repStack = ItemStack.EMPTY;
 
     public static SkillProperties fromJson(JsonObject obj) {
@@ -36,11 +37,12 @@ public class SkillProperties {
         boolean enabled = JsonUtils.getBoolean(obj, "enabled", true);
         boolean active = JsonUtils.getBoolean(obj, "active", true);
         ResourceLocation type = new ResourceLocation(JsonUtils.getString(obj, "type"));
+        double divisor = JsonUtils.getInt(obj, "divisor", 1);
         ItemStack rep = ShapedRecipes.deserializeItem(JsonUtils.getJsonObject(obj, "stack"), false);
-        return new SkillProperties(skillName, type, levels, prerequisites, column, row, enabled, active, rep);
+        return new SkillProperties(skillName, type, levels, prerequisites, column, row, enabled, active, divisor, rep);
     }
 
-    public SkillProperties(ResourceLocation skillName, ResourceLocation skillType, int[] levelCosts, ResourceLocation[] prerequisites, int column, int row, boolean enabled, boolean active, ItemStack rep) {
+    public SkillProperties(ResourceLocation skillName, ResourceLocation skillType, int[] levelCosts, ResourceLocation[] prerequisites, int column, int row, boolean enabled, boolean active, double divisor, ItemStack rep) {
         this.skillName = skillName;
         this.skillType = skillType;
         this.levels = levelCosts;
@@ -84,6 +86,10 @@ public class SkillProperties {
         return active;
     }
 
+    public double getDivisor() {
+        return divisor;
+    }
+
     public ItemStack getRepStack() {
         return repStack;
     }
@@ -107,6 +113,7 @@ public class SkillProperties {
         tag.setInteger("row", getRow());
         tag.setBoolean("enabled", isEnabled());
         tag.setBoolean("active", isActive());
+        tag.setDouble("divisor", getDivisor());
         if (!repStack.isEmpty()) {
             tag.setTag("item", repStack.serializeNBT());
         }
@@ -130,11 +137,12 @@ public class SkillProperties {
         int row = tag.getInteger("row");
         boolean enabled = tag.getBoolean("enabled");
         boolean active = tag.getBoolean("active");
+        double divisor = tag.getDouble("divisor");
         ItemStack stack = ItemStack.EMPTY;
         if (tag.hasKey("item")) {
             stack = new ItemStack(tag.getCompoundTag("item"));
         }
-        return new SkillProperties(name, type, levels, prereqs, column, row, enabled, active, stack);
+        return new SkillProperties(name, type, levels, prereqs, column, row, enabled, active, divisor, stack);
     }
 
     private static int[] getLevels(JsonObject obj) {

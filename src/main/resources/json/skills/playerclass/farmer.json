@@ -1,6 +1,8 @@
 {
   "name": "levelup:farmer",
   "bonus": "levelup:craft_bonus",
+  "localized_name": "Farmer",
+  "description": "More efficient farming techniques",
   "skills": [
     {
       "name": "levelup:cropgrowth",

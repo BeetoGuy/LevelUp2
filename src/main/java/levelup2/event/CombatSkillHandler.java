@@ -46,9 +46,10 @@ public class CombatSkillHandler {
             if (arrow.shootingEntity instanceof EntityPlayer && SkillRegistry.getPlayer(((EntityPlayer)arrow.shootingEntity)).isActive()) {
                 int archer = SkillRegistry.getSkillLevel((EntityPlayer)arrow.shootingEntity, ARROWSPEED);
                 if (archer > 0) {
-                    arrow.motionX *= 1.0F + archer / 10F;
-                    arrow.motionY *= 1.0F + archer / 10F;
-                    arrow.motionZ *= 1.0F + archer / 10F;
+                    double divisor = CapabilityEventHandler.getDivisor(ARROWSPEED);
+                    arrow.motionX *= 1.0F + archer / divisor;
+                    arrow.motionY *= 1.0F + archer / divisor;
+                    arrow.motionZ *= 1.0F + archer / divisor;
                 }
             }
         }
@@ -59,7 +60,7 @@ public class CombatSkillHandler {
         int archery = SkillRegistry.getSkillLevel(evt.getEntityPlayer(), ARROWDRAW);
         if (archery > 0 && SkillRegistry.getPlayer(evt.getEntityPlayer()).isActive()) {
             evt.getEntityPlayer().setActiveHand(evt.getHand());
-            setItemUseCount(evt.getEntityPlayer(), archery);
+            setItemUseCount(evt.getEntityPlayer(), (int)(archery / CapabilityEventHandler.getDivisor(ARROWDRAW)));
             evt.setAction(new ActionResult<>(EnumActionResult.SUCCESS, evt.getBow()));
         }
     }
@@ -75,19 +76,20 @@ public class CombatSkillHandler {
             int skill = SkillRegistry.getSkillLevel(player, NATURALARMOR);
             if (skill > 0) {
                 if (!evt.getSource().isUnblockable()) {
-                    float amount = evt.getAmount() * (1.0F - skill / 20F);
+                    float amount = evt.getAmount() * (float)(1.0F - skill / CapabilityEventHandler.getDivisor(NATURALARMOR));
                     evt.setAmount(amount);
                 }
             }
             skill = SkillRegistry.getSkillLevel(player, SHIELDBLOCK);
             if (skill > 0) {
-                if (isBlocking(player) && player.getRNG().nextFloat() < skill / 10F) {
+                if (isBlocking(player) && player.getRNG().nextFloat() < skill / CapabilityEventHandler.getDivisor(SHIELDBLOCK)) {
                     evt.setAmount(0F);
                 }
             }
             skill = SkillRegistry.getSkillLevel(player, FALLDAMAGE);
             if (skill > 0 && evt.getSource() == DamageSource.FALL) {
-                float reduction = Math.min(skill * 0.1F, 0.9F);
+                float divisor = (float)(1D / CapabilityEventHandler.getDivisor(FALLDAMAGE));
+                float reduction = Math.min(skill * divisor, 0.9F);
                 evt.setAmount(evt.getAmount() * (1.0F - reduction));
                 return;
             }
@@ -114,7 +116,7 @@ public class CombatSkillHandler {
             if (level > 0) {
                 if (!(src instanceof EntityDamageSourceIndirect)) {
                     if (!player.getHeldItemMainhand().isEmpty()) {
-                        if (player.getRNG().nextDouble() <= level / 20D)
+                        if (player.getRNG().nextDouble() <= level / CapabilityEventHandler.getDivisor(SWORDCRIT))
                             dmg *= 2.0F;
                     }
                 }
@@ -122,7 +124,7 @@ public class CombatSkillHandler {
             level = SkillRegistry.getSkillLevel(player, SWORDDAMAGE);
             if (level > 0 && !(src instanceof EntityDamageSourceIndirect)) {
                 if (!player.getHeldItemMainhand().isEmpty()) {
-                    dmg *= 1.0F + level / 20F;
+                    dmg *= 1.0F + level / CapabilityEventHandler.getDivisor(SWORDDAMAGE);
                     if (LevelUpConfig.damageScaling && !(evt.getEntityLiving() instanceof EntityPlayer) && evt.getEntityLiving().getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue() > 20) {
                         double health = evt.getEntityLiving().getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue();
                         float skillOutput = level / 40F;
@@ -131,7 +133,7 @@ public class CombatSkillHandler {
                 }
             } else if (SkillRegistry.getSkillLevel(player, ARROWSPEED) > 0 && src.getDamageType().equals("arrow")) {
                 level = SkillRegistry.getSkillLevel(player, ARROWSPEED);
-                dmg *= 1.0F + level / 20F;
+                dmg *= 1.0F + level / (float)(2F * CapabilityEventHandler.getDivisor(ARROWSPEED));
                 if (LevelUpConfig.damageScaling && !(evt.getEntityLiving() instanceof EntityPlayer) && evt.getEntityLiving().getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue() > 20) {
                     double health = evt.getEntityLiving().getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue();
                     float skillOutput = level / 40F;
@@ -165,7 +167,7 @@ public class CombatSkillHandler {
             int skill = SkillRegistry.getSkillLevel(evt.player, STEALTHSPEED);
             if (skill > 0) {
                 IAttributeInstance attrib = evt.player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-                AttributeModifier mod = new AttributeModifier(Library.sneakID, "SneakingSkillSpeed", skill / 10F, 2);
+                AttributeModifier mod = new AttributeModifier(Library.sneakID, "SneakingSkillSpeed", skill / CapabilityEventHandler.getDivisor(STEALTHSPEED), 2);
                 if (evt.player.isSneaking()) {
                     if (attrib.getModifier(Library.sneakID) == null)
                         attrib.applyModifier(mod);
@@ -175,7 +177,7 @@ public class CombatSkillHandler {
             }
             else if (SkillRegistry.getSkillLevel(evt.player, SPRINTSPEED) > 0) {
                 IAttributeInstance attrib = evt.player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-                AttributeModifier mod = new AttributeModifier(Library.speedID, "SprintingSkillSpeed", SkillRegistry.getSkillLevel(evt.player, SPRINTSPEED) / 20F, 2);
+                AttributeModifier mod = new AttributeModifier(Library.speedID, "SprintingSkillSpeed", SkillRegistry.getSkillLevel(evt.player, SPRINTSPEED) / CapabilityEventHandler.getDivisor(SPRINTSPEED), 2);
                 if (evt.player.isSprinting()) {
                     if (attrib.getModifier(Library.speedID) == null)
                         attrib.applyModifier(mod);
@@ -191,7 +193,7 @@ public class CombatSkillHandler {
         if (evt.getEntityLiving() instanceof EntityMob && evt.getSource().getTrueSource() instanceof EntityPlayer) {
             if (SkillRegistry.getSkillLevel((EntityPlayer)evt.getSource().getTrueSource(), COMBATBONUS) > 0) {
                 int deathXP = (int) evt.getEntityLiving().getMaxHealth();
-                SkillRegistry.addExperience((EntityPlayer) evt.getSource().getTrueSource(), deathXP / 10);
+                SkillRegistry.addExperience((EntityPlayer) evt.getSource().getTrueSource(), deathXP / (int)CapabilityEventHandler.getDivisor(COMBATBONUS));
             }
         }
     }

@@ -1,6 +1,8 @@
 {
   "name": "levelup:assassin",
   "bonus": "levelup:combat_bonus",
+  "localized_name": "Assassin",
+  "description": "Stealth archer, like Skyrim intended",
   "skills": [
     {
       "name": "levelup:stealth",

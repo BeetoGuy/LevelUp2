@@ -113,4 +113,12 @@ public class CapabilityEventHandler {
             return new NBTTagCompound();
         return base.getCompoundTag(tag);
     }
+
+    public static double getDivisor(ResourceLocation skill) {
+        IPlayerSkill sk = SkillRegistry.getSkillFromName(skill);
+        if (sk != null) {
+            return SkillRegistry.getProperty(sk).getDivisor();
+        }
+        return 1;
+    }
 }

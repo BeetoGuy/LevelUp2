@@ -18,6 +18,8 @@ public class ClassProperties {
     private ResourceLocation className;
     private ResourceLocation specSkill;
     private List<BonusSkill> bonusSkills;
+    private String localizedName;
+    private String description;
 
     public static ClassProperties fromJson(JsonObject obj) {
         ResourceLocation name = new ResourceLocation(JsonUtils.getString(obj, "name"));
@@ -29,13 +31,17 @@ public class ClassProperties {
                 skills.add(new BonusSkill(new ResourceLocation(JsonUtils.getString(o, "name")), JsonUtils.getInt(o, "level", 1)));
             }
         }
-        return new ClassProperties(name, bonus, skills);
+        String locName = JsonUtils.getString(obj, "localized_name", "");
+        String description = JsonUtils.getString(obj, "description", "");
+        return new ClassProperties(name, bonus, skills, locName, description);
     }
 
-    public ClassProperties(ResourceLocation name, ResourceLocation spec, List<BonusSkill> skills) {
+    public ClassProperties(ResourceLocation name, ResourceLocation spec, List<BonusSkill> skills, String localizedName, String description) {
         className = name;
         specSkill = spec;
         bonusSkills = skills;
+        this.localizedName = localizedName;
+        this.description = description;
     }
 
     public ResourceLocation getClassName() {
@@ -57,6 +63,14 @@ public class ClassProperties {
         return storage;
     }
 
+    public String getLocalizedName() {
+        return localizedName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     public void writeToBytes(ByteBuf buf) {
         NBTTagCompound tag = new NBTTagCompound();
         tag.setString("Class", className.toString());
@@ -71,6 +85,8 @@ public class ClassProperties {
             }
             tag.setTag("Bonus", bonus);
         }
+        tag.setString("LocName", localizedName);
+        tag.setString("Desc", description);
         ByteBufUtils.writeTag(buf, tag);
     }
 
@@ -86,7 +102,9 @@ public class ClassProperties {
                 bSkills.add(new BonusSkill(bName, level));
             }
         }
-        return new ClassProperties(name, spec, bSkills);
+        String locName = tag.getString("LocName");
+        String desc = tag.getString("Desc");
+        return new ClassProperties(name, spec, bSkills, locName, desc);
     }
 
     private static class BonusSkill {
