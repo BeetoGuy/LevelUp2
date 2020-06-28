@@ -52,6 +52,7 @@ public class SkillProperties {
         this.enabled = enabled;
         this.active = active;
         this.repStack = rep;
+        this.divisor = divisor;
     }
 
     public ResourceLocation getName() {

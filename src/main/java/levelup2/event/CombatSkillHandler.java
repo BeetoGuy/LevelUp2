@@ -177,7 +177,7 @@ public class CombatSkillHandler {
             }
             else if (SkillRegistry.getSkillLevel(evt.player, SPRINTSPEED) > 0) {
                 IAttributeInstance attrib = evt.player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-                AttributeModifier mod = new AttributeModifier(Library.speedID, "SprintingSkillSpeed", SkillRegistry.getSkillLevel(evt.player, SPRINTSPEED) / CapabilityEventHandler.getDivisor(SPRINTSPEED), 2);
+                AttributeModifier mod = new AttributeModifier(Library.speedID, "SprintingSkillSpeed", SkillRegistry.getSkillLevel(evt.player, SPRINTSPEED) / (float)CapabilityEventHandler.getDivisor(SPRINTSPEED), 2);
                 if (evt.player.isSprinting()) {
                     if (attrib.getModifier(Library.speedID) == null)
                         attrib.applyModifier(mod);
