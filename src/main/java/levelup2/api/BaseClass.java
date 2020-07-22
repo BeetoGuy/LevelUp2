@@ -15,18 +15,24 @@ public class BaseClass implements ICharacterClass {
     private ResourceLocation className;
     private IPlayerSkill bonusSkill;
     private List<PlayerSkillStorage> applicableSkills;
+    private String localizedName;
+    private String description;
 
-    public BaseClass(ResourceLocation location, IPlayerSkill spec, List<PlayerSkillStorage> skillBonuses) {
+    public BaseClass(ResourceLocation location, IPlayerSkill spec, List<PlayerSkillStorage> skillBonuses, String locName, String desc) {
         className = location;
         bonusSkill = spec;
         applicableSkills = skillBonuses;
+        localizedName = locName;
+        description = desc;
     }
 
     public static BaseClass fromProperties(ClassProperties props) {
         ResourceLocation location = props.getClassName();
         IPlayerSkill skill = SkillRegistry.getSkillFromName(props.getSpecSkill());
         List<PlayerSkillStorage> skills = props.getBonusSkills();
-        return new BaseClass(location, skill, skills);
+        String locName = props.getLocalizedName();
+        String desc = props.getDescription();
+        return new BaseClass(location, skill, skills, locName, desc);
     }
 
     public BaseClass fromJson(JsonObject json) {
@@ -36,7 +42,7 @@ public class BaseClass implements ICharacterClass {
         for (JsonElement obj : JsonUtils.getJsonArray(json, "skills")) {
             skillBonuses.add(PlayerSkillStorage.fromJson(obj.getAsJsonObject()));
         }
-        return new BaseClass(location, bonus, skillBonuses);
+        return new BaseClass(location, bonus, skillBonuses, "", "");
     }
 
     @Override
@@ -54,5 +60,15 @@ public class BaseClass implements ICharacterClass {
     @Override
     public List<PlayerSkillStorage> getSkillBonuses() {
         return applicableSkills;
+    }
+
+    @Override
+    public String getLocalizedName() {
+        return localizedName;
+    }
+
+    @Override
+    public String getLocalizedDescription() {
+        return description;
     }
 }

@@ -2,8 +2,6 @@ package levelup2.gui.classselect;
 
 import levelup2.api.ICharacterClass;
 import levelup2.network.SkillPacketHandler;
-import levelup2.skills.SkillRegistry;
-import levelup2.util.ClassProperties;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
@@ -66,9 +64,8 @@ public class GuiClassSelect extends GuiScreen {
 
         if (selectionList.getSelectedClass() != null) {
             ICharacterClass cl = selectionList.getSelectedClass().getCharacterClass();
-            ClassProperties prop = SkillRegistry.getProperty(cl);
-            this.drawCenteredString(this.fontRenderer, !prop.getLocalizedName().equals("") ? prop.getLocalizedName() : I18n.format(cl.getUnlocalizedName()), width / 2, height - 32, 16777215);
-            this.drawCenteredString(this.fontRenderer, !prop.getDescription().equals("") ? prop.getDescription() : I18n.format(cl.getUnlocalizedDescription()), width / 2, height - 20, 16777215);
+            this.drawCenteredString(this.fontRenderer, !cl.getLocalizedName().equals("") ? cl.getLocalizedName() : I18n.format(cl.getUnlocalizedName()), width / 2, height - 32, 16777215);
+            this.drawCenteredString(this.fontRenderer, !cl.getLocalizedDescription().equals("") ? cl.getLocalizedDescription() : I18n.format(cl.getUnlocalizedDescription()), width / 2, height - 20, 16777215);
         }
     }
 

@@ -9,12 +9,14 @@ import levelup2.api.BaseSkill;
 import levelup2.api.ICharacterClass;
 import levelup2.api.IPlayerSkill;
 import levelup2.config.LevelUpConfig;
+import levelup2.items.ItemRespecBook;
 import levelup2.player.IPlayerClass;
 import levelup2.skills.SkillRegistry;
 import levelup2.util.ClassProperties;
 import levelup2.util.SkillProperties;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -160,9 +162,21 @@ public class SkillPacketHandler {
     private void handleClassChange(ByteBuf buf, EntityPlayerMP player) {
         ResourceLocation cl = new ResourceLocation(ByteBufUtils.readUTF8String(buf));
         boolean reclass = buf.readBoolean();
-        if (SkillRegistry.getPlayer(player).getPlayerClass() == null || reclass) {
+        if (SkillRegistry.getPlayer(player).getPlayerClass() == null || (reclass && !SkillRegistry.getPlayer(player).getPlayerClass().equals(cl))) {
             SkillRegistry.getPlayer(player).setPlayerClass(cl);
             SkillRegistry.loadPlayer(player);
+            if (reclass && !player.capabilities.isCreativeMode) {
+                if (player.inventory.mainInventory.get(player.inventory.currentItem).getItem() instanceof ItemRespecBook) {
+                    player.inventory.mainInventory.set(player.inventory.currentItem, ItemStack.EMPTY);
+                } else {
+                    for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
+                        if (player.inventory.mainInventory.get(i).getItem() instanceof ItemRespecBook) {
+                            player.inventory.mainInventory.set(i, ItemStack.EMPTY);
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 

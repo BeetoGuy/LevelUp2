@@ -22,6 +22,10 @@ public interface ICharacterClass {
         return "class." + getClassName().toString() + ".desc";
     }
 
+    String getLocalizedName();
+
+    String getLocalizedDescription();
+
     @Nonnull
     IPlayerSkill getSpecializationSkill();
 
