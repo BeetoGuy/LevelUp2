@@ -59,41 +59,43 @@ public class MiningSkillHandler {
         if (evt.getHarvester() != null && !evt.getWorld().isRemote && SkillRegistry.getPlayer(evt.getHarvester()).isActive()) {
             IBlockState state = evt.getState();
             Random rand = evt.getHarvester().getRNG();
-            int skill = SkillRegistry.getSkillLevel(evt.getHarvester(), TREASUREHUNTING);
-            if (skill > 0 && !evt.isSilkTouching()) {
-                if (!evt.getDrops().isEmpty() && SkillRegistry.listContains(evt.getDrops().get(0), OreDictionary.getOres("dirt"))) {
-                    ItemStack drop = evt.getDrops().get(0).copy();
-                    if (rand.nextFloat() <= skill / (float)CapabilityEventHandler.getDivisor(TREASUREHUNTING)) {
-                        ItemStack loot = getDigLoot(evt.getHarvester());
-                        if (!loot.isEmpty()) {
-                            Library.removeFromList(evt.getDrops(), drop);
-                            evt.getDrops().add(loot.copy());
+            if (!evt.isSilkTouching()) {
+                int skill = SkillRegistry.getSkillLevel(evt.getHarvester(), TREASUREHUNTING);
+                if (skill > 0) {
+                    if (!evt.getDrops().isEmpty() && SkillRegistry.listContains(evt.getDrops().get(0), OreDictionary.getOres("dirt"))) {
+                        ItemStack drop = evt.getDrops().get(0).copy();
+                        if (rand.nextFloat() <= skill / (float) CapabilityEventHandler.getDivisor(TREASUREHUNTING)) {
+                            ItemStack loot = getDigLoot(evt.getHarvester());
+                            if (!loot.isEmpty()) {
+                                Library.removeFromList(evt.getDrops(), drop);
+                                evt.getDrops().add(loot.copy());
+                                return;
+                            }
+                        }
+                    }
+                }
+                skill = SkillRegistry.getSkillLevel(evt.getHarvester(), FLINTLOOT);
+                if (skill > 0) {
+                    if (state.getBlock() instanceof BlockGravel) {
+                        if (rand.nextInt((int) CapabilityEventHandler.getDivisor(FLINTLOOT)) < skill) {
+                            Library.removeFromList(evt.getDrops(), new ItemStack(state.getBlock()));
+                            evt.getDrops().add(new ItemStack(Items.FLINT));
                             return;
                         }
                     }
                 }
-            }
-            skill = SkillRegistry.getSkillLevel(evt.getHarvester(), FLINTLOOT);
-            if (!evt.isSilkTouching() && skill > 0) {
-                if (state.getBlock() instanceof BlockGravel) {
-                    if (rand.nextInt((int)CapabilityEventHandler.getDivisor(FLINTLOOT)) < skill) {
-                        Library.removeFromList(evt.getDrops(), new ItemStack(state.getBlock()));
-                        evt.getDrops().add(new ItemStack(Items.FLINT));
-                        return;
-                    }
+                skill = SkillRegistry.getSkillLevel(evt.getHarvester(), PROSPECTING);
+                if (skill > 0 && rand.nextDouble() <= skill / CapabilityEventHandler.getDivisor(PROSPECTING)) {
+                    getOreChunk(evt);
                 }
             }
-            skill = SkillRegistry.getSkillLevel(evt.getHarvester(), MINING_BONUS);
+            int skill = SkillRegistry.getSkillLevel(evt.getHarvester(), MINING_BONUS);
             if (skill > 0) {
                 ItemStack test = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
                 int experience = Library.getExperienceYield(test);
                 if (experience > 0) {
                     evt.getHarvester().addExperience(experience);
                 }
-            }
-            skill = SkillRegistry.getSkillLevel(evt.getHarvester(), PROSPECTING);
-            if (skill > 0 && rand.nextDouble() <= skill / CapabilityEventHandler.getDivisor(PROSPECTING)) {
-                getOreChunk(evt);
             }
             else if (SkillRegistry.getSkillLevel(evt.getHarvester(), LUMBERING) > 0 && PlankCache.contains(state.getBlock(), state.getBlock().damageDropped(state))) {
                 double divisor = CapabilityEventHandler.getDivisor(LUMBERING);
