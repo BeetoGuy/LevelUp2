@@ -41,6 +41,7 @@ public class LevelUpConfig {
     private static String[] surfaceOresDefault = {"oreCoal,0x343434,1,minecraft:coal,Coal", "oreIron,0xBC9980,1,minecraft:iron_ingot,Iron", "oreGold,0xFCEE4B,2,minecraft:gold_ingot,Gold", "oreDiamond,0x5DECF5,4,minecraft:diamond,Diamond", "oreEmerald,0x17DD62,4,minecraft:emerald,Emerald", "oreRedstone,0xFF0000,2,minecraft:redstone,Redstone", "oreLapis,0x193CB4,2,minecraft:dye:4,Lapis", "oreCopper,0xFF6D11,1,thermalfoundation:material:128,Copper", "oreTin,0x8FB0CE,1,thermalfoundation:material:129,Tin",
     "oreSilver,0xA9CDDC,2,thermalfoundation:material:130,Silver", "oreLead,0x515C73,2,thermalfoundation:material:131,Lead", "oreAluminum,0xE2CEE1,2,thermalfoundation:material:132,Aluminum", "oreNickel,0xAAA37B,2,thermalfoundation:material:133,Nickel", "orePlatinum,0xA1DCFF,3,thermalfoundation:material:134,Platinum", "oreIridium,0xB7BFDC,4,thermalfoundation:material:135,Iridium", "oreMithril,0x64B9D8,4,thermalfoundation:material:136,Mana-Infused"};
     private static String[] netherOresDefault = {"oreQuartz,0xE5DED5,2,minecraft:quartz,Nether Quartz", "oreCobalt,0x2979e7,4,tconstruct:ingots,Cobalt", "oreArdite,0xFFBD24,5,tconstruct:ingots:1,Ardite"};
+    public static boolean alwaysDropChunks = false;
 
     private static Property resetJson;
     private static Map<String, Property> PROP_SYNC = Maps.newHashMap();
@@ -80,6 +81,7 @@ public class LevelUpConfig {
         assembleOreChunks(Library.SURFACE_ORES, cfg.getStringList("surfaceores", Configuration.CATEGORY_GENERAL, surfaceOresDefault, "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), chunk name, (optional) defined chunk"));
         assembleOreChunks(Library.NETHER_ORES, cfg.getStringList("netherores", Configuration.CATEGORY_GENERAL, netherOresDefault, "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), chunk name, (optional) defined chunk"));
         assembleOreChunks(Library.END_ORES, cfg.getStringList("endores", Configuration.CATEGORY_GENERAL, new String[0], "Ores that split into chunks. (String build: Ore name, color, experience yield, smelting result (mod:item:metadata:stacksize), chunk name, (optional) defined chunk"));
+        alwaysDropChunks = cfg.getBoolean("Always Drop Ore Chunks", Configuration.CATEGORY_GENERAL, false, "If true, registered ores will always drop as their chunk variant.");
         resetJson = cfg.get("debug", "Reset json files", resetJsonFiles, "Forces Level Up! to restore external json files to default");
         resetJsonFiles = resetJson.getBoolean();
         rareChance = cfg.getInt("Rare Digging Loot Chance", "digloot", rareChance, 0, 100, "Chances that a rare loot drop will appear");

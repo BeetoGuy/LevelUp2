@@ -87,17 +87,18 @@ public class MiningSkillHandler {
                 skill = SkillRegistry.getSkillLevel(evt.getHarvester(), PROSPECTING);
                 if (skill > 0 && rand.nextDouble() <= skill / CapabilityEventHandler.getDivisor(PROSPECTING)) {
                     getOreChunk(evt);
+                } else getSingleChunk(evt);
+                skill = SkillRegistry.getSkillLevel(evt.getHarvester(), MINING_BONUS);
+                if (skill > 0) {
+                    ItemStack test = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
+                    int experience = Library.getExperienceYield(test);
+                    if (experience > 0) {
+                        evt.getHarvester().addExperience(experience);
+                    }
                 }
             }
-            int skill = SkillRegistry.getSkillLevel(evt.getHarvester(), MINING_BONUS);
-            if (skill > 0) {
-                ItemStack test = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
-                int experience = Library.getExperienceYield(test);
-                if (experience > 0) {
-                    evt.getHarvester().addExperience(experience);
-                }
-            }
-            else if (SkillRegistry.getSkillLevel(evt.getHarvester(), LUMBERING) > 0 && PlankCache.contains(state.getBlock(), state.getBlock().damageDropped(state))) {
+            if (SkillRegistry.getSkillLevel(evt.getHarvester(), LUMBERING) > 0 && PlankCache.contains(state.getBlock(), state.getBlock().damageDropped(state))) {
+                int skill = SkillRegistry.getSkillLevel(evt.getHarvester(), LUMBERING);
                 double divisor = CapabilityEventHandler.getDivisor(LUMBERING);
                 if (rand.nextDouble() <= skill / divisor) {
                     ItemStack planks = PlankCache.getProduct(state.getBlock(), state.getBlock().damageDropped(state));
@@ -120,6 +121,18 @@ public class MiningSkillHandler {
                 return Library.getLootManager().getLootTableFromLocation(location).generateLootForPools(player.getRNG(), build.build()).get(0);
         }
         return ItemStack.EMPTY;
+    }
+
+    private void getSingleChunk(BlockEvent.HarvestDropsEvent evt) {
+        if (!evt.getDrops().isEmpty()) {
+            ItemStack test = evt.getDrops().get(0);
+            ItemStack drop = Library.getOreChunk(test, evt.getHarvester().getRNG(), 0);
+            if (!drop.isEmpty()) {
+                drop.setCount(1);
+                Library.removeFromList(evt.getDrops(), test);
+                evt.getDrops().add(drop.copy());
+            }
+        }
     }
 
     private void getOreChunk(BlockEvent.HarvestDropsEvent evt) {
