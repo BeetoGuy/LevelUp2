@@ -87,13 +87,13 @@ public class MiningSkillHandler {
                 skill = SkillRegistry.getSkillLevel(evt.getHarvester(), PROSPECTING);
                 if (skill > 0 && rand.nextDouble() <= skill / CapabilityEventHandler.getDivisor(PROSPECTING)) {
                     getOreChunk(evt);
-                } else getSingleChunk(evt);
+                } else if (LevelUpConfig.alwaysDropChunks) getSingleChunk(evt);
                 skill = SkillRegistry.getSkillLevel(evt.getHarvester(), MINING_BONUS);
                 if (skill > 0) {
                     ItemStack test = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
                     int experience = Library.getExperienceYield(test);
                     if (experience > 0) {
-                        evt.getHarvester().addExperience(experience);
+                        evt.getHarvester().addExperience(experience * (int)CapabilityEventHandler.getDivisor(MINING_BONUS));
                     }
                 }
             }

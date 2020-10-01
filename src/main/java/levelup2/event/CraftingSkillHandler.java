@@ -1,7 +1,5 @@
 package levelup2.event;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import levelup2.api.IProcessor;
 import levelup2.capability.CapabilityBrewingStand;
 import levelup2.capability.CapabilityFurnace;
@@ -45,17 +43,13 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CraftingSkillHandler {
     public static final CraftingSkillHandler INSTANCE = new CraftingSkillHandler();
@@ -76,13 +70,13 @@ public class CraftingSkillHandler {
                 int craftingChances = getCraftingItems(evt.craftMatrix);
                 if (craftingChances > 0) {
                     int experienceGain = 0;
-                    for (int i = 0; i < getCraftingItems(evt.craftMatrix); i++) {
+                    for (int i = 0; i < craftingChances; i++) {
                         if (rand.nextFloat() < 0.55F) {
                             experienceGain++;
                         }
                     }
                     if (experienceGain > 0)
-                        SkillRegistry.addExperience(evt.player, experienceGain);
+                        SkillRegistry.addExperience(evt.player, experienceGain * (int)CapabilityEventHandler.getDivisor(CRAFTBONUS));
                 }
             }
         }
